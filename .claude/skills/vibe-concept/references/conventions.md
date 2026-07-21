@@ -41,13 +41,13 @@ const meta = { title: 'Documents — empty state' };
 export default meta;
 ```
 
-### `INTEGRATION.md`
-The recipe for wiring this concept into the chosen product's real codebase. Write it from the matching `product-profiles/<product>.md` (pdfguru.md / tbp.md / pdfleader.md), not from general React knowledge — each product has its own path convention, export style, route registration, and data layer. Cover, in the target product's actual terms:
-- **Path** — where the component lands in the real repo (e.g. `pages/<name>/index.tsx` for pdfguru/tbp, `pages-layer/<name>/` for pdfleader).
-- **Export style** — default vs named export, per the product's convention.
-- **Route registration** — the product's router file and path-constants file.
-- **Data wiring** — which state layer (Redux+thunks, RTK, RTK slices) replaces `mock.ts`, and that `mock.ts` gets deleted once real data is wired.
-- **i18n keys** — the product's i18n key namespace convention for replacing literal strings.
+### `INTEGRATION.md` (required — the integration spec)
+Every concept MUST ship this file; the structure gate fails a concept without it. It is the spec an engineer reads to drop the concept into the product with no guesswork. Write it from the matching `product-profiles/<product>.md`, not general React knowledge. Follow the section structure in `src/concepts/_template/INTEGRATION.md`:
+
+- **Purpose** — what screen, which product, which user state.
+- **Props / data contract** — a table, one row per `types.ts` prop: name, type, and its real source in the app (selector/thunk/i18n key). This is the seam.
+- **States** — default / empty / loading / error, whichever apply, and how each renders.
+- **Integration steps** — in the target product's actual terms: path, export style, sub-component mapping, route registration, data wiring (which replaces `mock.ts`), i18n keys.
 
 ## Decomposition
 

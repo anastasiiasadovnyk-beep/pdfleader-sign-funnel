@@ -21,3 +21,19 @@ export function conceptScreens() {
   }
   return out.map((f) => ({ file: f, src: readFileSync(f, 'utf8') }));
 }
+
+export function conceptDirs() {
+  const root = 'src/concepts';
+  if (!existsSync(root)) return [];
+  const out = [];
+  for (const product of readdirSync(root)) {
+    if (product.startsWith('_')) continue;
+    const productDir = path.join(root, product);
+    if (!statSync(productDir).isDirectory()) continue;
+    for (const slug of readdirSync(productDir)) {
+      const dir = path.join(productDir, slug);
+      if (statSync(dir).isDirectory()) out.push({ dir, product, slug });
+    }
+  }
+  return out;
+}
