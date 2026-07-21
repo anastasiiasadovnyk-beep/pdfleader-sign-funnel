@@ -137,9 +137,9 @@ export default defineConfig({
 
 - [ ] **Step 4: Create styles + app entry**
 
-`src/styles/sandbox.css`:
+`src/styles/sandbox.css` (ui-pes only exports `"."`, so its `theme.css` is imported via the relative node_modules path — the same approach the real products use):
 ```css
-@import '@universe-forma/ui-pes/es/theme.css';
+@import '../../node_modules/@universe-forma/ui-pes/es/theme.css';
 @import 'tailwindcss';
 
 body { margin: 0; }
