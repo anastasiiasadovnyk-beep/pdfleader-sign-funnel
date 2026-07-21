@@ -2,3 +2,7 @@
 @import 'tailwindcss';
 
 body { margin: 0; }
+
+@import '../../brands/pdfguru.css';
+@import '../../brands/tbp.css';
+@import '../../brands/pdfleader.css';

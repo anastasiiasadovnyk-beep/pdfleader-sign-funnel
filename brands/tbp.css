@@ -1,0 +1,7 @@
+[data-brand='tbp'] {
+  --color-primary: #2f6bff;
+  --color-primary-contrast-text: #ffffff;
+  --color-text-primary: #212e45;
+  --color-bg-white-bg: #ffffff;
+  --font-primary: 'Inter', sans-serif;
+}
