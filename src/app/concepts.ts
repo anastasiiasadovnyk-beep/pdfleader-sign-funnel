@@ -1,8 +1,9 @@
 import type { ComponentType } from 'react';
 import type { Brand } from './BrandProvider';
 
-export type ConceptMeta = { title: string; brand: Brand };
+export type ConceptMeta = { title: string };
 export type ConceptEntry = {
+  product: Brand;
   slug: string;
   title: string;
   brand: Brand;
@@ -10,7 +11,10 @@ export type ConceptEntry = {
   loadMock: () => Promise<{ default: unknown }>;
 };
 
-const slugOf = (p: string) => p.split('/').slice(-2, -1)[0];
+// path: /src/concepts/<product>/<slug>/Screen.tsx
+const partsOf = (p: string) => p.split('/');
+const productOf = (p: string) => partsOf(p).slice(-3, -2)[0] as Brand;
+const slugOf = (p: string) => partsOf(p).slice(-2, -1)[0];
 
 export function listConcepts(
   screens: Record<string, () => Promise<{ default: ComponentType<any> }>>,
@@ -18,23 +22,26 @@ export function listConcepts(
   mocks: Record<string, () => Promise<{ default: unknown }>>,
 ): ConceptEntry[] {
   return Object.keys(screens)
-    .filter((path) => !slugOf(path).startsWith('_'))
-    .map((path) => {
-      const slug = slugOf(path);
-      const meta = metas[Object.keys(metas).find((m) => slugOf(m) === slug)!] ?? { title: slug, brand: 'pdfguru' as Brand };
+    .filter((p) => !productOf(p).startsWith('_'))
+    .map((p) => {
+      const product = productOf(p);
+      const slug = slugOf(p);
+      const metaKey = Object.keys(metas).find((m) => slugOf(m) === slug && productOf(m) === product);
+      const mockKey = Object.keys(mocks).find((m) => slugOf(m) === slug && productOf(m) === product);
       return {
+        product,
         slug,
-        title: meta.title,
-        brand: meta.brand,
-        load: screens[path],
-        loadMock: mocks[Object.keys(mocks).find((m) => slugOf(m) === slug)!],
+        title: metas[metaKey!]?.title ?? slug,
+        brand: product,
+        load: screens[p],
+        loadMock: mocks[mockKey!],
       };
     });
 }
 
 export const conceptEntries = () =>
   listConcepts(
-    import.meta.glob<{ default: ComponentType<any> }>('/src/concepts/*/Screen.tsx'),
-    import.meta.glob('/src/concepts/*/meta.ts', { eager: true, import: 'default' }) as Record<string, ConceptMeta>,
-    import.meta.glob<{ default: unknown }>('/src/concepts/*/mock.ts'),
+    import.meta.glob<{ default: ComponentType<any> }>('/src/concepts/*/*/Screen.tsx'),
+    import.meta.glob('/src/concepts/*/*/meta.ts', { eager: true, import: 'default' }) as Record<string, ConceptMeta>,
+    import.meta.glob<{ default: unknown }>('/src/concepts/*/*/mock.ts'),
   );

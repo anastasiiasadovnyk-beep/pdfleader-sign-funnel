@@ -1,8 +1,8 @@
 # Conventions — the concept contract
 
-Every concept is a folder `src/concepts/<slug>/` with exactly 5 files. `<slug>` is kebab-case and describes the screen (e.g. `documents-empty`). Look at `src/concepts/_template/` and `src/concepts/documents-empty/` for worked examples of this exact shape.
+Every concept is a folder `src/concepts/<product>/<slug>/` with 5 core files. `<product>` is `pdfguru` | `tbp` | `pdfleader` — the folder is authoritative for brand. `<slug>` is kebab-case and describes the screen (e.g. `documents-empty`). Look at `src/concepts/_template/` and `src/concepts/pdfguru/documents-empty/` for worked examples of this exact shape.
 
-## The 5 files
+## The 5 core files
 
 ### `types.ts`
 One exported `<Name>Props` type. Every piece of data or callback the screen needs is a prop — this type is the integration seam between the concept and whatever real data source the target product will wire up later.
@@ -34,7 +34,12 @@ export default mock;
 ```
 
 ### `meta.ts`
-Default-exports `{ title: string; brand: Brand }`, importing `Brand` from `@/app/BrandProvider`. `brand` is the target product chosen during intake (`pdfguru` | `tbp` | `pdfleader`) — this is what drives which brand CSS the gallery/route applies.
+Default-exports `{ title: string }` only. No `brand` field — brand is derived from the `<product>` folder segment, which is what drives which brand CSS the gallery/route applies.
+
+```ts
+const meta = { title: 'Documents — empty state' };
+export default meta;
+```
 
 ### `INTEGRATION.md`
 The recipe for wiring this concept into the chosen product's real codebase. Write it from the matching `product-profiles/<product>.md` (pdfguru.md / tbp.md / pdfleader.md), not from general React knowledge — each product has its own path convention, export style, route registration, and data layer. Cover, in the target product's actual terms:
@@ -43,6 +48,22 @@ The recipe for wiring this concept into the chosen product's real codebase. Writ
 - **Route registration** — the product's router file and path-constants file.
 - **Data wiring** — which state layer (Redux+thunks, RTK, RTK slices) replaces `mock.ts`, and that `mock.ts` gets deleted once real data is wired.
 - **i18n keys** — the product's i18n key namespace convention for replacing literal strings.
+
+## Decomposition
+
+Non-trivial screens split into sub-files instead of one god-component. `Screen.tsx` stays the composition root:
+- `components/*.tsx` — focused sub-components, each pure with typed props (same rules as `Screen.tsx`: ui-pes + token classes only, no data-fetch/store/router/i18n).
+- `lib/*.ts` — pure helpers (formatting, derivations) with no side effects.
+- `hooks/*.ts` — view logic (local state, derived values) — no data-fetching or store access; that still belongs to the integration layer, not the concept.
+
+Every `.tsx` file in the concept is gate-checked (`node scripts/gates/run.mjs`), not just `Screen.tsx` — a hardcode hidden in a sub-component still fails the gate.
+
+These folder names are intentionally neutral, not FSD (`ui/`/`model/`) — the sandbox serves three different product architectures. `INTEGRATION.md` is where the neutral shape gets mapped to the target product's real layout:
+- **pdfleader** — FSD: `ui/` (+ `model/` for hooks, `lib/` for helpers) and an `index.ts` barrel.
+- **pdfguru** — `pages/<name>/parts`.
+- **tbp** — `pages/<name>/components`.
+
+See `src/concepts/_template/components/ExampleRow.tsx` for the shape.
 
 ## Borrowed discipline (cite, don't copy)
 

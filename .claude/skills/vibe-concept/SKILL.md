@@ -5,16 +5,16 @@ description: Build a UI concept, screen, or page from a Figma reference, design,
 
 # vibe-concept
 
-Turn a Figma reference (or screenshot) + a prompt into a concept folder under `src/concepts/<slug>/` that renders in the sandbox gallery and passes the quality gates.
+Turn a Figma reference (or screenshot) + a prompt into a concept folder under `src/concepts/<product>/<slug>/` that renders in the sandbox gallery and passes the quality gates.
 
 ## Workflow
 
 1. **Intake** — get a Figma node URL (prefer Figma MCP if available) or a screenshot; ask which target product (`pdfguru` | `tbp` | `pdfleader`) if not stated; produce a structured concept brief. See `references/intake.md`.
 2. **Consult the design system** — read `ds-catalog/*.md` for the overview, pick real ui-pes components, then drill into `node_modules/@universe-forma/ui-pes` source for exact props. See `references/ds-catalog.md`.
 3. **Read the target product profile** — `product-profiles/<product>.md`. This shapes the integration recipe in step 4.
-4. **Emit the concept** — create `src/concepts/<slug>/{Screen.tsx,types.ts,mock.ts,meta.ts,INTEGRATION.md}`. See `references/conventions.md`.
+4. **Emit the concept** — create `src/concepts/<product>/<slug>/{Screen.tsx,types.ts,mock.ts,meta.ts,INTEGRATION.md}`. See `references/conventions.md`.
 5. **Run gates** — `node scripts/gates/run.mjs <slug>`; fix findings and re-run until it passes. NEVER declare the concept done on a failing gate.
-6. **Self-verify** — screenshot the sandbox route `/c/<slug>`, compare to the reference, iterate. See `references/self-review.md`.
+6. **Self-verify** — screenshot the sandbox route `/c/<product>/<slug>`, compare to the reference, iterate. See `references/self-review.md`.
 
 | Step | Reference |
 |---|---|
@@ -29,5 +29,6 @@ Load each reference file just before you need it — don't read all four upfront
 
 - **Never invent a component.** If ui-pes lacks it, compose from ui-pes primitives + tokens and FLAG the gap for the DS team in your response.
 - **`Screen.tsx` must be pure.** Props in, UI out. Only `@universe-forma/ui-pes` imports plus Tailwind token classes. No data-fetching, no store, no router, no i18n inside it. No raw hex colors, no raw Tailwind palette utilities (`bg-gray-500` etc.), and no raw px where a spacing/radius token exists — token utilities only. Arbitrary layout values with no matching token (e.g. `max-w-[720px]`) are allowed.
+- **Decompose non-trivial screens** into `components/`/`lib/`/`hooks/` — no monolithic Screen.tsx. Every `.tsx` in the concept is gate-checked.
 - **Data goes through typed props + `mock.ts`.** Never hardcode data inline in the component; `mock.ts` is the integration seam that gets deleted when the concept is wired to real data.
 - **Run the gates before declaring done.** `node scripts/gates/run.mjs <slug>` must exit 0. A failing gate means the concept is not finished — fix it, don't explain it away.

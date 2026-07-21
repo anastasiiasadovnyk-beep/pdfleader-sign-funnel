@@ -12,7 +12,7 @@ Fix every finding and re-run until it exits 0. Do not declare the concept done, 
 
 ## 2. Screenshot the sandbox route
 
-Start the dev server if it isn't running (`npm run dev`) and capture `/c/<slug>` — the gallery route for this concept, wired up by `ConceptRoute` from `meta.ts` + `mock.ts`.
+Start the dev server if it isn't running (`npm run dev`) and capture `/c/<product>/<slug>` — the gallery route for this concept, wired up by `ConceptRoute` from `meta.ts` + `mock.ts`.
 
 ## 3. Compare to the reference
 
