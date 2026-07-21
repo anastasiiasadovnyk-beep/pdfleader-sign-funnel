@@ -1,10 +1,14 @@
-import { Button } from '@universe-forma/ui-pes';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Gallery } from './Gallery';
+import { ConceptRoute } from './ConceptRoute';
 
 export function App() {
   return (
-    <main className="p-8">
-      <h1 className="text-desktop-title-3">Vibe Concepts</h1>
-      <Button>Design system online</Button>
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Gallery />} />
+        <Route path="/c/:slug" element={<ConceptRoute />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
