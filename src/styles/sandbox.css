@@ -1,8 +1,10 @@
 @import '../../node_modules/@universe-forma/ui-pes/es/theme.css';
 @import 'tailwindcss';
-
-body { margin: 0; }
-
 @import '../../brands/pdfguru.css';
 @import '../../brands/tbp.css';
 @import '../../brands/pdfleader.css';
+@source '../../node_modules/@universe-forma/ui-pes/es';
+
+body {
+  margin: 0;
+}
