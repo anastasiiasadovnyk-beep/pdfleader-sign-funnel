@@ -28,6 +28,6 @@ Load each reference file just before you need it — don't read all four upfront
 ## HARD RULES
 
 - **Never invent a component.** If ui-pes lacks it, compose from ui-pes primitives + tokens and FLAG the gap for the DS team in your response.
-- **`Screen.tsx` must be pure.** Props in, UI out. Only `@universe-forma/ui-pes` imports plus Tailwind token classes. No data-fetching, no store, no router, no i18n inside it. No raw hex colors, no raw px values, no raw Tailwind palette utilities (`bg-gray-500` etc.) — token utilities only.
+- **`Screen.tsx` must be pure.** Props in, UI out. Only `@universe-forma/ui-pes` imports plus Tailwind token classes. No data-fetching, no store, no router, no i18n inside it. No raw hex colors, no raw Tailwind palette utilities (`bg-gray-500` etc.), and no raw px where a spacing/radius token exists — token utilities only. Arbitrary layout values with no matching token (e.g. `max-w-[720px]`) are allowed.
 - **Data goes through typed props + `mock.ts`.** Never hardcode data inline in the component; `mock.ts` is the integration seam that gets deleted when the concept is wired to real data.
 - **Run the gates before declaring done.** `node scripts/gates/run.mjs <slug>` must exit 0. A failing gate means the concept is not finished — fix it, don't explain it away.

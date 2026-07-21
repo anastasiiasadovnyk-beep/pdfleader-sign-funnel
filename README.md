@@ -46,7 +46,7 @@ Checks for hardcoded values instead of tokens, missing states, and invalid token
 ```bash
 npm run reindex             # both of the below
 npm run reindex:ds          # ds-catalog/*.md from node_modules/@universe-forma/ui-pes
-npm run reindex:products    # product-profiles/*.md and brands/*.css from local product repos
+npm run reindex:products    # brands/*.css from local product repos (product-profiles/*.md are hand-maintained)
 ```
 
 `reindex:products` reads sibling checkouts at `../pdfguru-fe`, `../tbp-fe`, `../pdfleader-fe` by default. Override with `PDFGURU_FE`, `TBP_FE`, `PDFLEADER_FE` env vars if your checkouts live elsewhere:
