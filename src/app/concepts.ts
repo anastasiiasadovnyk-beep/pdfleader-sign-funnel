@@ -17,17 +17,19 @@ export function listConcepts(
   metas: Record<string, ConceptMeta>,
   mocks: Record<string, () => Promise<{ default: unknown }>>,
 ): ConceptEntry[] {
-  return Object.keys(screens).map((path) => {
-    const slug = slugOf(path);
-    const meta = metas[Object.keys(metas).find((m) => slugOf(m) === slug)!] ?? { title: slug, brand: 'pdfguru' as Brand };
-    return {
-      slug,
-      title: meta.title,
-      brand: meta.brand,
-      load: screens[path],
-      loadMock: mocks[Object.keys(mocks).find((m) => slugOf(m) === slug)!],
-    };
-  });
+  return Object.keys(screens)
+    .filter((path) => !slugOf(path).startsWith('_'))
+    .map((path) => {
+      const slug = slugOf(path);
+      const meta = metas[Object.keys(metas).find((m) => slugOf(m) === slug)!] ?? { title: slug, brand: 'pdfguru' as Brand };
+      return {
+        slug,
+        title: meta.title,
+        brand: meta.brand,
+        load: screens[path],
+        loadMock: mocks[Object.keys(mocks).find((m) => slugOf(m) === slug)!],
+      };
+    });
 }
 
 export const conceptEntries = () =>
