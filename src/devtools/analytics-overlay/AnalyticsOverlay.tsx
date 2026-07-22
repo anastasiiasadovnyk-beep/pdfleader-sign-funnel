@@ -21,8 +21,8 @@ export function AnalyticsOverlay({ product, concept, page }: { product: string; 
 
   const onPick = useCallback((anchor: ElementAnchor) => {
     setTagMode(false);
-    setSpec((s) => { setDraft({ id: nextEventId(s), anchor }); return s; });
-  }, []);
+    setDraft({ id: nextEventId(spec), anchor });
+  }, [spec]);
   const hover = useElementPicker(tagMode, onPick);
 
   const persist = (next: AnalyticsSpec) => { setSpec(next); saveSpec(next); };
