@@ -68,6 +68,11 @@ export function Gallery() {
                               <Arrow />
                             </span>
                           </div>
+                          {e.kind === 'multi' && (
+                            <span className="w-fit rounded-3 bg-bg-light-grey px-2 py-0.5 text-caption-xs text-text-secondary">
+                              Funnel · {e.pages?.length ?? 0} pages
+                            </span>
+                          )}
                           <span className="text-caption-xs text-text-secondary font-mono">
                             /c/{e.product}/{e.slug}
                           </span>
