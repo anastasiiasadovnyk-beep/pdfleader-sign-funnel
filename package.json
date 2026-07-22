@@ -10,7 +10,8 @@
     "reindex": "node scripts/reindex-ds.mjs && node scripts/reindex-products.mjs",
     "reindex:ds": "node scripts/reindex-ds.mjs",
     "reindex:products": "node scripts/reindex-products.mjs",
-    "gate": "node scripts/gates/run.mjs"
+    "gate": "node scripts/gates/run.mjs",
+    "gate:analytics": "node -e \"import('./scripts/gates/verify-analytics.mjs').then(m=>{const r=m.analyzeAll();let bad=false;for(const x of r){if(x.errors.length){bad=true;console.error('\\u2717',x.product+'/'+x.slug);x.errors.forEach(e=>console.error('  -',e));}x.warnings.forEach(w=>console.warn('\\u26a0',x.product+'/'+x.slug,w));}process.exit(bad?1:0);})\""
   },
   "dependencies": {
     "@universe-forma/ui-pes": "^0.5.45",

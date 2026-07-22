@@ -127,6 +127,16 @@ npm run gate <назва>    # перевірити один
 
 ---
 
+## Multipage concepts & analytics tagging
+
+Some concepts are more than one screen — a funnel or a wizard. Those live under `src/concepts/<product>/<slug>/` with a `flow.ts` (the page order) plus `pages/<page>/{Screen.tsx,types.ts,mock.ts}` instead of a single flat `Screen.tsx`. The gallery route drives navigation between pages and shows a flow bar; you don't need to do anything extra to preview it — `/c/<product>/<slug>` opens the flow's first page.
+
+Every concept, single- or multi-page, also carries an analytics spec. Run `npm run dev`, open the concept, and use the **Tag** button in the dev-only overlay in the corner: pick an element on the page (or add a `page_load` event) and give it an event name. Saving writes `analytics.json` into the concept folder — this is the spec an engineer wires to the product's real analytics dispatch. Run `npm run gate:analytics` any time to see which pages or elements are still untagged.
+
+**Багатосторінкові концепти й розмітка аналітики.** Деякі концепти — це не один екран, а послідовність (воронка, майстер). Вони лежать у `src/concepts/<продукт>/<назва>/` з файлом `flow.ts` (порядок сторінок) і папками `pages/<сторінка>/` замість одного `Screen.tsx` — переглядаються так само, за адресою `/c/<продукт>/<назва>`, галерея сама показує панель переходів між кроками. Кожен концепт також має нести файл аналітики: у `npm run dev` відкрий концепт, натисни **Tag** у панелі оверлею (видно лише в дев-режимі), познач елементи та події `page_load` — збережеться `analytics.json` у папці концепту. Командою `npm run gate:analytics` можна будь-коли перевірити, які сторінки чи елементи ще не розмічені.
+
+---
+
 ## Оновлення каталогів (робить розробник, зрідка)
 
 Claude «знає» дизайн-систему й архітектуру продуктів завдяки згенерованим каталогам (`ds-catalog/`, `product-profiles/`, `brands/`). Коли `ui-pes` оновлюється або змінюється продукт — їх треба перегенерувати:

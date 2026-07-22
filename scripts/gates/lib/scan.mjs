@@ -37,3 +37,18 @@ export function conceptDirs() {
   }
   return out;
 }
+
+export function conceptPages(dir) {
+  const flowPath = path.join(dir, 'flow.ts');
+  if (!existsSync(flowPath)) {
+    const screen = path.join(dir, 'Screen.tsx');
+    return { multi: false, pages: existsSync(screen) ? [{ slug: 'screen', screen }] : [] };
+  }
+  const pagesDir = path.join(dir, 'pages');
+  if (!existsSync(pagesDir)) return { multi: true, pages: [] };
+  const pages = readdirSync(pagesDir)
+    .filter((n) => statSync(path.join(pagesDir, n)).isDirectory())
+    .map((slug) => ({ slug, screen: path.join(pagesDir, slug, 'Screen.tsx') }))
+    .filter((p) => existsSync(p.screen));
+  return { multi: true, pages };
+}

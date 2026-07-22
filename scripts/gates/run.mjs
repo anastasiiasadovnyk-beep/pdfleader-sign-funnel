@@ -3,6 +3,7 @@ import { verifyStructure } from './verify-structure.mjs';
 import { lintHardcodes } from './lint-hardcodes.mjs';
 import { verifyStates } from './verify-states.mjs';
 import { validateTokens, loadColorCatalog } from './validate-tokens.mjs';
+import { analyzeAll } from './verify-analytics.mjs';
 
 const only = process.argv[2];
 const catalog = loadColorCatalog();
@@ -29,6 +30,19 @@ for (const { file, src } of conceptScreens()) {
     findings.forEach((f) => console.error(`  - ${f}`));
   } else {
     console.log(`✓ ${file}`);
+  }
+}
+
+for (const r of analyzeAll()) {
+  if (only && !`${r.product}/${r.slug}`.includes(only)) continue;
+  if (r.errors.length) {
+    failed = true;
+    console.error(`\n✗ analytics ${r.product}/${r.slug}`);
+    r.errors.forEach((e) => console.error(`  - ${e}`));
+  }
+  if (r.warnings.length) {
+    console.warn(`\n⚠ analytics ${r.product}/${r.slug}`);
+    r.warnings.forEach((w) => console.warn(`  - ${w}`));
   }
 }
 
