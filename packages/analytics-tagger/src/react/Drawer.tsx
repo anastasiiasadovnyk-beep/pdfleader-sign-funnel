@@ -25,15 +25,20 @@ function TabBody({ tab }: { tab: TabId }) {
   }
 }
 
-export function Drawer({ onClose }: { onClose: () => void }) {
+export function Drawer({ onClose, onDisable }: { onClose: () => void; onDisable: () => void }) {
   const ctx = useContext(TaggerContext)!;
   return (
     <div className="aftag-drawer">
       <div className="aftag-drawer-header">
         <span className="aftag-drawer-title">Analytics tagger</span>
-        <button type="button" className="aftag-icon-btn" onClick={onClose} aria-label="Close">
-          &times;
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <button type="button" className="aftag-btn" onClick={onDisable} title="Turn the tagger off for this tab">
+            Disable
+          </button>
+          <button type="button" className="aftag-icon-btn" onClick={onClose} aria-label="Close">
+            &times;
+          </button>
+        </div>
       </div>
       <div className="aftag-tabs" role="tablist">
         {TABS.map((t) => (

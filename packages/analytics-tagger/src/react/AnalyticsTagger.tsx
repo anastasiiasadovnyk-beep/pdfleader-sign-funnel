@@ -30,10 +30,16 @@ export const TaggerContext = createContext<TaggerContextValue | null>(null);
 
 export type AnalyticsTaggerProps = { product: string; concept: string; page: string };
 
+const STORAGE_KEY = 'aftag:enabled';
+const OFF_VALUES = new Set(['0', 'false', 'off', 'no']);
+const readEnabled = () => { try { return sessionStorage.getItem(STORAGE_KEY) === '1'; } catch { return false; } };
+
 export function AnalyticsTagger({ product, concept, page }: AnalyticsTaggerProps) {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const tagParam = searchParams.get('tag');
 
+  // Once ?tag is seen the tool stays on across navigation (per-tab), until Disable or ?tag=0.
+  const [enabled, setEnabled] = useState(readEnabled);
   const [spec, setSpec] = useState<AnalyticsSpec>(() => emptySpec(product, concept));
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<TabId>('inspect');
@@ -41,16 +47,35 @@ export function AnalyticsTagger({ product, concept, page }: AnalyticsTaggerProps
   const [draft, setDraft] = useState<DraftEvent | null>(null);
 
   useEffect(() => {
-    if (!tagParam) return;
+    if (tagParam == null) return;
+    const off = OFF_VALUES.has(tagParam.toLowerCase());
+    try { off ? sessionStorage.removeItem(STORAGE_KEY) : sessionStorage.setItem(STORAGE_KEY, '1'); } catch { /* ignore */ }
+    setEnabled(!off);
+  }, [tagParam]);
+
+  const disable = useCallback(() => {
+    try { sessionStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
+    setEnabled(false);
+    setOpen(false);
+    setInspecting(false);
+    if (searchParams.has('tag')) {
+      const next = new URLSearchParams(searchParams);
+      next.delete('tag');
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
+  useEffect(() => {
+    if (!enabled) return;
     let alive = true;
     loadSpec(product, concept).then((s) => { if (alive) setSpec(s); });
     return () => { alive = false; };
-  }, [tagParam, product, concept]);
+  }, [enabled, product, concept]);
 
   useEffect(() => {
     // dynamic import keeps styles.css out of the prod bundle when the overlay never mounts
-    if (tagParam) import('../styles.css');
-  }, [tagParam]);
+    if (enabled) import('../styles.css');
+  }, [enabled]);
 
   const persist = useCallback((next: AnalyticsSpec) => {
     setSpec(next);
@@ -73,7 +98,7 @@ export function AnalyticsTagger({ product, concept, page }: AnalyticsTaggerProps
   }, [hoverAnchor, seedDraft]);
 
   useEffect(() => {
-    if (!tagParam) return;
+    if (!enabled) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
       if (inspecting) { setInspecting(false); return; }
@@ -81,7 +106,7 @@ export function AnalyticsTagger({ product, concept, page }: AnalyticsTaggerProps
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [tagParam, inspecting, draft]);
+  }, [enabled, inspecting, draft]);
 
   const eventCount = useMemo(() => spec.events.filter((e) => e.page === page).length, [spec, page]);
 
@@ -89,13 +114,13 @@ export function AnalyticsTagger({ product, concept, page }: AnalyticsTaggerProps
     product, concept, page, spec, persist, draft, setDraft, tab, setTab, inspecting, setInspecting,
   }), [product, concept, page, spec, persist, draft, tab, inspecting]);
 
-  if (!tagParam) return null;
+  if (!enabled) return null;
 
   return (
     <TaggerContext.Provider value={context}>
       <div className="aftag-root">
         <Launcher count={eventCount} onToggle={() => setOpen((v) => !v)} />
-        {open && <Drawer onClose={() => setOpen(false)} />}
+        {open && <Drawer onClose={() => setOpen(false)} onDisable={disable} />}
         {inspecting && <ElementHighlight rect={rect} anchor={hoverAnchor} onChip={onChip} />}
       </div>
     </TaggerContext.Provider>
