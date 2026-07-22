@@ -1,33 +1,27 @@
-import { scanInteractive, analyzeConcept } from './verify-analytics.mjs';
+import { analyzeConcept } from './verify-analytics.mjs';
 
-test('scanInteractive finds ui-pes + native interactives with labels', () => {
-  const src = `
-    <Button onClick={onNext}>Choose file</Button>
-    <button type="button">Skip</button>
-    <Input placeholder="Email" />
-  `;
-  const found = scanInteractive(src);
-  expect(found.some((f) => f.label === 'Choose file')).toBe(true);
-  expect(found.some((f) => f.label === 'Skip')).toBe(true);
-  expect(found.some((f) => f.type === 'Input')).toBe(true);
-});
-
-test('analyzeConcept flags invalid names as errors', () => {
-  const spec = { version: 1, product: 'p', concept: 'c', events: [
-    { id: 'evt_1', page: 'screen', trigger: 'click', event: 'BadName', data: {}, notes: '' },
-  ] };
-  const { errors } = analyzeConcept(spec, [{ slug: 'screen', interactives: [] }]);
-  expect(errors.some((e) => e.includes('BadName'))).toBe(true);
-});
-
-test('analyzeConcept warns on missing page_load and untagged elements', () => {
-  const spec = { version: 1, product: 'p', concept: 'c', events: [] };
-  const { warnings } = analyzeConcept(spec, [{ slug: 'screen', interactives: [{ type: 'Button', label: 'Go' }] }]);
-  expect(warnings.some((w) => w.includes('page_load'))).toBe(true);
-  expect(warnings.some((w) => w.includes('Go'))).toBe(true);
-});
-
-test('analyzeConcept: null spec warns not-tagged', () => {
-  const { warnings } = analyzeConcept(null, [{ slug: 'screen', interactives: [] }]);
+test('null spec warns not-tagged', () => {
+  const { warnings, errors } = analyzeConcept(null, [{ slug: 'screen' }]);
   expect(warnings.some((w) => w.includes('no analytics'))).toBe(true);
+  expect(errors).toEqual([]);
+});
+test('invalid event name is an error (v1 or v2)', () => {
+  const spec = { version: 2, product: 'p', concept: 'c', events: [
+    { id: 'e', page: 'screen', category: 'interaction', trigger: 'click', event: 'BadName', data: {}, notes: '' },
+  ] };
+  expect(analyzeConcept(spec, [{ slug: 'screen' }]).errors.some((e) => e.includes('BadName'))).toBe(true);
+});
+test('page with no page-view event warns', () => {
+  const spec = { version: 2, product: 'p', concept: 'c', events: [
+    { id: 'e', page: 'screen', category: 'interaction', trigger: 'click', event: 'x_tap', data: {}, notes: '' },
+  ] };
+  expect(analyzeConcept(spec, [{ slug: 'screen' }]).warnings.some((w) => w.includes('page-view'))).toBe(true);
+});
+test('valid tagged page passes clean', () => {
+  const spec = { version: 2, product: 'p', concept: 'c', events: [
+    { id: 'e', page: 'screen', category: 'navigation', trigger: 'page_view', event: 'screen_view', data: {}, notes: '' },
+  ] };
+  const { warnings, errors } = analyzeConcept(spec, [{ slug: 'screen' }]);
+  expect(errors).toEqual([]);
+  expect(warnings).toEqual([]);
 });

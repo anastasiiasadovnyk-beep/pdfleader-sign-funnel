@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { resolveConceptPath } from './vite-plugin-analytics-writer.mjs';
+import { resolveConceptPath } from './plugin.mjs';
 
 const root = '/repo';
 

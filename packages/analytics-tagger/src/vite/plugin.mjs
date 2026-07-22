@@ -33,7 +33,7 @@ export default function analyticsWriter() {
         if (!file) { res.statusCode = 400; res.end('bad target'); return; }
         if (req.method === 'GET') {
           res.setHeader('content-type', 'application/json');
-          res.end(existsSync(file) ? readFileSync(file, 'utf8') : JSON.stringify({ version: 1, product: parts[0], concept: parts[1], events: [] }));
+          res.end(existsSync(file) ? readFileSync(file, 'utf8') : JSON.stringify({ version: 2, product: parts[0], concept: parts[1], events: [] }));
           return;
         }
         if (req.method === 'POST') {

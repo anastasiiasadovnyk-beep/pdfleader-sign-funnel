@@ -23,11 +23,6 @@ export function Gallery() {
       <main className="mx-auto flex max-w-[1200px] flex-col gap-8 px-6 py-8">
         <header className="flex flex-wrap items-end justify-between gap-3 border-b border-action-stroke pb-5">
           <div className="flex flex-col gap-1.5">
-            <div className="flex items-center gap-1.5">
-              {PRODUCTS.map((p) => (
-                <span key={p.key} data-brand={p.key} className="h-1.5 w-8 rounded-full bg-primary" />
-              ))}
-            </div>
             <h1 className="text-desktop-title-3">Vibe Concepts</h1>
             <p className="text-body-2 text-text-secondary max-w-[64ch]">
               Screen concepts on the <span className="text-text-primary">ui-pes</span> design system — previewed

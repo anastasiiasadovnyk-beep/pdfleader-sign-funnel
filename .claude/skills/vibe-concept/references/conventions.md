@@ -85,28 +85,35 @@ Single-page concepts keep the flat `Screen.tsx` shape — don't introduce `flow.
 
 ## Analytics contract
 
-Every concept ships `analytics.json` in its folder, written by the sandbox's dev-only tagging overlay (open `/c/<product>/<slug>`, click **Tag**). Schema:
+Every concept ships `analytics.json` in its folder, written by the `@universe-forma/analytics-tagger` package's runtime overlay. The overlay is **opt-in**: it only mounts in dev when the URL carries `?tag=1` (e.g. `/c/<product>/<slug>?tag=1`) — previews stay clean otherwise. Schema (v2):
 
 ```ts
-type Trigger = 'click' | 'page_load' | 'input_change';
-type ElementAnchor = { tag: string; role: string | null; label: string; occurrence: number };
+type EventCategory = 'interaction' | 'form' | 'visibility' | 'navigation' | 'media' | 'content' | 'custom';
+type ElementAnchor = { selector: string; tag: string; role: string | null; label: string; text?: string };
 type AnalyticsEvent = {
-  id: string;            // 'evt_1', 'evt_2', ...
-  page: string;           // page slug ('screen' for single-page concepts)
-  trigger: Trigger;
-  event: string;          // snake_case event name
+  id: string;             // 'evt_1', 'evt_2', ...
+  page: string;            // page slug ('screen' for single-page concepts)
+  category: EventCategory;
+  trigger: string;         // e.g. 'click', 'page_view', 'input_change', 'impression'
+  event: string;           // snake_case event name
   data: Record<string, string>;
-  element?: ElementAnchor; // omitted for page_load events
+  element?: ElementAnchor; // omitted for elementless triggers (page_view, modal_open, ...)
   notes: string;
 };
-type AnalyticsSpec = { version: 1; product: string; concept: string; events: AnalyticsEvent[] };
+type AnalyticsSpec = { version: 2; product: string; concept: string; events: AnalyticsEvent[] };
 ```
 
-**Naming convention** — snake_case, suffixed by trigger type: `_tap` for clicks, `_view` for page loads, `_change` for input changes. Examples from `src/concepts/pdfguru/upload-funnel/analytics.json`: `choose_file_tap`, `upload_select_file_view`, `view_result_tap`. Other pdfguru-shaped examples: `file_from_provider_chosen`, `sign_up_confirm_tap`.
+`element.selector` is a real CSS selector computed via `@medv/finder` (stable, shortest-unique) when tagged live in the overlay — robust to layout/occurrence changes, unlike the old label+occurrence anchor.
 
-Tag a `page_load` event for every page plus a click/change event for every primary interactive element (button, input, link). The advisory gate (`npm run gate:analytics`) warns on untagged elements and pages missing a `page_load`; it hard-fails only on non-snake_case event names.
+**Taxonomy** — seven categories, each with triggers mapped to a naming suffix. Core suffixes (match pdfguru's existing convention): `_tap` (click-family: `click`, `double_click`, `form_submit`, `back`, `copy`, ...), `_view` (`page_view`, `impression`, `modal_open`, ...), `_status` (`validation_error`), `_change` (`input_change`, `select_change`, `toggle`). Documented **extensions** beyond the core four, used where the core suffixes don't fit: `_hover`, `_focus`, `_blur`, `_scroll`, `_play`/`_pause`/`_complete` (media), `_expand`/`_collapse` (accordion). `custom` triggers have no fixed suffix — name freely.
 
-Context props — `page`, `device`, `ab_test`, orientation — are auto-attached by the product's analytics layer at dispatch time. Do **not** encode them in the spec; `data` is only for event-specific payload fields (e.g. `{ method: 'click' }`).
+**Naming convention** — snake_case throughout: `deriveEventName(label, trigger)` → `${slug(label)}_${suffix}`. Examples from `src/concepts/pdfguru/upload-funnel/analytics.json`: `choose_file_tap` (interaction/click), `upload_select_file_view` (navigation/page_view), `view_result_tap` (interaction/click). Other pdfguru-shaped examples: `file_from_provider_chosen`, `sign_up_confirm_tap`.
+
+**Property presets** — grounded in pdfguru's real vocabulary, offered as autocomplete on `data` keys: `method, status, place, source, feature_name, features_name, type, funnel, file_format, file_size_bytes, file_pages, currency, download_method, error_type, error_code, session_id, is_premium, plan_type, tool, screen_config_name`. Common enum values are hinted too (e.g. `method: manual|auto|click|drag_and_drop|box|drive|files_list|paypal`, `status: success|fail|error|impossible|started|processing|ready`, `funnel:` the full pdfguru funnel list). Free-text entry is always allowed alongside presets.
+
+Tag a page-view event (category `navigation`, trigger `page_view`) for every page plus an event for every primary interactive element (button, input, link, toggle, etc.) — pick the closest category/trigger from the taxonomy rather than defaulting everything to click/page_view. The overlay's **Coverage** tab scans the live DOM at runtime and diffs it against tagged `element.selector`s to surface untagged elements — this replaces the old static source-scan, so coverage reflects what's actually rendered, not what a text scanner could find in source. The advisory gate (`npm run gate:analytics`) hard-fails only on non-snake_case event names and warns when a page has no page-view event.
+
+Context props — `page`, `local_page`, `device`, `device_new`, `orientation`, `version`, `ab_test`, `userAgent`, `env` — are auto-attached by the product's analytics layer at dispatch time. Do **not** encode them in the spec; `data` is only for event-specific payload fields (e.g. `{ method: 'click' }`).
 
 ## Borrowed discipline (cite, don't copy)
 
