@@ -1,4 +1,5 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
+import type { ComponentType } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { conceptEntries } from './concepts';
 import type { ConceptEntry } from './concepts';
@@ -6,6 +7,19 @@ import { BrandProvider } from './BrandProvider';
 import { FlowBar } from './FlowBar';
 import { resolvePage, nextTargets, prevSlug } from './flowNav';
 import { AnalyticsOverlay } from '../devtools/analytics-overlay/AnalyticsOverlay';
+
+type Loader = () => Promise<{ default: ComponentType<any> }>;
+type MockLoader = () => Promise<{ default: unknown }>;
+
+const lazyCache = new Map<string, ComponentType<any>>();
+function lazyFor(key: string, load: Loader): ComponentType<any> {
+  let c = lazyCache.get(key);
+  if (!c) {
+    c = lazy(load);
+    lazyCache.set(key, c);
+  }
+  return c;
+}
 
 export function ConceptRoute() {
   const { product, slug, page } = useParams();
@@ -17,10 +31,22 @@ export function ConceptRoute() {
     : <SinglePage entry={entry} />;
 }
 
-function SinglePage({ entry }: { entry: ConceptEntry }) {
+function usePageMock(key: string, load: MockLoader) {
   const [mock, setMock] = useState<unknown>(null);
-  useEffect(() => { entry.loadMock().then((m) => setMock(m.default)).catch((e) => console.error('mock load failed', e)); }, [entry]);
-  const Screen = useMemo(() => lazy(entry.load), [entry]);
+  useEffect(() => {
+    let alive = true;
+    setMock(null);
+    load().then((m) => alive && setMock(m.default)).catch((e) => console.error('mock load failed', e));
+    return () => { alive = false; };
+    // key identifies the page; load is stable for a given key
+  }, [key]);
+  return mock;
+}
+
+function SinglePage({ entry }: { entry: ConceptEntry }) {
+  const key = `${entry.product}/${entry.slug}`;
+  const mock = usePageMock(key, entry.loadMock);
+  const Screen = lazyFor(key, entry.load);
   return (
     <BrandProvider brand={entry.brand}>
       <Suspense fallback={<p className="p-8">Loading…</p>}>
@@ -35,9 +61,9 @@ function MultiPage({ entry, pageParam, navigate }: { entry: ConceptEntry; pagePa
   const flow = entry.flow!;
   const current = resolvePage(flow, pageParam);
   const pageEntry = entry.pages!.find((p) => p.slug === current)!;
-  const [mock, setMock] = useState<unknown>(null);
-  useEffect(() => { pageEntry.loadMock().then((m) => setMock(m.default)).catch((e) => console.error('mock load failed', e)); }, [pageEntry]);
-  const Screen = useMemo(() => lazy(pageEntry.load), [pageEntry]);
+  const key = `${entry.product}/${entry.slug}/${current}`;
+  const mock = usePageMock(key, pageEntry.loadMock);
+  const Screen = lazyFor(key, pageEntry.load);
   const targets = nextTargets(flow, current);
   const back = prevSlug(flow, current);
   const onNext = () => { if (targets[0]) navigate(targets[0]); };
@@ -45,7 +71,7 @@ function MultiPage({ entry, pageParam, navigate }: { entry: ConceptEntry; pagePa
   return (
     <BrandProvider brand={entry.brand}>
       <Suspense fallback={<p className="p-8">Loading…</p>}>
-        {mock !== null && <Screen {...(mock as object)} onNext={onNext} onBack={onBack} />}
+        {mock !== null && <Screen key={key} {...(mock as object)} onNext={onNext} onBack={onBack} />}
       </Suspense>
       <FlowBar flow={flow} current={current} onJump={navigate} />
       {import.meta.env.DEV && <AnalyticsOverlay product={entry.product} concept={entry.slug} page={current} />}
