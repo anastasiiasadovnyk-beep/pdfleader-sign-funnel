@@ -91,4 +91,3 @@ jobs:
             ${{ job.status == 'success'
             && (steps.commit.outputs.changed == 'true' && '#00aaff' || '#00ff00')
             || '#ff0000' }}
-          slack_username: ui-design-vibe-concepts
