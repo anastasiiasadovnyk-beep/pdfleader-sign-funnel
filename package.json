@@ -2,6 +2,7 @@
   "name": "ui-design-vibe-concepts",
   "private": true,
   "type": "module",
+  "workspaces": ["packages/*"],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

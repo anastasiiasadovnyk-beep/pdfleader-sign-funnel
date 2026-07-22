@@ -1,0 +1,1 @@
+export const ANALYTICS_TAGGER_VERSION = 2;
