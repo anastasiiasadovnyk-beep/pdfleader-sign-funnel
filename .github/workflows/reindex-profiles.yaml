@@ -1,0 +1,160 @@
+name: Reindex profiles (LLM)
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      products:
+        description: 'Comma-separated products to reindex (default all)'
+        required: false
+        default: 'pdfguru,tbp,pdfleader'
+
+concurrency:
+  group: reindex-profiles-${{ github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  # Absolute in-workspace paths so scripts/lib/product-config.mjs finds the checked-out repos.
+  PDFGURU_FE: ${{ github.workspace }}/_products/pdfguru-fe
+  TBP_FE: ${{ github.workspace }}/_products/tbp-fe
+  PDFLEADER_FE: ${{ github.workspace }}/_products/pdfleader-fe
+
+jobs:
+  reindex-profiles:
+    runs-on: forma-amd64-ci
+    environment: dev
+    steps:
+      - name: Checkout sandbox
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Checkout pdfguru-fe
+        uses: actions/checkout@v4
+        with:
+          repository: universe-forma/pdfguru-fe
+          path: _products/pdfguru-fe
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Checkout tbp-fe
+        uses: actions/checkout@v4
+        with:
+          repository: universe-forma/tbp-fe
+          path: _products/tbp-fe
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Checkout pdfleader-fe
+        uses: actions/checkout@v4
+        with:
+          repository: universe-forma/pdfleader-fe
+          path: _products/pdfleader-fe
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Install dependency
+        id: install
+        uses: universe-forma/github-actions/build/dependency/node@main
+        with:
+          node-version: '23.x'
+          package-manager: npm
+          install-cmd: npm ci
+          github_token: ${{ secrets.GH_TOKEN }}
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@universe-forma'
+
+      - name: Reindex deterministic (ds-catalog + brand tokens)
+        id: reindex
+        run: npm run reindex
+
+      - name: Reindex product profiles (agent)
+        id: agent
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GH_TOKEN }}
+          claude_args: >-
+            --model claude-sonnet-5
+            --max-turns 60
+            --allowedTools "Read,Grep,Glob,Edit,Write,Bash(ls:*),Bash(cat:*),Bash(grep:*),Bash(find:*),Bash(head:*),Bash(wc:*)"
+          prompt: |
+            You are reindexing this repo's product architecture profiles from the real product source code.
+
+            The three product repos are checked out at:
+              - pdfguru:   _products/pdfguru-fe
+              - tbp:       _products/tbp-fe
+              - pdfleader: _products/pdfleader-fe
+
+            For each product whose key is in this list — ${{ github.event.inputs.products || 'pdfguru,tbp,pdfleader' }} —
+            regenerate `product-profiles/<key>.md` by analyzing its repo above.
+
+            Rules (strict):
+            1. Read `product-profiles/_TEMPLATE.md` FIRST. Every profile MUST follow its section
+               headings and numbering EXACTLY, and obey its authoring rules.
+            2. READ-ONLY on the product repos under `_products/` — never modify them. Only Write/Edit
+               the `product-profiles/<key>.md` files in this repo.
+            3. Ground every statement in real code: cite concrete file paths and prefer short real
+               snippets. NEVER invent files, routes, libraries, or patterns. If something is not
+               present, write "not found in repo".
+            4. Section 7 (Analytics) is load-bearing: determine the actual analytics dispatch shape,
+               event-name convention, auto-attached context props, and where events are wired — the
+               sandbox's analytics.json integrates against this.
+            5. Keep each profile ~70-90 lines, terse and high-signal, matching the existing files.
+
+            Do not touch any file outside `product-profiles/`. When done, output a one-line summary
+            per product of what changed.
+
+      - name: Verify (gate + tests)
+        id: verify
+        run: |
+          npm run gate
+          npm test
+
+      - name: Open reindex PR
+        id: pr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          base: main
+          branch: reindex/profiles-${{ github.run_id }}
+          delete-branch: true
+          add-paths: |
+            product-profiles/*.md
+            brands/*.css
+            ds-catalog/*.md
+          commit-message: 'chore(reindex): refresh product profiles + brands'
+          author: 'forma-ci[bot] <forma-ci@users.noreply.github.com>'
+          committer: 'forma-ci[bot] <forma-ci@users.noreply.github.com>'
+          title: 'chore(reindex): refresh product profiles + brands'
+          body: ''
+
+      - name: Send Slack Notification
+        uses: universe-forma/github-actions/notifications/slack@main
+        if: always()
+        with:
+          slack_webhook_url: ${{ secrets.NOTIFICATIONS_SLACK_WEBHOOK }}
+          slack_message: |
+            *Job*: 🧠 Reindex profiles (LLM)
+            *Trigger*: ${{ github.event_name == 'schedule' && '⏰ Scheduled (weekly)' || '🖐️ Manual' }}
+            ${{ job.status == 'success'
+            && (steps.pr.outputs.pull-request-number
+              && format('Opened PR #{0} with refreshed profiles/brands.', steps.pr.outputs.pull-request-number)
+              || 'Ran — no profile/brand changes to PR.')
+            || 'Profile reindex failed — no PR opened.' }}
+            *Steps*:
+            • Install: ${{ steps.install.outcome == 'success' && '✅' || '❌' }}
+            • Deterministic reindex: ${{ steps.reindex.outcome == 'success' && '✅' || '❌' }}
+            • Agent (profiles): ${{ steps.agent.outcome == 'success' && '✅' || '❌' }}
+            • Verify (gate+tests): ${{ steps.verify.outcome == 'success' && '✅' || '❌' }}
+            • PR: ${{ steps.pr.outcome == 'success' && (steps.pr.outputs.pull-request-number && format('✅ #{0}', steps.pr.outputs.pull-request-number) || '➖ none') || '❌' }}
+          slack_title: >-
+            ${{ job.status == 'success'
+            && (steps.pr.outputs.pull-request-number && ':brain: Profiles PR opened' || ':white_check_mark: Profiles clean')
+            || ':x: Profile reindex failed' }}
+          slack_color: >-
+            ${{ job.status == 'success'
+            && (steps.pr.outputs.pull-request-number && '#00aaff' || '#00ff00')
+            || '#ff0000' }}
