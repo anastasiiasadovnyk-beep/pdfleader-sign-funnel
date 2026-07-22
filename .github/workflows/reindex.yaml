@@ -1,0 +1,94 @@
+name: Reindex (ds + products)
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: reindex-${{ github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  reindex:
+    runs-on: forma-amd64-ci
+    environment: dev
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # PAT (not the default GITHUB_TOKEN) so the reindex commit re-triggers the dev deploy.
+          # GH_TOKEN must have repo write scope. Falls back to GITHUB_TOKEN if the secret is empty.
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Install dependency
+        id: install
+        uses: universe-forma/github-actions/build/dependency/node@main
+        with:
+          node-version: '23.x'
+          package-manager: npm
+          install-cmd: npm ci
+          github_token: ${{ secrets.GH_TOKEN }}
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@universe-forma'
+
+      - name: Sync ui-pes to latest in range
+        id: sync
+        run: npm update @universe-forma/ui-pes
+
+      - name: Reindex ds + products
+        id: reindex
+        run: npm run reindex
+
+      - name: Verify (gate + tests)
+        id: verify
+        run: |
+          npm run gate
+          npm test
+
+      - name: Commit reindex to main
+        id: commit
+        run: |
+          git config user.name "forma-ci[bot]"
+          git config user.email "forma-ci@users.noreply.github.com"
+          git add ds-catalog brands package.json package-lock.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No reindex changes — nothing to commit."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git commit -m "chore(reindex): sync ui-pes and regenerate ds-catalog"
+            git push origin HEAD:main
+          fi
+
+      - name: Send Slack Notification
+        uses: universe-forma/github-actions/notifications/slack@main
+        if: always()
+        with:
+          slack_webhook_url: ${{ secrets.NOTIFICATIONS_SLACK_WEBHOOK }}
+          slack_message: |
+            *Job*: 🔄 Reindex (ds + products)
+            *Trigger*: ${{ github.event_name == 'schedule' && '⏰ Scheduled (daily)' || '🖐️ Manual' }}
+            ${{ job.status == 'success'
+            && (steps.commit.outputs.changed == 'true'
+              && 'Reindex committed to `main` (ds-catalog/brands updated).'
+              || 'Reindex ran — no changes, catalog already up to date.')
+            || 'Reindex failed — catalog NOT updated.' }}
+            *Steps Status*:
+            • Install: ${{ steps.install.outcome == 'success' && '✅' || '❌' }}
+            • Sync ui-pes: ${{ steps.sync.outcome == 'success' && '✅' || '❌' }}
+            • Reindex: ${{ steps.reindex.outcome == 'success' && '✅' || '❌' }}
+            • Verify (gate+tests): ${{ steps.verify.outcome == 'success' && '✅' || '❌' }}
+            • Commit: ${{ steps.commit.outcome == 'success' && (steps.commit.outputs.changed == 'true' && '✅ pushed' || '➖ no change') || '❌' }}
+          slack_title: >-
+            ${{ job.status == 'success'
+            && (steps.commit.outputs.changed == 'true' && ':arrows_counterclockwise: Reindex committed' || ':white_check_mark: Reindex clean')
+            || ':x: Reindex failed' }}
+          slack_color: >-
+            ${{ job.status == 'success'
+            && (steps.commit.outputs.changed == 'true' && '#00aaff' || '#00ff00')
+            || '#ff0000' }}
+          slack_username: ui-design-vibe-concepts
