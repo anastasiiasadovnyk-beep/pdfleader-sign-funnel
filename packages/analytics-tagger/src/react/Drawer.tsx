@@ -1,6 +1,11 @@
 import { useContext } from 'react';
 import { TaggerContext } from './AnalyticsTagger';
 import type { TabId } from './AnalyticsTagger';
+import { InspectTab } from './tabs/InspectTab';
+import { AddTab } from './tabs/AddTab';
+import { EventsTab } from './tabs/EventsTab';
+import { CoverageTab } from './tabs/CoverageTab';
+import { ExportTab } from './tabs/ExportTab';
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'inspect', label: 'Inspect' },
@@ -10,43 +15,13 @@ const TABS: { id: TabId; label: string }[] = [
   { id: 'export', label: 'Export' },
 ];
 
-function ComingSoon({ label }: { label: string }) {
-  return <p className="aftag-placeholder">{label} — coming in A9.</p>;
-}
-
-function InspectTab() {
-  const ctx = useContext(TaggerContext)!;
-  return (
-    <div className="aftag-tab-body">
-      <p className="aftag-help">Hover elements on the page to preview them, click (or pick a trigger chip) to draft an event.</p>
-      <button type="button" className="aftag-btn aftag-btn-primary" onClick={() => ctx.setInspecting(!ctx.inspecting)}>
-        {ctx.inspecting ? 'Stop inspecting (Esc)' : 'Start inspecting'}
-      </button>
-    </div>
-  );
-}
-
-function AddTab() {
-  const ctx = useContext(TaggerContext)!;
-  if (!ctx.draft) return <p className="aftag-placeholder">Pick an element in Inspect to start a draft — coming in A9.</p>;
-  return (
-    <div className="aftag-tab-body">
-      <p className="aftag-help">Draft seeded from inspection. Full form lands in A9.</p>
-      <dl className="aftag-draft-summary">
-        <dt>trigger</dt><dd>{ctx.draft.trigger}</dd>
-        <dt>selector</dt><dd>{ctx.draft.element?.selector}</dd>
-      </dl>
-    </div>
-  );
-}
-
 function TabBody({ tab }: { tab: TabId }) {
   switch (tab) {
     case 'inspect': return <InspectTab />;
     case 'add': return <AddTab />;
-    case 'events': return <ComingSoon label="Events" />;
-    case 'coverage': return <ComingSoon label="Coverage" />;
-    case 'export': return <ComingSoon label="Export" />;
+    case 'events': return <EventsTab />;
+    case 'coverage': return <CoverageTab />;
+    case 'export': return <ExportTab />;
   }
 }
 

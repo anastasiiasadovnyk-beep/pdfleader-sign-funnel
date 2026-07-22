@@ -166,6 +166,126 @@
   word-break: break-all;
 }
 
+.aftag-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.aftag-field-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.aftag-input {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 13px;
+  padding: 8px 10px;
+  width: 100%;
+}
+.aftag-input:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
+}
+.aftag-input-invalid {
+  border-color: #dc2626;
+}
+
+.aftag-error {
+  font-size: 11px;
+  color: #dc2626;
+}
+
+.aftag-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.aftag-row .aftag-input {
+  flex: 1;
+}
+
+.aftag-preview {
+  background: #111827;
+  border-radius: 8px;
+  padding: 10px;
+  overflow-x: auto;
+}
+.aftag-preview code {
+  color: #93c5fd;
+  font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.aftag-btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.aftag-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.aftag-group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #111827;
+  text-transform: capitalize;
+}
+.aftag-badge {
+  background: #f3f4f6;
+  color: #374151;
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.aftag-event-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+.aftag-event-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.aftag-event-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #111827;
+}
+.aftag-event-meta {
+  font-size: 11px;
+  color: #6b7280;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aftag-flash {
+  outline: 3px solid #f59e0b !important;
+  outline-offset: 2px;
+  transition: outline-color 0.3s ease;
+}
+
 .aftag-highlight-box {
   position: fixed;
   pointer-events: none;
