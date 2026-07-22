@@ -9,7 +9,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["vite/client", "vitest/globals"],
+    "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"],
     "baseUrl": ".",
     "paths": { "@/*": ["src/*"] }
   },

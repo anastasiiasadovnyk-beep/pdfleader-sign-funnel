@@ -8,6 +8,7 @@ export function App() {
       <Routes>
         <Route path="/" element={<Gallery />} />
         <Route path="/c/:product/:slug" element={<ConceptRoute />} />
+        <Route path="/c/:product/:slug/:page" element={<ConceptRoute />} />
       </Routes>
     </BrowserRouter>
   );
