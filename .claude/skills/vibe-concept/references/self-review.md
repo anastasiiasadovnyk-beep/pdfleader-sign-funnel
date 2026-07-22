@@ -10,11 +10,19 @@ node scripts/gates/run.mjs <slug>
 
 Fix every finding and re-run until it exits 0. Do not declare the concept done, summarize success, or hand it back to the user while this is failing — that's the one rule this whole skill exists to enforce.
 
-## 2. Screenshot the sandbox route
+## 2. Run the fidelity gate (this replaces eyeballing)
 
-Start the dev server if it isn't running (`npm run dev`) and capture `/c/<product>/<slug>` — the gallery route for this concept, wired up by `ConceptRoute` from `meta.ts` + `mock.ts`.
+```
+npm run fidelity <product> <slug>
+```
 
-## 3. Compare to the reference — walk the fidelity checklist
+It renders the isolated `/preview/<product>/<slug>` route (no app shell), waits for fonts to load, screenshots desktop+mobile into `.fidelity/`, and asserts every `design-spec.json` region (`data-ff` tagged) against the rendered computed styles. **It exits non-zero and names each wrong element** (`title.fontSize: design=28 built=16`) so you fix the specific delta instead of guessing. Fix and re-run until it exits 0. Declaring done on a failing fidelity gate is the same violation as declaring done on a failing structure gate.
+
+If a region reports "not found", you forgot the `data-ff="<region>"` attribute on that element. If a size asserts as `16` (the browser default), a token utility isn't resolving — check the utility exists in `ds-catalog/typography.md` and that `brands/<product>.css` defines its `-size` var.
+
+## 3. Eyeball the screenshot for what the spec can't assert — walk the checklist
+
+Open `.fidelity/desktop.png` (and `mobile.png`) next to the Figma reference. The gate covers geometry and type; you still confirm by eye: icon glyphs, exact colors, copy, and overall composition.
 
 Put the screenshot next to the original Figma reference side by side and go through EVERY row below. For each, write the reference value vs what you built, and the delta. "Looks close" is not the bar — enumerate and fix each mismatch. Don't stop at layout; the differences that read as "cheap" are usually width, type, and the accent/badge, not the overall structure.
 

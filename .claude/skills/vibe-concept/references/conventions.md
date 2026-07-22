@@ -83,6 +83,27 @@ Each `pages/<page>/Screen.tsx` is a normal concept Screen — same purity rules 
 
 Single-page concepts keep the flat `Screen.tsx` shape — don't introduce `flow.ts`/`pages/` for a one-screen concept.
 
+## Design spec (`design-spec.json`) — the fidelity contract
+
+Every concept ships `design-spec.json` in its folder: the ground-truth values pulled from the Figma reference, checked by `npm run fidelity <product> <slug>`. Capture it while the Figma node is open (`get_variable_defs` / `get_design_context` give exact per-layer values) — don't reconstruct it from a screenshot.
+
+```jsonc
+{
+  "source": "figma://<file>?node-id=<node>",
+  "viewports": { "desktop": { "w": 1440, "h": 1024 }, "mobile": { "w": 390, "h": 844 } },
+  "regions": [
+    { "ff": "container", "viewport": "desktop", "assert": { "width": 796, "borderRadius": 20 } },
+    { "ff": "title", "assert": { "fontFamily": "Nunito Sans", "fontSize": 28, "fontWeight": 800 } },
+    { "ff": "badge", "assert": { "fontSize": 10, "fontWeight": 600, "textTransform": "uppercase" } }
+  ]
+}
+```
+
+- Each region's `ff` matches a `data-ff="<region>"` attribute you add in the JSX on the element to measure. Tag every region the design pins a value on — at minimum the container, each distinct text style, the primary CTA, and any badge/chip.
+- Supported `assert` props (measured from the rendered DOM): `width`, `height`, `fontFamily` (substring match), `fontSize`, `fontWeight`, `borderRadius`, `textTransform`, `gap`, `padding`. Numbers are px; tolerances default sensibly and can be overridden per region with `"tol": { "width": 4 }`.
+- `viewport` on a region scopes the assertion to one viewport (omit to check in all). Responsive concepts assert the desktop container width at `desktop` and stacked layout at `mobile`.
+- The gate renders the isolated `/preview/<product>/<slug>` route (no app shell) so screenshots and measurements aren't contaminated by the sandbox chrome. Screenshots land in `.fidelity/` (git-ignored) for eyeball comparison of anything the assertions don't cover (icon glyphs, exact color, copy).
+
 ## Analytics contract
 
 Every concept ships `analytics.json` in its folder, written by the `@universe-forma/analytics-tagger` package's runtime overlay. The overlay is **opt-in**: it only mounts in dev when the URL carries `?tag=1` (e.g. `/c/<product>/<slug>?tag=1`) — previews stay clean otherwise. Schema (v2):

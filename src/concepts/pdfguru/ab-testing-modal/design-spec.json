@@ -1,0 +1,28 @@
+{
+  "source": "figma://8vLbJpmEU3IJCw6QpZFMtb?node-id=54027-20200",
+  "note": "Ground-truth values captured from the Figma reference. verify-fidelity asserts the rendered concept against these; update when the design changes.",
+  "viewports": {
+    "desktop": { "w": 1440, "h": 1024 },
+    "mobile": { "w": 390, "h": 844 }
+  },
+  "regions": [
+    {
+      "ff": "container",
+      "viewport": "desktop",
+      "assert": { "width": 796, "borderRadius": 20 }
+    },
+    {
+      "ff": "title",
+      "viewport": "desktop",
+      "assert": { "fontFamily": "Nunito Sans", "fontSize": 28, "fontWeight": 800 }
+    },
+    {
+      "ff": "badge",
+      "assert": { "fontFamily": "Nunito Sans", "fontSize": 10, "fontWeight": 600, "textTransform": "uppercase" }
+    },
+    {
+      "ff": "cta",
+      "assert": { "fontFamily": "Nunito Sans", "fontSize": 16 }
+    }
+  ]
+}

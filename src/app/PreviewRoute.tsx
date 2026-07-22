@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { conceptEntries } from './concepts';
 import { ConceptView } from './conceptView';
 
-export function ConceptRoute() {
+export function PreviewRoute() {
   const { product, slug, page } = useParams();
   const navigate = useNavigate();
   const entry = conceptEntries().find((e) => e.product === product && e.slug === slug);
@@ -11,7 +11,8 @@ export function ConceptRoute() {
     <ConceptView
       entry={entry}
       pageParam={page}
-      navigate={(s) => navigate(`/c/${entry.product}/${entry.slug}/${s}`)}
+      navigate={(s) => navigate(`/preview/${entry.product}/${entry.slug}/${s}`)}
+      bare
     />
   );
 }
