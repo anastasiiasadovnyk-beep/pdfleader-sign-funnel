@@ -16,6 +16,11 @@ test('does not flag bracket className values like max-w-[720px]', () => {
   expect(lintHardcodes(good)).toEqual([]);
 });
 
+test('allows a hex inside a Tailwind arbitrary color value but bans bare hex', () => {
+  expect(lintHardcodes(`<div className="bg-[#5f30e2] text-[#ffffff]" />`)).toEqual([]);
+  expect(lintHardcodes(`<div className="bg-[#5f30e2]" style={{ color: '#ff0000' }} />`).length).toBeGreaterThanOrEqual(1);
+});
+
 test('flags a raw px style value', () => {
   const bad = `<div style={{ marginTop: 12px }} />`;
   expect(lintHardcodes(bad).length).toBeGreaterThanOrEqual(1);

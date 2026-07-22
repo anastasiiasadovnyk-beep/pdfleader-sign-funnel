@@ -28,13 +28,18 @@ node_modules/@universe-forma/ui-pes/es/components/<component>/<Component>.d.ts
 
 e.g. `node_modules/@universe-forma/ui-pes/es/components/button/Button.d.ts`. Read the `.d.ts` for the real prop names, types, and variants before writing JSX — don't assume props from memory or from other design systems.
 
-## 4. Map reference styles to token utilities
+## 4. Map reference styles to token utilities — match by VALUE, not by name
 
-Translate the raw observations from intake step 4 into ui-pes utilities, never raw values:
-- Colors → `ds-catalog/color-tokens.md` → `bg-*` / `text-*` / `border-*` (e.g. observed "primary blue" → `bg-primary` / `text-primary`).
-- Text sizes/weights → `ds-catalog/typography.md` → `text-desktop-title-*`, `text-body`, `text-body-emph`, `text-caption`, etc.
-- Radius/spacing → `ds-catalog/spacing.md` → `rounded-*`, `p-*`/`m-*` token utilities.
+### Colors — resolve against the product's real values, don't guess by vibe
+Do NOT map a color by what it "looks like" ("highlighted control → `bg-primary`"). That is the #1 fidelity bug. Match the design's **actual value** to the product's **resolved** token values, which live in `brands/<product>.css` (generated from the product's real theme — `ds-catalog/color-tokens.md` lists token names but their values are product-supplied, so the brand file is the source of truth for values):
 
-If a reference value doesn't map cleanly to any token, pick the closest token and flag the mismatch rather than dropping in a raw hex/px value — the gates will reject raw values outright.
+1. Read the exact color of each region from the reference — fill, text, border, accent, CTA, badge — as hex/rgb (Figma inspector, or sample the screenshot).
+2. Open `brands/<product>.css` and find the token whose value **equals or is closest to** that color. Semantic anchors (pdfguru example): `--color-primary: #5f30e2` (violet), `--color-secondary: #d2294b` (red), `--color-success-main: #008554` (green), `--color-error-main: #d90a0a`, plus each `-light`/`-dark`/`-contrast-text` variant.
+3. Use THAT token's utility / component prop. Example: a `#5f30e2` accent → `border-primary`/`text-primary`; a `#d2294b` CTA → `<Button color="secondary">`; a `#008554` badge → `<Badge color="success">`. **A highlighted accent and the CTA are usually DIFFERENT semantics** — resolve each by value; never assume the accent is `primary` just because it's the emphasized control.
+4. No token within a close match → it's a DS gap. Prefer the nearest token and FLAG it. Only if the exact brand value is genuinely required and absent from the tokens, use a flagged arbitrary value `bg-[#hex]` / `text-[#hex]` (allowed by the gate inside brackets) and call it out in your response. Never a bare hex in a style object — that fails the gate.
 
-Restate: never invent a component or a token value. Compose from what's cataloged, and flag gaps for the DS team instead of papering over them.
+### Type / spacing / radius
+- Text → match the reference's real **font family / size / weight** to a `ds-catalog/typography.md` token (`text-desktop-title-*`, `text-body`, `text-body-emph`, `text-body-2`, `text-caption`, `text-button-*`). Check the resolved size/weight in `brands/<product>.css` (`--text-*-size` / `--text-*--font-weight`) when two tokens are close — pick the one whose size AND weight match, not just the name.
+- Radius/spacing → `ds-catalog/spacing.md` → `rounded-*`, `p-*`/`m-*`/`gap-*`. Arbitrary layout values (`max-w-[480px]`) are fine when no token fits.
+
+Restate: never invent a component or a token value. Resolve colors and type by value against `brands/<product>.css`, compose from what's cataloged, and flag gaps for the DS team instead of papering over them.
