@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "product": "pdfguru",
+  "concept": "upload-funnel",
+  "events": [
+    { "id": "evt_1", "page": "select-file", "trigger": "page_load", "event": "upload_select_file_view", "data": {}, "notes": "" },
+    { "id": "evt_2", "page": "select-file", "trigger": "click", "event": "choose_file_tap", "data": { "method": "click" },
+      "element": { "tag": "button", "role": null, "label": "{ctaLabel}", "occurrence": 0 }, "notes": "Choose file" },
+    { "id": "evt_3", "page": "processing", "trigger": "page_load", "event": "upload_processing_view", "data": {}, "notes": "" },
+    { "id": "evt_4", "page": "processing", "trigger": "click", "event": "view_result_tap", "data": {},
+      "element": { "tag": "button", "role": null, "label": "{ctaLabel}", "occurrence": 0 }, "notes": "View result" },
+    { "id": "evt_5", "page": "done", "trigger": "page_load", "event": "upload_done_view", "data": {}, "notes": "" },
+    { "id": "evt_6", "page": "done", "trigger": "click", "event": "start_over_tap", "data": {},
+      "element": { "tag": "button", "role": null, "label": "{ctaLabel}", "occurrence": 0 }, "notes": "Start over" }
+  ]
+}

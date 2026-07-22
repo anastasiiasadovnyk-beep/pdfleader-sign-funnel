@@ -15,6 +15,7 @@ Turn a Figma reference (or screenshot) + a prompt into a concept folder under `s
 4. **Emit the concept** — create `src/concepts/<product>/<slug>/{Screen.tsx,types.ts,mock.ts,meta.ts,INTEGRATION.md}`. See `references/conventions.md`.
 5. **Run gates** — `node scripts/gates/run.mjs <slug>`; fix findings and re-run until it passes. NEVER declare the concept done on a failing gate.
 6. **Self-verify** — screenshot the sandbox route `/c/<product>/<slug>`, compare to the reference, iterate. See `references/self-review.md`.
+7. **Tag analytics** — run the sandbox (`npm run dev`), open `/c/<product>/<slug>`, click **Tag** in the overlay, add a `page_load` event per page and tag each primary interactive element (button, input, link) with an event. Save; this writes `analytics.json` into the concept folder. See `references/conventions.md` (Analytics contract).
 
 | Step | Reference |
 |---|---|
@@ -22,8 +23,9 @@ Turn a Figma reference (or screenshot) + a prompt into a concept folder under `s
 | 2. Design system | `references/ds-catalog.md` |
 | 4. Concept contract | `references/conventions.md` |
 | 6. Self-verify | `references/self-review.md` |
+| 7. Analytics | `references/conventions.md` |
 
-Load each reference file just before you need it — don't read all four upfront.
+Load each reference file just before you need it — don't read them all upfront.
 
 ## HARD RULES
 
@@ -33,3 +35,5 @@ Load each reference file just before you need it — don't read all four upfront
 - **Data goes through typed props + `mock.ts`.** Never hardcode data inline in the component; `mock.ts` is the integration seam that gets deleted when the concept is wired to real data.
 - **Every concept ships an `INTEGRATION.md` spec.** It is a required file (the structure gate fails without it) and must contain: Purpose, Props / data contract, States, and step-by-step integration into the target product. See `references/conventions.md` for the spec structure. A concept without this spec is incomplete.
 - **Run the gates before declaring done.** `node scripts/gates/run.mjs <slug>` must exit 0. A failing gate means the concept is not finished — fix it, don't explain it away.
+- **Every multipage concept declares its flow.** A concept with more than one page uses `flow.ts` + `pages/<page>/` (never multiple screens crammed into one file). Single-page concepts keep the flat `Screen.tsx` shape.
+- **Tag analytics before handoff.** Each concept ships `analytics.json` covering a `page_load` per page and its primary actions. Event names are `snake_case` with the product suffix convention (`_tap` click, `_view` load, `_change` input). The analytics gate warns on untagged elements; invalid names hard-fail.

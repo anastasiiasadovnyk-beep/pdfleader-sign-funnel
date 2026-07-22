@@ -24,3 +24,13 @@ Which states the screen handles and how they render: default, empty, loading, er
 4. **Route** — the product's router file + path-constants file.
 5. **Data wiring** — which state layer replaces `mock.ts` (Redux+thunks / RTK slice); delete `mock.ts` once wired.
 6. **i18n** — the product's key namespace for the literal strings.
+
+## Analytics
+The concept ships `analytics.json` (produced by the sandbox tagging overlay). One row per event.
+
+| Event | Trigger | Element | Data | Wiring (pdfguru) |
+|---|---|---|---|---|
+| `choose_file_tap` | click | Choose file button | `{ method: 'click' }` | `dispatch(sendAnalyticEvent({ event: 'choose_file_tap', data: { method: 'click' } }))` |
+| `select_file_view` | page_load | — | — | fire on mount of the page |
+
+Context props (`page`, `device`, `ab_test`, orientation) are auto-attached by the product's analytics layer — do not encode them here.

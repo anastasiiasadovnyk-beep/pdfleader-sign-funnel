@@ -65,6 +65,49 @@ These folder names are intentionally neutral, not FSD (`ui/`/`model/`) — the s
 
 See `src/concepts/_template/components/ExampleRow.tsx` for the shape.
 
+## Multipage concepts
+
+A concept with more than one screen declares a flow instead of cramming pages into one file. Layout:
+
+```
+src/concepts/<product>/<slug>/
+  flow.ts
+  pages/
+    <page-a>/{Screen.tsx,types.ts,mock.ts}
+    <page-b>/{Screen.tsx,types.ts,mock.ts}
+```
+
+`flow.ts` default-exports a `Flow`: a `start` slug and a `pages` array of `{ slug, title, next? }`, where `next` is the following page's slug (or an array, for branching). See `src/concepts/pdfguru/upload-funnel/flow.ts` for a worked 3-page example.
+
+Each `pages/<page>/Screen.tsx` is a normal concept Screen — same purity rules as single-page. The route (`ConceptRoute.tsx`) injects `onNext` and `onBack` callbacks as extra props at render time; declare them as optional in `types.ts` (`onNext?: () => void`) and call them from your primary/back actions. Do not wire real navigation or route params inside the Screen — the route owns navigation, the Screen just calls the callback it's given.
+
+Single-page concepts keep the flat `Screen.tsx` shape — don't introduce `flow.ts`/`pages/` for a one-screen concept.
+
+## Analytics contract
+
+Every concept ships `analytics.json` in its folder, written by the sandbox's dev-only tagging overlay (open `/c/<product>/<slug>`, click **Tag**). Schema:
+
+```ts
+type Trigger = 'click' | 'page_load' | 'input_change';
+type ElementAnchor = { tag: string; role: string | null; label: string; occurrence: number };
+type AnalyticsEvent = {
+  id: string;            // 'evt_1', 'evt_2', ...
+  page: string;           // page slug ('screen' for single-page concepts)
+  trigger: Trigger;
+  event: string;          // snake_case event name
+  data: Record<string, string>;
+  element?: ElementAnchor; // omitted for page_load events
+  notes: string;
+};
+type AnalyticsSpec = { version: 1; product: string; concept: string; events: AnalyticsEvent[] };
+```
+
+**Naming convention** — snake_case, suffixed by trigger type: `_tap` for clicks, `_view` for page loads, `_change` for input changes. Examples from `src/concepts/pdfguru/upload-funnel/analytics.json`: `choose_file_tap`, `upload_select_file_view`, `view_result_tap`. Other pdfguru-shaped examples: `file_from_provider_chosen`, `sign_up_confirm_tap`.
+
+Tag a `page_load` event for every page plus a click/change event for every primary interactive element (button, input, link). The advisory gate (`npm run gate:analytics`) warns on untagged elements and pages missing a `page_load`; it hard-fails only on non-snake_case event names.
+
+Context props — `page`, `device`, `ab_test`, orientation — are auto-attached by the product's analytics layer at dispatch time. Do **not** encode them in the spec; `data` is only for event-specific payload fields (e.g. `{ method: 'click' }`).
+
 ## Borrowed discipline (cite, don't copy)
 
 Two habits worth carrying into concept copy and structure, borrowed from frontend-design practice — apply the discipline, don't copy files:
