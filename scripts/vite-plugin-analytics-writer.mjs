@@ -42,7 +42,7 @@ export default function analyticsWriter() {
             mkdirSync(path.dirname(file), { recursive: true });
             writeFileSync(file, JSON.stringify(body, null, 2) + '\n');
             res.statusCode = 200; res.end('ok');
-          } catch (e) { res.statusCode = 400; res.end(String(e)); }
+          } catch (e) { res.statusCode = 400; res.end('invalid analytics payload'); }
           return;
         }
         res.statusCode = 405; res.end('method not allowed');
