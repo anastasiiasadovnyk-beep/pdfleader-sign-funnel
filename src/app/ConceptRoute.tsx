@@ -6,7 +6,7 @@ import type { ConceptEntry } from './concepts';
 import { BrandProvider } from './BrandProvider';
 import { FlowBar } from './FlowBar';
 import { resolvePage, nextTargets, prevSlug } from './flowNav';
-import { AnalyticsOverlay } from '../devtools/analytics-overlay/AnalyticsOverlay';
+import { AnalyticsTagger } from '@universe-forma/analytics-tagger';
 
 type Loader = () => Promise<{ default: ComponentType<any> }>;
 type MockLoader = () => Promise<{ default: unknown }>;
@@ -52,7 +52,7 @@ function SinglePage({ entry }: { entry: ConceptEntry }) {
       <Suspense fallback={<p className="p-8">Loading…</p>}>
         {mock !== null && <Screen {...(mock as object)} />}
       </Suspense>
-      {import.meta.env.DEV && <AnalyticsOverlay product={entry.product} concept={entry.slug} page="screen" />}
+      {import.meta.env.DEV && <AnalyticsTagger product={entry.product} concept={entry.slug} page="screen" />}
     </BrandProvider>
   );
 }
@@ -74,7 +74,7 @@ function MultiPage({ entry, pageParam, navigate }: { entry: ConceptEntry; pagePa
         {mock !== null && <Screen key={key} {...(mock as object)} onNext={onNext} onBack={onBack} />}
       </Suspense>
       <FlowBar flow={flow} current={current} onJump={navigate} />
-      {import.meta.env.DEV && <AnalyticsOverlay product={entry.product} concept={entry.slug} page={current} />}
+      {import.meta.env.DEV && <AnalyticsTagger product={entry.product} concept={entry.slug} page={current} />}
     </BrandProvider>
   );
 }
