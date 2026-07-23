@@ -1,4 +1,4 @@
-import { lintHardcodes } from './lint-hardcodes.mjs';
+import { lintHardcodes, lintHardcodeWarnings } from './lint-hardcodes.mjs';
 
 test('flags raw hex and raw tailwind palette utility', () => {
   const bad = `<div className="bg-gray-500" style={{ color: '#ff0000' }} />`;
@@ -19,6 +19,11 @@ test('does not flag bracket className values like max-w-[720px]', () => {
 test('allows a hex inside a Tailwind arbitrary color value but bans bare hex', () => {
   expect(lintHardcodes(`<div className="bg-[#5f30e2] text-[#ffffff]" />`)).toEqual([]);
   expect(lintHardcodes(`<div className="bg-[#5f30e2]" style={{ color: '#ff0000' }} />`).length).toBeGreaterThanOrEqual(1);
+});
+
+test('surfaces bracket-arbitrary hex as a warning (not a silent pass) and stays clean without one', () => {
+  expect(lintHardcodeWarnings(`<div className="stroke-[#ffffff] bg-[#5f30e2]" />`).length).toBe(1);
+  expect(lintHardcodeWarnings(`<div className="bg-primary text-text-primary" />`)).toEqual([]);
 });
 
 test('flags a raw px style value', () => {

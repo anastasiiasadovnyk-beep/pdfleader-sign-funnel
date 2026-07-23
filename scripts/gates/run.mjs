@@ -1,6 +1,6 @@
 import { conceptScreens, conceptDirs } from './lib/scan.mjs';
 import { verifyStructure } from './verify-structure.mjs';
-import { lintHardcodes } from './lint-hardcodes.mjs';
+import { lintHardcodes, lintHardcodeWarnings } from './lint-hardcodes.mjs';
 import { verifyStates } from './verify-states.mjs';
 import { validateTokens, loadColorCatalog } from './validate-tokens.mjs';
 import { analyzeAll } from './verify-analytics.mjs';
@@ -30,6 +30,11 @@ for (const { file, src } of conceptScreens()) {
     findings.forEach((f) => console.error(`  - ${f}`));
   } else {
     console.log(`✓ ${file}`);
+  }
+  const warnings = lintHardcodeWarnings(src);
+  if (warnings.length) {
+    console.warn(`⚠ ${file}`);
+    warnings.forEach((w) => console.warn(`  - ${w}`));
   }
 }
 
