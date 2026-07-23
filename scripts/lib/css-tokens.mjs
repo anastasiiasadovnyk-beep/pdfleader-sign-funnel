@@ -18,6 +18,8 @@ export function parseCssVars(css) {
   return out;
 }
 
+const isTypeModifier = (name) => /--(line-height|font-weight|letter-spacing)$/.test(name);
+
 export function tailwindUtilFor(name) {
   if (name.startsWith('color-')) {
     const base = name.replace(/^color-/, '');
@@ -25,5 +27,26 @@ export function tailwindUtilFor(name) {
   }
   if (name.startsWith('radius-')) return `rounded-${name.replace(/^radius-/, '')}`;
   if (name.startsWith('spacing-')) return `p-${name.replace(/^spacing-/, '')} / m-${name.replace(/^spacing-/, '')}`;
+  if (isTypeModifier(name)) return null;
+  if (name.startsWith('font-')) return `font-${name.replace(/^font-/, '')}`;
+  if (name.startsWith('text-')) return `text-${name.replace(/^text-/, '')}`;
   return null;
+}
+
+// Concrete class candidates per token, so a generated Tailwind `@source inline(...)` safelist
+// forces every ui-pes utility to be emitted regardless of what a concept literally types.
+export function safelistClasses(name) {
+  if (name.startsWith('color-')) {
+    const base = name.replace(/^color-/, '');
+    return [`bg-${base}`, `text-${base}`, `border-${base}`];
+  }
+  if (name.startsWith('radius-')) return [`rounded-${name.replace(/^radius-/, '')}`];
+  if (name.startsWith('spacing-')) {
+    const n = name.replace(/^spacing-/, '');
+    return [`p-${n}`, `px-${n}`, `py-${n}`, `m-${n}`, `mx-${n}`, `my-${n}`, `gap-${n}`];
+  }
+  if (isTypeModifier(name)) return [];
+  if (name.startsWith('font-')) return [`font-${name.replace(/^font-/, '')}`];
+  if (name.startsWith('text-')) return [`text-${name.replace(/^text-/, '')}`];
+  return [];
 }

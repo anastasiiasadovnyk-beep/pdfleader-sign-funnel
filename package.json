@@ -2,7 +2,9 @@
   "name": "ui-design-vibe-concepts",
   "private": true,
   "type": "module",
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -11,10 +13,14 @@
     "reindex": "node scripts/reindex-ds.mjs && node scripts/reindex-products.mjs",
     "reindex:ds": "node scripts/reindex-ds.mjs",
     "reindex:products": "node scripts/reindex-products.mjs",
+    "fidelity": "node scripts/fidelity/run.mjs",
     "gate": "node scripts/gates/run.mjs",
     "gate:analytics": "node -e \"import('./scripts/gates/verify-analytics.mjs').then(m=>{const r=m.analyzeAll();let bad=false;for(const x of r){if(x.errors.length){bad=true;console.error('\\u2717',x.product+'/'+x.slug);x.errors.forEach(e=>console.error('  -',e));}x.warnings.forEach(w=>console.warn('\\u26a0',x.product+'/'+x.slug,w));}process.exit(bad?1:0);})\""
   },
   "dependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/montserrat": "^5.3.0",
+    "@fontsource/nunito-sans": "^5.3.0",
     "@universe-forma/ui-pes": "^0.5.45",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -28,6 +34,7 @@
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.5.2",
     "jsdom": "^29.1.1",
+    "playwright": "^1.61.1",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.9.3",
     "vite": "^6.0.0",

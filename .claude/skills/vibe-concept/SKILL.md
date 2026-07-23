@@ -14,16 +14,18 @@ Turn a Figma reference (or screenshot) + a prompt into a concept folder under `s
 3. **Read the target product profile** — `product-profiles/<product>.md`. This shapes the integration recipe in step 4.
 4. **Emit the concept** — create `src/concepts/<product>/<slug>/{Screen.tsx,types.ts,mock.ts,meta.ts,INTEGRATION.md}`. See `references/conventions.md`.
 5. **Run gates** — `node scripts/gates/run.mjs <slug>`; fix findings and re-run until it passes. NEVER declare the concept done on a failing gate.
-6. **Self-verify** — screenshot the sandbox route `/c/<product>/<slug>`, compare to the reference, iterate. See `references/self-review.md`.
-7. **Tag analytics** — run the sandbox (`npm run dev`), open `/c/<product>/<slug>?tag=1` (the tagger is opt-in via the `?tag=1` query param; it's invisible otherwise). Use **Inspect** to hover and tag elements, add one page-view event per page, and check **Coverage** to find untagged interactive elements. Events auto-save as you go; **Export** also writes `analytics.json` into the concept folder. The tagger's taxonomy now spans interaction/form/visibility/navigation/media/content/custom — pick the closest category/trigger rather than defaulting to click/page_load. See `references/conventions.md` (Analytics contract).
+6. **Capture the design contract** — while the Figma node is open, extract **all frames** (desktop, mobile, breakpoints) and the ground-truth per-region values (component + props, font family/size/weight, colors by token, layout flow, copy) into `design.json`, tag those regions in the JSX with `data-ff="<region>"`, and add a named scenario in `mock.ts` for each state (loading/empty/selected/variant). This is the machine-checkable contract — don't eyeball. See `references/conventions.md` (Design contract, Scenarios).
+7. **Self-verify — run the fidelity gate** — `npm run fidelity <product> <slug>`. It renders the isolated `/preview/<product>/<slug>` route (no app shell) for every scenario × frame, screenshots them into `.fidelity/`, and asserts every `design.json` region against the rendered computed styles. Fix each reported delta and re-run until it exits 0, then eyeball the screenshots against the reference for anything assertions don't cover. See `references/self-review.md`.
+8. **Tag analytics** — run the sandbox (`npm run dev`), open `/c/<product>/<slug>?tag=1` (the tagger is opt-in via the `?tag=1` query param; it's invisible otherwise). Use **Inspect** to hover and tag elements, add one page-view event per page, and check **Coverage** to find untagged interactive elements. Events auto-save as you go; **Export** also writes `analytics.json` into the concept folder. The tagger's taxonomy now spans interaction/form/visibility/navigation/media/content/custom — pick the closest category/trigger rather than defaulting to click/page_load. See `references/conventions.md` (Analytics contract).
 
 | Step | Reference |
 |---|---|
 | 1. Intake | `references/intake.md` |
 | 2. Design system | `references/ds-catalog.md` |
 | 4. Concept contract | `references/conventions.md` |
-| 6. Self-verify | `references/self-review.md` |
-| 7. Analytics | `references/conventions.md` |
+| 6. Design contract | `references/conventions.md` |
+| 7. Self-verify (fidelity gate) | `references/self-review.md` |
+| 8. Analytics | `references/conventions.md` |
 
 Load each reference file just before you need it — don't read them all upfront.
 
@@ -32,7 +34,8 @@ Load each reference file just before you need it — don't read them all upfront
 - **Never invent a component.** If ui-pes lacks it, compose from ui-pes primitives + tokens and FLAG the gap for the DS team in your response.
 - **`Screen.tsx` must be pure.** Props in, UI out. Only `@universe-forma/ui-pes` imports plus Tailwind token classes. No data-fetching, no store, no router, no i18n inside it. No raw hex colors, no raw Tailwind palette utilities (`bg-gray-500` etc.), and no raw px where a spacing/radius token exists — token utilities only. Arbitrary layout values with no matching token (e.g. `max-w-[720px]`) are allowed.
 - **Match colors and type by value, not by name.** Resolve each design color against the product's real values in `brands/<product>.css` and use the matching semantic token's utility — a violet accent (`primary`) and a red CTA (`secondary`) are different tokens; never default the emphasized control to `primary`. Same for type: match the reference's real size+weight to the right `text-*` token. No token match → nearest token + flag, or a flagged arbitrary `bg-[#hex]` only as a last resort. See `references/ds-catalog.md` §4.
-- **Fidelity is part of done.** Before handoff, walk the `references/self-review.md` checklist (container width, typography, color semantics, badge style, icons, spacing, states, copy) against the reference and fix each delta — "looks close" is not done.
+- **Fidelity is a gate, not a vibe.** Every concept ships a `design.json` contract (all frames + scenarios + regions tagged `data-ff="<region>"`), and `npm run fidelity <product> <slug>` must exit 0 before handoff. Don't declare done, summarize success, or hand back while it reports a delta — fix each one. The gate points at the wrong element so the user doesn't have to. Then walk the `references/self-review.md` checklist for anything assertions don't cover.
+- **Match structure to complexity (tiers).** A static screen stays flat (`Screen.tsx` + one mock); an interactive one adds a store-shaped `hooks/use<Name>Model.ts` + scenarios; a complex/responsive/stateful one uses region-scoped contracts (each region owns its props + mock fragment + `design.json` entries + `data-ff`). Don't over-structure the simple case; don't cram the complex case into one flat file with one mock. See `references/conventions.md` (Architecture tiers).
 - **Decompose non-trivial screens** into `components/`/`lib/`/`hooks/` — no monolithic Screen.tsx. Every `.tsx` in the concept is gate-checked.
 - **Data goes through typed props + `mock.ts`.** Never hardcode data inline in the component; `mock.ts` is the integration seam that gets deleted when the concept is wired to real data.
 - **Every concept ships an `INTEGRATION.md` spec.** It is a required file (the structure gate fails without it) and must contain: Purpose, Props / data contract, States, and step-by-step integration into the target product. See `references/conventions.md` for the spec structure. A concept without this spec is incomplete.

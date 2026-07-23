@@ -49,6 +49,34 @@ Every concept MUST ship this file; the structure gate fails a concept without it
 - **States** — default / empty / loading / error, whichever apply, and how each renders.
 - **Integration steps** — in the target product's actual terms: path, export style, sub-component mapping, route registration, data wiring (which replaces `mock.ts`), i18n keys.
 
+## Architecture tiers — match structure to complexity
+
+Pick the lightest tier that fits. Do NOT over-structure a simple screen (that's the failure mode on the cheap side); do NOT cram a complex, stateful, responsive screen into one flat file with one mock (that's the failure mode that causes round after round of "fix this element too"). The contract scales fractally — a Tier-1 screen is just the degenerate case of the Tier-3 shape.
+
+| Tier | When | Shape |
+|---|---|---|
+| **1 — Static** | empty state, card, static page | `Screen.tsx` + `types.ts` + single-scenario `mock.ts` + `meta.ts` + `INTEGRATION.md`. |
+| **2 — Interactive** | local state, derived values, a few actions | + `hooks/use<Name>Model.ts` (store-shaped view-model, below) + pure `lib/*.ts` + `components/*.tsx`. `mock.ts` gains named scenarios for its states. |
+| **3 — Complex / flow** | many regions, async (loading/error), validation, wizard, A/B variants | **region-scoped contracts** (below) + store-shaped view-model or a statechart for flows. Split `types.ts` by domain. Multipage → `flow.ts` + `pages/`. |
+
+The reference Tier-3 concept is `src/concepts/pdfguru/ab-testing-modal/` — read it before building anything non-trivial.
+
+### Region-scoped contracts (Tier 3)
+For a complex screen, the **region is the unit of contract, not the whole screen** — otherwise you get one 40-field props bag and one giant mock that nobody can review and the fidelity gate can't localize. Each region is a sub-component that carries its own slice of every contract:
+- `components/<Region>.tsx` — the ui-pes composition, with `data-ff="<region>"` on the elements the design pins values on.
+- its props typed in `types.ts` (or a `<Region>.types.ts` for large screens); the root `Screen` props are a **composition** of region props, not a flat bag.
+- its mock fragment (a field on each scenario object), its `design.json` region entries, its `INTEGRATION.md` row.
+
+This keeps every region independently authored, mocked, fidelity-checked, and wired — and lets an implementer (human or AI) reason about one region without loading the whole screen.
+
+### State as a wiring seam (not a rewrite)
+Interaction lives in `hooks/use<Name>Model.ts`, shaped to **mirror the target product's store** so integration is a wiring, not a rewrite. Return exactly three things:
+- `state` — the raw interaction state (becomes slice state on integration).
+- `actions` — named handlers (`select`, `setCustomValue`) that map 1:1 to dispatched actions.
+- `derived` — values computed from state (`ctaLabel`, `projectedSizeOf`) that map to selectors.
+
+Seed it from `initial*` props (from `mock.ts`), keep all math in pure `lib/*.ts`. `INTEGRATION.md` then says "replace `state` with the slice, `actions` with dispatches, `derived` with selectors" — a mechanical swap. Never fetch data or touch a real store inside the hook.
+
 ## Decomposition
 
 Non-trivial screens split into sub-files instead of one god-component. `Screen.tsx` stays the composition root:
@@ -82,6 +110,46 @@ src/concepts/<product>/<slug>/
 Each `pages/<page>/Screen.tsx` is a normal concept Screen — same purity rules as single-page. The route (`ConceptRoute.tsx`) injects `onNext` and `onBack` callbacks as extra props at render time; declare them as optional in `types.ts` (`onNext?: () => void`) and call them from your primary/back actions. Do not wire real navigation or route params inside the Screen — the route owns navigation, the Screen just calls the callback it's given.
 
 Single-page concepts keep the flat `Screen.tsx` shape — don't introduce `flow.ts`/`pages/` for a one-screen concept.
+
+## Scenarios (`mock.ts`) — one mock per state, not one mock total
+
+`mock.ts` default-exports the base scenario **and** named-exports the other states the screen must handle. Preview any of them at `/c|preview/<product>/<slug>?scenario=<exportName>`; the fidelity gate renders and asserts each. This is how loading / empty / error / selected / disabled / A-B variants become first-class instead of being discovered late and patched one at a time.
+
+```ts
+const mock: Props = { /* base */ };
+export default mock;                                          // scenario "default"
+export const empty: Props = { ...mock, items: [] };           // ?scenario=empty
+export const loading: Props = { ...mock, status: 'loading' }; // ?scenario=loading
+```
+
+Derive variants from the base with spread so they stay in sync. Model async as an explicit `status` field in the contract, not an ad-hoc flag — loading/error are states the design has, so they belong in the props and the scenarios.
+
+## Design contract (`design.json`) — frames · scenarios · regions
+
+Every concept ships `design.json`: the **ground-truth values pulled from the Figma frames**, and the single source of truth the fidelity gate checks (`npm run fidelity <product> <slug>`). Capture it while the Figma node is open (`get_variable_defs` / `get_design_context` give exact per-layer values, and Code Connect — `get_code_connect_map` — gives the exact ui-pes component + props when the DS library has it mapped). Never reconstruct it from a screenshot.
+
+Capture **all** frames up front — desktop, mobile, and any breakpoint the design has — so responsive layouts aren't discovered turn by turn. Record, per region: the ui-pes `component` it maps to, its `props`, token-mapped styles, `layout` (flow/align — so "stacked vs horizontal" is a recorded fact, not a guess), `copy`, and any `dsGap`.
+
+```jsonc
+{
+  "source": "figma://<file>?node-id=<node>",
+  "frames": { "desktop": { "w": 1440, "h": 1024, "node": "…" }, "mobile": { "w": 390, "h": 844, "node": "…" } },
+  "scenarios": ["default", "customSelected", "disabled"],     // must match mock export names
+  "regions": [
+    { "ff": "container", "frame": "desktop", "component": "div (Dialog DS gap)", "assert": { "width": 796, "borderRadius": 20 } },
+    { "ff": "title", "frame": "desktop", "copy": "Compress PDF", "assert": { "fontFamily": "Nunito Sans", "fontSize": 28, "fontWeight": 800 } },
+    { "ff": "badge", "component": "Badge (color=success, size=sm)", "assert": { "fontSize": 10, "fontWeight": 600, "textTransform": "uppercase", "textContent": "RECOMMENDED" } },
+    { "ff": "savings", "frame": "desktop", "assert": { "flexDirection": "row" } },
+    { "ff": "savings", "frame": "mobile",  "assert": { "flexDirection": "column" } }
+  ]
+}
+```
+
+- `ff` matches a `data-ff="<region>"` attribute in the JSX. Tag every region the design pins a value on: container, each distinct text style, primary CTA, badge/chip, and any region whose **layout** flips responsively.
+- Assertable props (measured from the rendered DOM): `width`, `height`, `fontFamily` (substring), `fontSize`, `fontWeight`, `borderRadius`, `textTransform`, `flexDirection`, `textAlign`, `gap`, `padding`, `textContent` (substring). Numbers are px; tolerances default sensibly, override per region with `"tol": { "width": 4 }`.
+- `frame` scopes a region to one frame (omit → checked in all); `scenario` scopes it to one scenario (omit → checked in all). A responsive region asserts `flexDirection: row` at `desktop` and `column` at `mobile`.
+- `component`/`props`/`layout`/`copy`/`dsGap` are contract metadata the runner doesn't assert but the builder and `INTEGRATION.md` rely on — fill them; they're how the concept records "what the design is."
+- The gate renders the isolated `/preview/<product>/<slug>` route (no app shell) so measurements aren't contaminated by the sandbox chrome. Screenshots land in `.fidelity/` (git-ignored, one per scenario×frame) for eyeball comparison of what assertions can't cover (icon glyphs, exact color).
 
 ## Analytics contract
 

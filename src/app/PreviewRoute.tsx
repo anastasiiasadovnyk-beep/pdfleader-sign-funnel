@@ -2,7 +2,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { conceptEntries } from './concepts';
 import { ConceptView } from './conceptView';
 
-export function ConceptRoute() {
+export function PreviewRoute() {
   const { product, slug, page } = useParams();
   const [params] = useSearchParams();
   const navigate = useNavigate();
@@ -12,7 +12,8 @@ export function ConceptRoute() {
     <ConceptView
       entry={entry}
       pageParam={page}
-      navigate={(s) => navigate(`/c/${entry.product}/${entry.slug}/${s}`)}
+      navigate={(s) => navigate(`/preview/${entry.product}/${entry.slug}/${s}`)}
+      bare
       scenario={params.get('scenario') ?? 'default'}
     />
   );
