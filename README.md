@@ -2,7 +2,7 @@
 
 Vibe-code screen concepts on the `@universe-forma/ui-pes` design system for **pdfguru**, **tbp**, and **pdfleader** — preview them in a gallery and hand off integration-ready code. Full guide below (Ukrainian).
 
-The workflow is driven by the **`/vibe-concept`** skill, checked into this repo at `.claude/skills/vibe-concept/` — Claude Code loads it automatically when you work here, nothing to install. It turns a Figma node (or screenshot) + a prompt into a concept that passes the quality gates and an automated **fidelity** check (`npm run fidelity <product> <slug>`) that measures the rendered screen against a `design-spec.json` and reports each mismatch. Brand webfonts are self-hosted and generated from the brand tokens, so the sandbox renders the real typeface.
+The workflow is driven by the **`/vibe-concept`** skill, checked into this repo at `.claude/skills/vibe-concept/` — Claude Code loads it automatically when you work here, nothing to install. It turns a Figma node (or screenshot) + a prompt into a concept that passes the quality gates and an automated **fidelity** check (`npm run fidelity <product> <slug>`) that measures the rendered screen against a `design.json` contract (all frames · scenarios · regions) and reports each mismatch. Brand webfonts are self-hosted and generated from the brand tokens, so the sandbox renders the real typeface.
 
 ---
 
@@ -125,9 +125,9 @@ npm run gate <назва>    # перевірити один
 npm run fidelity <продукт> <назва>   # напр. npm run fidelity pdfguru compress-modal
 ```
 
-Вона відкриває концепт на ізольованому роуті `/preview/<продукт>/<назва>` (без шапки й галереї, щоб ніщо не заважало), чекає завантаження шрифтів, робить скріншоти для десктопу й мобільного (у `.fidelity/` всередині папки концепту) і звіряє кожен регіон із файлом `design-spec.json` — ширину, шрифт, розмір і насиченість тексту, радіус, регістр бейджа. Якщо щось не збігається, вона **називає конкретний елемент** (`title.fontSize: design=28 built=16`), а не просто «схоже/несхоже». Claude ганяє її й лагодить відхилення сам, поки не стане зелено.
+Вона відкриває концепт на ізольованому роуті `/preview/<продукт>/<назва>` (без шапки й галереї, щоб ніщо не заважало), чекає завантаження шрифтів, робить скріншоти кожного стану (scenario) × кожного фрейму (десктоп/мобільний) у `.fidelity/` і звіряє кожен регіон із файлом `design.json` — ширину, шрифт, розмір і насиченість тексту, радіус, регістр бейджа, навіть напрямок розкладки (`flex-direction` — стек vs горизонталь). Якщо щось не збігається, вона **називає конкретний елемент** (`title.fontSize: design=28 built=16`), а не просто «схоже/несхоже». Claude ганяє її й лагодить відхилення сам, поки не стане зелено.
 
-> `design-spec.json` — це «еталон» концепту: значення, зняті з макета Figma. Claude створює його під час генерації й позначає відповідні елементи в коді атрибутом `data-ff="…"`. Концепт без специфікації перевіряється лише скріншотом (без числових звірок).
+> `design.json` — це «еталон» концепту: усі фрейми (десктоп/мобільний), стани (scenarios) і регіони зі значеннями, знятими з макета Figma. Claude створює його під час генерації й позначає елементи в коді атрибутом `data-ff="…"`. Стани концепту задаються як named-export у `mock.ts` — дивишся будь-який через `?scenario=<назва>`. Концепт без `design.json` перевіряється лише скріншотом.
 
 ---
 
@@ -143,7 +143,8 @@ npm run fidelity <продукт> <назва>   # напр. npm run fidelity pd
 | `types.ts` | типи пропсів — це і є «шов» для інтеграції |
 | `mock.ts` | тестові дані для перегляду в пісочниці |
 | `meta.ts` | лише назва (`{ title }`) — бренд береться з папки продукту |
-| `design-spec.json` | еталонні значення з макета (ширина, шрифти, кольори, бейджі) для перевірки `npm run fidelity`; регіони позначені в коді через `data-ff="…"` |
+| `design.json` | контракт відповідності: фрейми · стани (scenarios) · регіони з еталонними значеннями з макета для `npm run fidelity`; елементи позначені `data-ff="…"` |
+| `mock.ts` (scenarios) | стани екрана як named-export (`empty`, `loading`, …) поверх базового — переглядаються через `?scenario=<назва>` |
 | `INTEGRATION.md` | інструкція для інженера |
 
 Для нетривіальних екранів Claude додатково розкладає `Screen.tsx` на `components/` (окремі під-компоненти), `lib/` (чисті хелпери) і/або `hooks/` (view-логіка) — замість одного величезного файлу. Усі `.tsx`-файли концепту проходять перевірки якості.
