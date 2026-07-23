@@ -60,3 +60,11 @@ const mock: CompressModalProps = {
 };
 
 export default mock;
+
+// Named scenarios — preview at /c|preview/…?scenario=<name>; the fidelity gate asserts each.
+export const customSelected: CompressModalProps = { ...mock, initialSelectedId: 'custom' };
+
+export const disabled: CompressModalProps = {
+  ...mock,
+  options: mock.options.map((o) => (o.id === 'low' ? { ...o, disabled: true } : o)),
+};

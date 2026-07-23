@@ -9,7 +9,7 @@ export type PageEntry = {
   title: string;
   next?: string | string[];
   load: () => Promise<{ default: ComponentType<any> }>;
-  loadMock: () => Promise<{ default: unknown }>;
+  loadMock: () => Promise<Record<string, unknown>>;
 };
 export type ConceptEntry = {
   product: Brand;
@@ -18,7 +18,7 @@ export type ConceptEntry = {
   brand: Brand;
   kind: 'single' | 'multi';
   load: () => Promise<{ default: ComponentType<any> }>;
-  loadMock: () => Promise<{ default: unknown }>;
+  loadMock: () => Promise<Record<string, unknown>>;
   flow?: Flow;
   pages?: PageEntry[];
 };
@@ -34,10 +34,10 @@ const pageNameOf = (p: string) => partsOf(p).slice(-2, -1)[0];
 export function listConcepts(
   screens: Record<string, () => Promise<{ default: ComponentType<any> }>>,
   metas: Record<string, ConceptMeta>,
-  mocks: Record<string, () => Promise<{ default: unknown }>>,
+  mocks: Record<string, () => Promise<Record<string, unknown>>>,
   flows: Record<string, Flow> = {},
   pageScreens: Record<string, () => Promise<{ default: ComponentType<any> }>> = {},
-  pageMocks: Record<string, () => Promise<{ default: unknown }>> = {},
+  pageMocks: Record<string, () => Promise<Record<string, unknown>>> = {},
 ): ConceptEntry[] {
   const titleFor = (product: Brand, slug: string) => {
     const key = Object.keys(metas).find((m) => slugOf(m) === slug && productOf(m) === product);
@@ -97,8 +97,8 @@ export const conceptEntries = () =>
   listConcepts(
     import.meta.glob<{ default: ComponentType<any> }>('/src/concepts/*/*/Screen.tsx'),
     import.meta.glob('/src/concepts/*/*/meta.ts', { eager: true, import: 'default' }) as Record<string, ConceptMeta>,
-    import.meta.glob<{ default: unknown }>('/src/concepts/*/*/mock.ts'),
+    import.meta.glob<Record<string, unknown>>('/src/concepts/*/*/mock.ts'),
     import.meta.glob('/src/concepts/*/*/flow.ts', { eager: true, import: 'default' }) as Record<string, Flow>,
     import.meta.glob<{ default: ComponentType<any> }>('/src/concepts/*/*/pages/*/Screen.tsx'),
-    import.meta.glob<{ default: unknown }>('/src/concepts/*/*/pages/*/mock.ts'),
+    import.meta.glob<Record<string, unknown>>('/src/concepts/*/*/pages/*/mock.ts'),
   );

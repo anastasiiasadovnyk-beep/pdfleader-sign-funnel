@@ -61,7 +61,7 @@ export default function CompressOption({
           <span className="text-body-2 text-text-secondary">{option.description}</span>
         </span>
 
-        <span className="flex shrink-0 flex-col items-end md:flex-row md:items-center md:justify-end md:gap-6">
+        <span data-ff="savings" className="flex shrink-0 flex-col items-end md:flex-row md:items-center md:justify-end md:gap-6">
           <span className="text-body-emph text-text-primary">{projectedSize}</span>
           <span
             className={cn('text-right text-body-2 md:w-24', selected ? 'text-primary' : 'text-text-secondary')}

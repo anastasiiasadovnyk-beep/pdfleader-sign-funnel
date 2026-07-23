@@ -16,7 +16,7 @@ Fix every finding and re-run until it exits 0. Do not declare the concept done, 
 npm run fidelity <product> <slug>
 ```
 
-It renders the isolated `/preview/<product>/<slug>` route (no app shell), waits for fonts to load, screenshots desktop+mobile into `.fidelity/`, and asserts every `design-spec.json` region (`data-ff` tagged) against the rendered computed styles. **It exits non-zero and names each wrong element** (`title.fontSize: design=28 built=16`) so you fix the specific delta instead of guessing. Fix and re-run until it exits 0. Declaring done on a failing fidelity gate is the same violation as declaring done on a failing structure gate.
+It renders the isolated `/preview/<product>/<slug>` route (no app shell) for every scenario × frame in `design.json`, waits for fonts to load, screenshots them into `.fidelity/`, and asserts every region (`data-ff` tagged) against the rendered computed styles. **It exits non-zero and names each wrong element** (`title.fontSize: design=28 built=16`, `savings.flexDirection: design=column built=row`) so you fix the specific delta instead of guessing. Fix and re-run until it exits 0. Declaring done on a failing fidelity gate is the same violation as declaring done on a failing structure gate.
 
 If a region reports "not found", you forgot the `data-ff="<region>"` attribute on that element. If a size asserts as `16` (the browser default), a token utility isn't resolving — check the utility exists in `ds-catalog/typography.md` and that `brands/<product>.css` defines its `-size` var.
 

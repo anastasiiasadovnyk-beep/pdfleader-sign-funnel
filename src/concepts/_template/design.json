@@ -1,0 +1,23 @@
+{
+  "source": "figma://<file>?node-id=<node>",
+  "note": "The fidelity contract. Capture from the Figma frames (get_variable_defs / get_design_context; get_code_connect_map for the exact ui-pes component). `npm run fidelity <product> <slug>` renders each scenario × frame on /preview and asserts every region (data-ff) against these values. Tag matching elements in the JSX with data-ff=\"<region>\".",
+  "frames": {
+    "desktop": { "w": 1440, "h": 1024, "node": "<node>" }
+  },
+  "scenarios": ["default"],
+  "regions": [
+    {
+      "ff": "container",
+      "frame": "desktop",
+      "component": "<ui-pes component or DS gap>",
+      "layout": { "flow": "column" },
+      "copy": "<exact text from the design>",
+      "assert": { "width": 720, "borderRadius": 16 }
+    },
+    {
+      "ff": "heading",
+      "component": "<text token>",
+      "assert": { "fontFamily": "<brand font>", "fontSize": 24, "fontWeight": 700 }
+    }
+  ]
+}
