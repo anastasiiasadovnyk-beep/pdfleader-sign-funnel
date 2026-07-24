@@ -58,7 +58,7 @@ function SinglePage({ entry, bare, scenario }: { entry: ConceptEntry; bare: bool
       <Suspense fallback={<p className="p-8">Loading…</p>}>
         {mock !== null && <Screen {...(mock as object)} />}
       </Suspense>
-      {!bare && import.meta.env.DEV && <AnalyticsTagger product={entry.product} concept={entry.slug} page="screen" />}
+      {!bare && <AnalyticsTagger product={entry.product} concept={entry.slug} page="screen" />}
     </BrandProvider>
   );
 }
@@ -80,7 +80,7 @@ function MultiPage({ entry, pageParam, navigate, bare, scenario }: { entry: Conc
         {mock !== null && <Screen key={key} {...(mock as object)} onNext={onNext} onBack={onBack} />}
       </Suspense>
       {!bare && <FlowBar flow={flow} current={current} onJump={navigate} />}
-      {!bare && import.meta.env.DEV && <AnalyticsTagger product={entry.product} concept={entry.slug} page={current} />}
+      {!bare && <AnalyticsTagger product={entry.product} concept={entry.slug} page={current} />}
     </BrandProvider>
   );
 }
