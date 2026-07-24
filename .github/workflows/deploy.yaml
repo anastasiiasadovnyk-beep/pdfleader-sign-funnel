@@ -1,9 +1,10 @@
-name: Deploy (dev)
+name: Deploy
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
@@ -16,10 +17,16 @@ permissions:
 jobs:
   build:
     runs-on: forma-amd64-ci
-    environment: dev
+      environment: dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b # v6.2.0
+        with:
+          role-to-assume: ${{ vars.AWS_ASSUME_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_DEFAULT_REGION }}
 
       - name: Install dependency
         id: install
@@ -41,6 +48,7 @@ jobs:
         uses: universe-forma/github-actions/deploy/frontend/s3@main
         with:
           s3_bucket: ${{ secrets.AWS_S3_BUCKET }}
+          app_path: build
 
       - name: Send Slack Notification
         uses: universe-forma/github-actions/notifications/slack@main
@@ -48,9 +56,9 @@ jobs:
         with:
           slack_webhook_url: ${{ secrets.NOTIFICATIONS_SLACK_WEBHOOK }}
           slack_message: |
-            *Environment*: 🔧 DEVELOPMENT
+            *Environment*: 🔒 vibeconcepts.formatech.io (WAF + Okta)
             *Branch*: `main`
-            *Trigger*: 🤖 Push to `main`
+            *Trigger*: 🤖 ${{ github.event_name }}
             ${{ job.status == 'cancelled'
             && 'Pipeline was cancelled manually'
             || job.status == 'success'
