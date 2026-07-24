@@ -7,6 +7,7 @@ import { Launcher } from './Launcher';
 import { Drawer } from './Drawer';
 import { ElementHighlight } from './ElementHighlight';
 import { useInspector } from './useInspector';
+import '../styles.css';
 
 export type TabId = 'inspect' | 'events' | 'add' | 'coverage' | 'export';
 
@@ -65,17 +66,22 @@ export function AnalyticsTagger({ product, concept, page }: AnalyticsTaggerProps
     }
   }, [searchParams, setSearchParams]);
 
+  const enable = useCallback(() => {
+    try { sessionStorage.setItem(STORAGE_KEY, '1'); } catch { /* ignore */ }
+    setEnabled(true);
+  }, []);
+
+  const toggle = useCallback(() => {
+    if (!enabled) { enable(); setOpen(true); return; }
+    setOpen((v) => !v);
+  }, [enabled, enable]);
+
   useEffect(() => {
     if (!enabled) return;
     let alive = true;
     loadSpec(product, concept).then((s) => { if (alive) setSpec(s); });
     return () => { alive = false; };
   }, [enabled, product, concept]);
-
-  useEffect(() => {
-    // dynamic import keeps styles.css out of the prod bundle when the overlay never mounts
-    if (enabled) import('../styles.css');
-  }, [enabled]);
 
   const persist = useCallback((next: AnalyticsSpec) => {
     setSpec(next);
@@ -114,15 +120,15 @@ export function AnalyticsTagger({ product, concept, page }: AnalyticsTaggerProps
     product, concept, page, spec, persist, draft, setDraft, tab, setTab, inspecting, setInspecting,
   }), [product, concept, page, spec, persist, draft, tab, inspecting]);
 
-  if (!enabled) return null;
-
   return (
-    <TaggerContext.Provider value={context}>
-      <div className="aftag-root">
-        <Launcher count={eventCount} onToggle={() => setOpen((v) => !v)} />
-        {open && <Drawer onClose={() => setOpen(false)} onDisable={disable} />}
-        {inspecting && <ElementHighlight rect={rect} anchor={hoverAnchor} onChip={onChip} />}
-      </div>
-    </TaggerContext.Provider>
+    <div className="aftag-root">
+      <Launcher count={eventCount} onToggle={toggle} />
+      {enabled && (
+        <TaggerContext.Provider value={context}>
+          {open && <Drawer onClose={() => setOpen(false)} onDisable={disable} />}
+          {inspecting && <ElementHighlight rect={rect} anchor={hoverAnchor} onChip={onChip} />}
+        </TaggerContext.Provider>
+      )}
+    </div>
   );
 }
