@@ -36,6 +36,7 @@ const outDir = path.join(conceptDir, '.fidelity');
 mkdirSync(outDir, { recursive: true });
 
 const failures = [];
+const approximations = new Set();
 let asserted = 0;
 for (const scenario of scenarios) {
   for (const [frameName, f] of Object.entries(frames)) {
@@ -67,6 +68,7 @@ for (const scenario of scenarios) {
         };
       }, r.ff);
       if (!measured) { failures.push(`[${scenario}/${frameName}] region "${r.ff}" not found — add data-ff="${r.ff}"`); continue; }
+      if (r.nearestToken) approximations.add(r.ff);
       for (const [prop, want] of Object.entries(r.assert)) {
         asserted++;
         const got = measured[prop];
@@ -91,5 +93,8 @@ if (failures.length) {
   console.error(`\n✗ ${failures.length} fidelity delta(s):`);
   failures.forEach((f) => console.error('  - ' + f));
   process.exit(1);
+}
+if (approximations.size) {
+  console.warn(`⚠ ${approximations.size} region(s) asserted against the NEAREST token (design has no exact ui-pes token — flag for DS): ${[...approximations].join(', ')}`);
 }
 console.log(`✓ all ${asserted} assertions passed (${scenarios.length} scenario × ${Object.keys(frames).length} frame)`);

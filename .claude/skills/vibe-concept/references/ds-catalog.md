@@ -18,6 +18,8 @@ For each "component candidate" from the intake brief, match it to a real entry i
 
 If nothing in the catalog fits: compose from primitives (`Slot`, layout + Tailwind token classes) and say so explicitly in your response — this is the DS gap to flag, not a reason to invent a bespoke component.
 
+Check `DS-GAPS.md` (repo root) first — it's the standing register of known ui-pes gaps (missing `Dialog`/`Radio`/`Slider`/`Checkbox`/`Stepper`/`Card`, `Button` has no `success` color, `Badge` has no default `type`, no icon set). If your gap is listed, use the documented workaround; if it's new, add it there (with the concept that hit it) in addition to your concept's `INTEGRATION.md`.
+
 ## 3. Drill into the real source for exact props
 
 The catalog tells you a component exists and how to import it; it does not give you the prop signature. For that, read the installed package directly:
