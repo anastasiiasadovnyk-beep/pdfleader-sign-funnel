@@ -17,7 +17,7 @@ permissions:
 jobs:
   build:
     runs-on: forma-amd64-ci
-      environment: dev
+    environment: dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
