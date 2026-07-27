@@ -26,7 +26,6 @@ const mock: CompressModalProps = {
       description: 'Medium size, better quality.',
       projectedSize: '154 MB',
       savingsLabel: '46% smaller',
-      recommended: true,
     },
     {
       id: 'low',
@@ -51,11 +50,11 @@ const mock: CompressModalProps = {
   initialCustomValue: 90,
   customSizeRange: { minMb: 4, maxMb: 232 },
   orLabel: 'OR',
-  recommendedLabel: 'RECOMMENDED',
   customSliderLabel: 'Adjust compression level',
+  sliderLeftLabel: 'Better quality',
+  sliderRightLabel: 'Smaller size',
   ctaLabelTemplate: 'Compress to {size}',
   onCompress: (result) => console.log('compress', result),
-  onBack: () => console.log('back'),
   onClose: () => console.log('close'),
 };
 

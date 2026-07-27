@@ -9,7 +9,10 @@
       "category": "navigation",
       "trigger": "page_view",
       "event": "compress_modal_view",
-      "data": { "feature_name": "compress", "screen_config_name": "quality_picker" },
+      "data": {
+        "feature_name": "compress",
+        "screen_config_name": "quality_picker"
+      },
       "notes": "Modal opened — one page-view per render of the compress quality picker."
     },
     {
@@ -17,31 +20,34 @@
       "page": "screen",
       "category": "interaction",
       "trigger": "click",
-      "event": "compress_option_tap",
-      "data": { "feature_name": "compress", "type": "preset" },
+      "event": "compress_level_tap",
+      "data": {
+        "feature_name": "compress",
+        "method": "level_select"
+      },
       "element": {
-        "selector": ".bg-primary-opacity-4 > button",
         "tag": "button",
         "role": null,
-        "label": "Medium",
-        "text": "Medium"
+        "label": "Compression level option"
       },
-      "notes": "Selecting a compression preset/custom row switches the mode. data.type = preset | custom."
+      "notes": "User selects a preset (High/Medium/Low) or Custom row."
     },
     {
       "id": "evt_3",
       "page": "screen",
       "category": "form",
-      "trigger": "input_change",
-      "event": "compression_level_change",
-      "data": { "feature_name": "compress" },
+      "trigger": "change",
+      "event": "compress_custom_change",
+      "data": {
+        "feature_name": "compress",
+        "method": "custom_slider"
+      },
       "element": {
-        "selector": "input[type='range']",
         "tag": "input",
         "role": "slider",
         "label": "Adjust compression level"
       },
-      "notes": "Custom slider drag — updates the custom projected size and the CTA label live."
+      "notes": "User drags the always-visible custom quality slider."
     },
     {
       "id": "evt_4",
@@ -49,45 +55,33 @@
       "category": "interaction",
       "trigger": "click",
       "event": "compress_confirm_tap",
-      "data": { "feature_name": "compress", "status": "started" },
+      "data": {
+        "feature_name": "compress",
+        "method": "cta"
+      },
       "element": {
-        "selector": "footer button",
         "tag": "button",
         "role": null,
-        "label": "Compress to 154 MB",
-        "text": "Compress to 154 MB"
+        "label": "Compress to {size}"
       },
-      "notes": "Primary CTA — starts the compress job at the selected quality."
+      "notes": "Primary CTA — confirms compression with the selected level."
     },
     {
       "id": "evt_5",
       "page": "screen",
       "category": "interaction",
-      "trigger": "back",
-      "event": "compress_back_tap",
-      "data": { "feature_name": "compress" },
-      "element": {
-        "selector": "header button:first-of-type",
-        "tag": "button",
-        "role": null,
-        "label": "Go back"
-      },
-      "notes": "Header back arrow — returns to the previous compress step."
-    },
-    {
-      "id": "evt_6",
-      "page": "screen",
-      "category": "interaction",
       "trigger": "click",
       "event": "compress_close_tap",
-      "data": { "feature_name": "compress" },
+      "data": {
+        "feature_name": "compress",
+        "method": "close"
+      },
       "element": {
-        "selector": "header button:last-of-type",
         "tag": "button",
         "role": null,
         "label": "Close"
       },
-      "notes": "Header close — dismisses the compress flow."
+      "notes": "User dismisses the modal via the close (X) button."
     }
   ]
 }

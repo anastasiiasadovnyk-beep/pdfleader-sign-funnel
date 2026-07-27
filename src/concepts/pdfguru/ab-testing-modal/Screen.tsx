@@ -1,11 +1,11 @@
 import { Button, IconButton } from '@universe-forma/ui-pes';
 import type { CompressModalProps } from './types';
 import { useCompressState } from './hooks/useCompressState';
-import { ChevronLeftIcon, ChevronRightIcon, CloseIcon } from './components/icons';
+import { ChevronRightIcon, CloseIcon } from './components/icons';
 import CompressOption from './components/CompressOption';
 
 export default function Screen(props: CompressModalProps) {
-  const { title, file, options, orLabel, recommendedLabel, customSliderLabel, onBack, onClose } = props;
+  const { title, file, options, orLabel, customSliderLabel, sliderLeftLabel, sliderRightLabel, onClose } = props;
   const { selectedId, customValue, select, setCustomValue, ctaLabel, projectedSizeOf, onCompress } =
     useCompressState(props);
 
@@ -19,10 +19,11 @@ export default function Screen(props: CompressModalProps) {
       projectedSize={projectedSizeOf(o)}
       selected={o.id === selectedId}
       onSelect={select}
-      recommendedLabel={recommendedLabel}
       customValue={customValue}
       onCustomChange={setCustomValue}
       customSliderLabel={customSliderLabel}
+      sliderLeftLabel={sliderLeftLabel}
+      sliderRightLabel={sliderRightLabel}
     />
   );
 
@@ -32,16 +33,7 @@ export default function Screen(props: CompressModalProps) {
         <div className="mx-auto mt-3 h-1 w-16 shrink-0 rounded-full bg-material-grey-300 md:hidden" />
 
         <header className="flex items-center gap-2 px-4 py-4 md:px-6 md:py-6">
-          <IconButton
-            variant="outlined"
-            color="action"
-            size="md"
-            onClick={onBack}
-            aria-label="Go back"
-            className="shrink-0"
-          >
-            <ChevronLeftIcon className="h-6 w-6" />
-          </IconButton>
+          <span aria-hidden="true" className="h-10 w-10 shrink-0" />
           <div className="min-w-0 flex-1 text-center">
             <h1 data-ff="title" className="text-mobile-title-4 text-text-primary md:text-desktop-title-4">{title}</h1>
             <p className="truncate text-body-2 text-text-secondary md:hidden">{file.name}</p>
@@ -82,16 +74,23 @@ export default function Screen(props: CompressModalProps) {
         </div>
 
         <footer className="px-4 py-4 md:px-6 md:py-6">
-          <Button
-            data-ff="cta"
-            color="secondary"
-            size="md"
-            onClick={onCompress}
-            rightIcon={<ChevronRightIcon className="h-5 w-5" />}
-            className="w-full"
-          >
-            {ctaLabel}
-          </Button>
+          <div className="relative">
+            <span
+              aria-hidden="true"
+              data-ff="cta-glow"
+              className="pointer-events-none absolute inset-x-8 -bottom-1 h-8 rounded-full bg-secondary opacity-40 blur-2xl"
+            />
+            <Button
+              data-ff="cta"
+              color="secondary"
+              size="md"
+              onClick={onCompress}
+              rightIcon={<ChevronRightIcon className="h-5 w-5" />}
+              className="relative w-full"
+            >
+              {ctaLabel}
+            </Button>
+          </div>
         </footer>
       </div>
     </div>
