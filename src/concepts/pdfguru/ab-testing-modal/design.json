@@ -21,11 +21,6 @@
       "assert": { "fontFamily": "Nunito Sans", "fontSize": 28, "fontWeight": 800 }
     },
     {
-      "ff": "badge",
-      "component": "Badge (color=success, variant=tonal, size=sm)",
-      "assert": { "fontFamily": "Nunito Sans", "fontSize": 10, "fontWeight": 600, "textTransform": "uppercase", "textContent": "RECOMMENDED" }
-    },
-    {
       "ff": "savings",
       "frame": "desktop",
       "layout": { "flow": "horizontal", "align": "right" },

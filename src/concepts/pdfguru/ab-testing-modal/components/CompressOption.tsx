@@ -8,10 +8,11 @@ export type CompressOptionProps = {
   projectedSize: string;
   selected: boolean;
   onSelect: (id: string) => void;
-  recommendedLabel: string;
   customValue: number;
   onCustomChange: (value: number) => void;
   customSliderLabel: string;
+  sliderLeftLabel: string;
+  sliderRightLabel: string;
 };
 
 export default function CompressOption({
@@ -19,12 +20,13 @@ export default function CompressOption({
   projectedSize,
   selected,
   onSelect,
-  recommendedLabel,
   customValue,
   onCustomChange,
   customSliderLabel,
+  sliderLeftLabel,
+  sliderRightLabel,
 }: CompressOptionProps) {
-  const showSlider = option.kind === 'custom' && selected;
+  const showSlider = option.kind === 'custom';
   return (
     <div
       className={cn(
@@ -50,14 +52,7 @@ export default function CompressOption({
         <QualityIcon icon={option.icon} className="h-8 w-8 shrink-0 text-text-primary" />
 
         <span className="flex min-w-0 flex-1 flex-col">
-          <span className="flex items-center gap-2">
-            <span className="text-body-emph text-text-primary">{option.title}</span>
-            {option.recommended && (
-              <span data-ff="badge" className="w-fit rounded-badge-dense bg-success-16 px-badge-dense-horizontal-padding py-badge-dense-vertical-padding text-badge-sm uppercase leading-none tracking-wide text-success-dark">
-                {recommendedLabel}
-              </span>
-            )}
-          </span>
+          <span className="text-body-emph text-text-primary">{option.title}</span>
           <span className="text-body-2 text-text-secondary">{option.description}</span>
         </span>
 
@@ -72,8 +67,12 @@ export default function CompressOption({
       </button>
 
       {showSlider && (
-        <div className="mt-5">
+        <div className="mt-5 flex flex-col gap-1" onPointerDown={() => onSelect(option.id)}>
           <QualitySlider value={customValue} onChange={onCustomChange} ariaLabel={customSliderLabel} />
+          <div className="flex items-center justify-between">
+            <span className="text-caption text-text-secondary">{sliderLeftLabel}</span>
+            <span className="text-caption text-text-secondary">{sliderRightLabel}</span>
+          </div>
         </div>
       )}
     </div>

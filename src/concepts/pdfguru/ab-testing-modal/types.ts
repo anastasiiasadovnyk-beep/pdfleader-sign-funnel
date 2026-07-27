@@ -8,7 +8,6 @@ export type CompressOption = {
   description: string;
   projectedSize: string;
   savingsLabel: string;
-  recommended?: boolean;
   disabled?: boolean;
 };
 
@@ -30,10 +29,10 @@ export type CompressModalProps = {
   initialCustomValue: number;
   customSizeRange: { minMb: number; maxMb: number };
   orLabel: string;
-  recommendedLabel: string;
   customSliderLabel: string;
+  sliderLeftLabel: string;
+  sliderRightLabel: string;
   ctaLabelTemplate: string;
   onCompress: (result: CompressResult) => void;
-  onBack: () => void;
   onClose: () => void;
 };
