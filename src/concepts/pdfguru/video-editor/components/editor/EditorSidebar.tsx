@@ -21,6 +21,7 @@ interface EditorSidebarProps {
   onAddImage: (gradient: string, src?: string) => void;
   onAddVideo: (gradient: string, src?: string) => void;
   onAddElement: (payload: { label?: string; icon?: IconType; category?: string }) => void;
+  onAddSubtitle: (label: string) => void;
   onDeleteClip: () => void;
   onLayout: (
     clipId: string,
@@ -47,6 +48,7 @@ export const EditorSidebar: FC<EditorSidebarProps> = ({
   onAddImage,
   onAddVideo,
   onAddElement,
+  onAddSubtitle,
   onDeleteClip,
   onLayout,
   onEditText,
@@ -75,6 +77,7 @@ export const EditorSidebar: FC<EditorSidebarProps> = ({
           onAddImage={onAddImage}
           onAddVideo={onAddVideo}
           onAddElement={onAddElement}
+          onAddSubtitle={onAddSubtitle}
           onDeleteClip={onDeleteClip}
           onLayout={onLayout}
           onEditText={onEditText}

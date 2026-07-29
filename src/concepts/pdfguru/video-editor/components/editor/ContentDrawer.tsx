@@ -20,6 +20,7 @@ interface ContentDrawerProps {
   onAddImage: (gradient: string, src?: string) => void;
   onAddVideo: (gradient: string, src?: string) => void;
   onAddElement: (payload: { label?: string; icon?: IconType; category?: string }) => void;
+  onAddSubtitle: (label: string) => void;
   onDeleteClip: () => void;
   onLayout: (
     clipId: string,
@@ -48,6 +49,7 @@ export const ContentDrawer: FC<ContentDrawerProps> = ({
   onAddImage,
   onAddVideo,
   onAddElement,
+  onAddSubtitle,
   onDeleteClip,
   onLayout,
   onEditText,
@@ -87,6 +89,7 @@ export const ContentDrawer: FC<ContentDrawerProps> = ({
           onAddImage={onAddImage}
           onAddVideo={onAddVideo}
           onAddElement={onAddElement}
+          onAddSubtitle={onAddSubtitle}
         />
       );
     return <p className='text-body-2 text-text-secondary'>No {tab?.label.toLowerCase()} added yet.</p>;

@@ -62,6 +62,7 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack }) => {
     onAddVideo: (tone: string, src?: string) => timeline.addVideoClip(tone, editor.playheadSec, src),
     onAddElement: (payload: { label?: string; icon?: IconType; category?: string }) =>
       timeline.addShapeClip(payload, editor.playheadSec),
+    onAddSubtitle: (label: string) => timeline.addSubtitleClip(label, editor.playheadSec),
     onDeleteClip: timeline.deleteSelectedClip,
     onLayout: timeline.updateClipLayout,
     onEditText: timeline.updateClipLabel,

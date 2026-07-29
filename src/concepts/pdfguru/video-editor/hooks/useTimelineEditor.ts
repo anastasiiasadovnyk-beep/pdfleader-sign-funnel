@@ -51,6 +51,7 @@ export const useTimelineEditor = () => {
   const imageSeq = useRef(0);
   const videoSeq = useRef(0);
   const shapeSeq = useRef(0);
+  const subtitleSeq = useRef(0);
 
   /** Record the current state as an undo point. Call once at the start of an edit. */
   const beginChange = useCallback(() => {
@@ -223,6 +224,26 @@ export const useTimelineEditor = () => {
     [present]
   );
 
+  /** Add a subtitle caption to the (own) subtitle row and select it. */
+  const addSubtitleClip = useCallback(
+    (label: string, _startSec: number) => {
+      subtitleSeq.current += 1;
+      const id = `subtitle-${subtitleSeq.current}`;
+      setPast((prev) => [...prev, present]);
+      setFuture([]);
+      setPresent((cur) => {
+        const existing = cur.tracks.find((track) => track.kind === 'subtitle');
+        const clip = { id, kind: 'subtitle' as const, ...packedBounds(existing?.clips ?? [], 10), label };
+        const tracks = existing
+          ? cur.tracks.map((track) => (track.kind === 'subtitle' ? { ...track, clips: [...track.clips, clip] } : track))
+          : [...cur.tracks, { id: 'subtitle', kind: 'subtitle' as const, clips: [clip] }];
+        return { ...cur, tracks };
+      });
+      setSelectedClipId(id);
+    },
+    [present]
+  );
+
   /** Update a clip's canvas layout (position / scale / rotation). */
   const updateClipLayout = useCallback(
     (
@@ -333,6 +354,7 @@ export const useTimelineEditor = () => {
       addImageClip,
       addVideoClip,
       addShapeClip,
+      addSubtitleClip,
       moveClipToTrack,
       updateClipLabel,
       updateClipLayout,
@@ -353,6 +375,7 @@ export const useTimelineEditor = () => {
       addImageClip,
       addVideoClip,
       addShapeClip,
+      addSubtitleClip,
       moveClipToTrack,
       updateClipLabel,
       updateClipLayout,

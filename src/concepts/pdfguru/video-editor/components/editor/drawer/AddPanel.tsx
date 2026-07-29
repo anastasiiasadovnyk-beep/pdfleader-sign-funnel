@@ -110,9 +110,48 @@ interface AddPanelProps {
   onAddImage: (gradient: string, src?: string) => void;
   onAddVideo: (gradient: string, src?: string) => void;
   onAddElement: (payload: { label?: string; icon?: IconType; category?: string }) => void;
+  onAddSubtitle: (label: string) => void;
 }
 
-export const AddPanel: FC<AddPanelProps> = ({ tabId, onAddText, onAddAudio, onAddImage, onAddVideo, onAddElement }) => {
+export const AddPanel: FC<AddPanelProps> = ({
+  tabId,
+  onAddText,
+  onAddAudio,
+  onAddImage,
+  onAddVideo,
+  onAddElement,
+  onAddSubtitle
+}) => {
+  if (tabId === 'subtitles') {
+    return (
+      <div className='flex flex-col gap-4'>
+        <Button
+          variant='filled'
+          color='primary'
+          size='md'
+          leftIcon={<MdOutlineFileUpload className='size-5' />}
+          onClick={() => onAddSubtitle('Add your subtitle text')}
+        >
+          Auto subtitles
+        </Button>
+        <div className='flex flex-col gap-2 border-t border-os-divider pt-4'>
+          <span className='text-body-emph text-text-primary'>Add manually</span>
+          <span className='text-body-2 text-text-secondary'>
+            Add a caption line to the timeline, then edit its text.
+          </span>
+          <Button
+            variant='filled-tonal'
+            color='primary'
+            size='md'
+            onClick={() => onAddSubtitle('Subtitle')}
+          >
+            Add subtitle
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (tabId === 'text') {
     return (
       <div className='flex flex-col gap-2'>
