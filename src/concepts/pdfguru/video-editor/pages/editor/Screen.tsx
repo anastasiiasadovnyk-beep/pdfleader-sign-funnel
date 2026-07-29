@@ -4,37 +4,38 @@ import type { IconType } from 'react-icons';
 
 import { cn } from '@universe-forma/ui-pes';
 
-import { useLocaleNavigate } from 'hooks/useLocaleNavigate';
-import { useMediaQuery } from 'hooks/useMediaQuery';
+import { ContentDrawer } from '../../components/editor/ContentDrawer';
+import { EditorCanvas } from '../../components/editor/EditorCanvas';
+import { EditorHeader } from '../../components/editor/EditorHeader';
+import { EditorSidebar } from '../../components/editor/EditorSidebar';
+import { ToolRail } from '../../components/editor/ToolRail';
+import { Timeline } from '../../components/editor/timeline/Timeline';
+import { useEditorState } from '../../hooks/useEditorState';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
+import { useTimelineEditor } from '../../hooks/useTimelineEditor';
+import { CLIP_KIND_TO_TAB, type TimelineClip } from '../../model/editorData';
+import type { ExportFormat } from '../../model/constants';
 
-import { ContentDrawer } from '../components/editor/ContentDrawer';
-import { EditorCanvas } from '../components/editor/EditorCanvas';
-import { EditorHeader } from '../components/editor/EditorHeader';
-import { EditorSidebar } from '../components/editor/EditorSidebar';
-import { ToolRail } from '../components/editor/ToolRail';
-import { Timeline } from '../components/editor/timeline/Timeline';
-import { useEditorState } from '../hooks/useEditorState';
-import { useTimelineEditor } from '../hooks/useTimelineEditor';
-import { CLIP_KIND_TO_TAB, type TimelineClip } from '../model/editorData';
-import type { ExportFormat } from '../model/constants';
-import { VIDEO_EDITOR_ROUTES } from '../model/constants';
+interface EditorScreenProps {
+  /** Returns to the landing page (provided by the flow host). */
+  onBack?: () => void;
+}
 
 /**
- * Screen 3 — Editor. Composes the top bar, the collapsible left sidebar
+ * Screen 2 — Editor. Composes the top bar, the collapsible left sidebar
  * (tool rail + content drawer), the canvas/viewer and the multi-track timeline.
- * Choosing an export format will open the result modal (Screen 4).
+ * Choosing an export format would open the result modal (a later screen).
  */
-export const VideoEditorPage: FC = () => {
-  const navigate = useLocaleNavigate();
+const EditorScreen: FC<EditorScreenProps> = ({ onBack }) => {
   const editor = useEditorState();
   const timeline = useTimelineEditor();
   // Desktop = the sidebar layout (>= md / 1024px, matching the `md:` CSS split).
   const isDesktop = useMediaQuery('min-md');
 
-  const handleBack = useCallback(() => navigate(VIDEO_EDITOR_ROUTES.landing), [navigate]);
+  const handleBack = useCallback(() => onBack?.(), [onBack]);
 
   const handleSelectFormat = useCallback((_format: ExportFormat) => {
-    // Screen 4 (result processing modal) hooks in here next.
+    // The result processing modal (a later screen) hooks in here next.
   }, []);
 
   // Locate the selected clip so the sidebar can open it in edit state.
@@ -222,3 +223,5 @@ export const VideoEditorPage: FC = () => {
     </div>
   );
 };
+
+export default EditorScreen;

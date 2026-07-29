@@ -4,7 +4,7 @@ import { MdArrowBack, MdCheck, MdOutlineEdit, MdOutlineShare, MdReply } from 're
 
 import { Button, IconButton, Input } from '@universe-forma/ui-pes';
 
-import logoUrl from 'assets/img/pdf-guru.svg';
+import logoUrl from '../../assets/pdf-guru.svg';
 
 import type { ExportFormat } from '../../model/constants';
 import { DownloadMenu } from './DownloadMenu';

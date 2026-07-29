@@ -1,27 +1,27 @@
 import { type FC, useCallback } from 'react';
 
-import { useLocaleNavigate } from 'hooks/useLocaleNavigate';
+import { LandingHeader } from '../../components/landing/LandingHeader';
+import { TrustpilotBadge } from '../../components/landing/TrustpilotBadge';
+import { UploadDropzone } from '../../components/landing/UploadDropzone';
 
-import { LandingHeader } from '../components/landing/LandingHeader';
-import { TrustpilotBadge } from '../components/landing/TrustpilotBadge';
-import { UploadDropzone } from '../components/landing/UploadDropzone';
-import { VIDEO_EDITOR_ROUTES } from '../model/constants';
+interface LandingScreenProps {
+  /** Advances to the editor page (provided by the flow host). */
+  onNext?: () => void;
+}
 
 /**
  * Screen 1 — Landing (Hero).
  * Marketing header, a centered headline + subtext, the drag-and-drop upload
  * card and a Trustpilot rating. A valid file advances into the editor.
  */
-export const VideoEditorLandingPage: FC = () => {
-  const navigate = useLocaleNavigate();
-
+const LandingScreen: FC<LandingScreenProps> = ({ onNext }) => {
   const handleFileAccepted = useCallback(
     (_file: File) => {
-      // Screen 2 (processing) sits between here and the editor; for this pass
-      // we go straight into the editor route, which owns its own loading state.
-      navigate(VIDEO_EDITOR_ROUTES.editor);
+      // A processing screen sits between here and the editor; for this concept
+      // we go straight into the editor, which owns its own loading state.
+      onNext?.();
     },
-    [navigate]
+    [onNext]
   );
 
   return (
@@ -51,3 +51,5 @@ export const VideoEditorLandingPage: FC = () => {
     </div>
   );
 };
+
+export default LandingScreen;
