@@ -2,10 +2,16 @@ import { type FC, useState } from 'react';
 
 import type { IconType } from 'react-icons';
 import {
+  MdChevronRight,
   MdOutlineAudiotrack,
   MdOutlineCategory,
   MdOutlineFileUpload,
   MdOutlineImage,
+  MdOutlineDesktopWindows,
+  MdOutlineKeyboard,
+  MdOutlineMic,
+  MdOutlinePictureInPictureAlt,
+  MdOutlineVideoCameraFront,
   MdOutlineVideocam,
   MdSearch
 } from 'react-icons/md';
@@ -32,6 +38,30 @@ const UPLOAD_LABELS: Record<string, string> = {
   audio: 'Upload audio',
   images: 'Upload image'
 };
+
+/** Record tab — the recording sources offered, in the order shown. */
+const RECORD_OPTIONS: { title: string; description: string; Icon: IconType }[] = [
+  {
+    title: 'Record screen and camera',
+    description: 'Record your screen and computer camera at the same time, with or without microphone.',
+    Icon: MdOutlinePictureInPictureAlt
+  },
+  {
+    title: 'Record screen',
+    description: 'Record with or without camera, microphone, and screen cast.',
+    Icon: MdOutlineDesktopWindows
+  },
+  {
+    title: 'Record camera',
+    description: 'Record video and audio from your computer camera and microphone.',
+    Icon: MdOutlineVideoCameraFront
+  },
+  {
+    title: 'Record audio',
+    description: 'Record audio from your computer microphone.',
+    Icon: MdOutlineMic
+  }
+];
 
 const STOCK_GRADIENTS = [
   'from-slate-300 to-slate-400',
@@ -110,9 +140,105 @@ interface AddPanelProps {
   onAddImage: (gradient: string, src?: string) => void;
   onAddVideo: (gradient: string, src?: string) => void;
   onAddElement: (payload: { label?: string; icon?: IconType; category?: string }) => void;
+  onAddSubtitle: (label: string) => void;
+  onAddTts: (label: string) => void;
 }
 
-export const AddPanel: FC<AddPanelProps> = ({ tabId, onAddText, onAddAudio, onAddImage, onAddVideo, onAddElement }) => {
+export const AddPanel: FC<AddPanelProps> = ({
+  tabId,
+  onAddText,
+  onAddAudio,
+  onAddImage,
+  onAddVideo,
+  onAddElement,
+  onAddSubtitle,
+  onAddTts
+}) => {
+  if (tabId === 'record') {
+    return (
+      <div className='flex flex-col gap-4'>
+        {RECORD_OPTIONS.map(({ title, description, Icon }) => (
+          <button
+            key={title}
+            type='button'
+            className='flex w-full items-center gap-4 rounded-4 border border-os-divider p-4 text-left transition-colors hover:bg-action-hover'
+          >
+            <Icon className='size-6 shrink-0 text-text-primary' />
+            <span className='flex min-w-0 flex-1 flex-col gap-1'>
+              <span className='text-body-emph text-text-primary'>{title}</span>
+              <span className='text-body-2 text-text-secondary'>{description}</span>
+            </span>
+            <MdChevronRight className='size-5 shrink-0 text-text-secondary' />
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  if (tabId === 'tts') {
+    return (
+      <div className='flex flex-col gap-3'>
+        <Button
+          variant='filled-tonal'
+          color='primary'
+          size='md'
+          className='w-full !justify-between'
+          leftIcon={<MdOutlineKeyboard className='size-5' />}
+          rightIcon={<MdChevronRight className='size-5' />}
+          onClick={() => onAddTts('')}
+        >
+          Input manually
+        </Button>
+        <div className='flex flex-col gap-1.5'>
+          <Button
+            variant='outlined'
+            color='primary'
+            size='md'
+            className='w-full !justify-between'
+            leftIcon={<MdOutlineFileUpload className='size-5' />}
+            rightIcon={<MdChevronRight className='size-5' />}
+            onClick={() => onAddTts('')}
+          >
+            Upload file
+          </Button>
+          <span className='text-center text-caption text-text-secondary'>Supports: .pdf, .docx, .txt</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (tabId === 'subtitles') {
+    return (
+      <div className='flex flex-col gap-3'>
+        <Button
+          variant='filled-tonal'
+          color='primary'
+          size='md'
+          className='w-full !justify-between'
+          leftIcon={<MdOutlineKeyboard className='size-5' />}
+          rightIcon={<MdChevronRight className='size-5' />}
+          onClick={() => onAddSubtitle('')}
+        >
+          Transcribe manually
+        </Button>
+        <div className='flex flex-col gap-1.5'>
+          <Button
+            variant='outlined'
+            color='primary'
+            size='md'
+            className='w-full !justify-between'
+            leftIcon={<MdOutlineFileUpload className='size-5' />}
+            rightIcon={<MdChevronRight className='size-5' />}
+            onClick={() => onAddSubtitle('')}
+          >
+            Upload subtitles file
+          </Button>
+          <span className='text-center text-caption text-text-secondary'>Supports: .srt, .ass, .lrc</span>
+        </div>
+      </div>
+    );
+  }
+
   if (tabId === 'text') {
     return (
       <div className='flex flex-col gap-2'>

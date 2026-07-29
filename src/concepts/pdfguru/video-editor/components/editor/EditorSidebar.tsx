@@ -21,6 +21,8 @@ interface EditorSidebarProps {
   onAddImage: (gradient: string, src?: string) => void;
   onAddVideo: (gradient: string, src?: string) => void;
   onAddElement: (payload: { label?: string; icon?: IconType; category?: string }) => void;
+  onAddSubtitle: (label: string) => void;
+  onAddTts: (label: string) => void;
   onDeleteClip: () => void;
   onLayout: (
     clipId: string,
@@ -47,13 +49,15 @@ export const EditorSidebar: FC<EditorSidebarProps> = ({
   onAddImage,
   onAddVideo,
   onAddElement,
+  onAddSubtitle,
+  onAddTts,
   onDeleteClip,
   onLayout,
   onEditText,
   canvasAspect,
   onSelectAspect
 }) => (
-  <div className='relative hidden h-full shrink-0 py-3 pl-3 md:flex'>
+  <div className='relative hidden h-full shrink-0 pb-3 pl-3 md:flex'>
     <div className='flex h-full overflow-hidden rounded-6 bg-bg-white-bg shadow-[0_8px_30px_-10px_rgba(33,33,52,0.18)]'>
       {/* Tool rail stays visible; only the content drawer collapses. */}
       <ToolRail
@@ -75,6 +79,8 @@ export const EditorSidebar: FC<EditorSidebarProps> = ({
           onAddImage={onAddImage}
           onAddVideo={onAddVideo}
           onAddElement={onAddElement}
+          onAddSubtitle={onAddSubtitle}
+          onAddTts={onAddTts}
           onDeleteClip={onDeleteClip}
           onLayout={onLayout}
           onEditText={onEditText}

@@ -19,6 +19,8 @@ import type { ExportFormat } from '../../model/constants';
 interface EditorScreenProps {
   /** Returns to the landing page (provided by the flow host). */
   onBack?: () => void;
+  /** Advances to the processing step, e.g. after choosing an export format. */
+  onNext?: () => void;
 }
 
 /**
@@ -26,7 +28,7 @@ interface EditorScreenProps {
  * (tool rail + content drawer), the canvas/viewer and the multi-track timeline.
  * Choosing an export format would open the result modal (a later screen).
  */
-const EditorScreen: FC<EditorScreenProps> = ({ onBack }) => {
+const EditorScreen: FC<EditorScreenProps> = ({ onBack, onNext }) => {
   const editor = useEditorState();
   const timeline = useTimelineEditor();
   // Desktop = the sidebar layout (>= md / 1024px, matching the `md:` CSS split).
@@ -34,9 +36,8 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack }) => {
 
   const handleBack = useCallback(() => onBack?.(), [onBack]);
 
-  const handleSelectFormat = useCallback((_format: ExportFormat) => {
-    // The result processing modal (a later screen) hooks in here next.
-  }, []);
+  // Choosing an export format advances to the processing step (Step 3).
+  const handleSelectFormat = useCallback((_format: ExportFormat) => onNext?.(), [onNext]);
 
   // Locate the selected clip so the sidebar can open it in edit state.
   const allClips = timeline.tracks.flatMap((track) => track.clips);
@@ -52,6 +53,7 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack }) => {
   const imageClips = allClips.filter((clip) => clip.kind === 'image' && onStage(clip));
   const shapeClips = allClips.filter((clip) => clip.kind === 'shape' && onStage(clip));
   const videoClips = allClips.filter((clip) => clip.kind === 'video' && onStage(clip));
+  const subtitleClips = allClips.filter((clip) => clip.kind === 'subtitle' && onStage(clip));
 
   // Shared add/edit handlers, used by both the desktop sidebar and the mobile sheet.
   const drawerHandlers = {
@@ -62,6 +64,8 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack }) => {
     onAddVideo: (tone: string, src?: string) => timeline.addVideoClip(tone, editor.playheadSec, src),
     onAddElement: (payload: { label?: string; icon?: IconType; category?: string }) =>
       timeline.addShapeClip(payload, editor.playheadSec),
+    onAddSubtitle: (label: string) => timeline.addSubtitleClip(label, editor.playheadSec),
+    onAddTts: (label: string) => timeline.addTtsClip(label, editor.playheadSec),
     onDeleteClip: timeline.deleteSelectedClip,
     onLayout: timeline.updateClipLayout,
     onEditText: timeline.updateClipLabel,
@@ -159,6 +163,7 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack }) => {
             textClips={textClips}
             imageClips={imageClips}
             shapeClips={shapeClips}
+            subtitleClips={subtitleClips}
             aspectRatio={editor.canvasAspect.ratio}
             selectedClipId={timeline.selectedClipId}
             onSelectClip={handleCanvasSelect}

@@ -11,6 +11,7 @@ import { ColorRow } from './ColorRow';
 import { RotationControl } from './RotationControl';
 import { COLORS, FadeAudioControl, Field, OpacityControl, SpeedControl, VolumeControl } from './settingsControls';
 import { TextSettings } from './TextSettings';
+import { TtsSettings } from './TtsSettings';
 
 type LayoutPatch = Partial<{ rotation: number; flipH: boolean; flipV: boolean; color: string }>;
 
@@ -23,7 +24,7 @@ interface ClipSettingsPanelProps {
 
 /** Edit-mode settings for the selected clip; controls vary by clip type. */
 export const ClipSettingsPanel: FC<ClipSettingsPanelProps> = ({ clip, onDelete, onLayout, onEditText }) => {
-  const hasAudio = clip.kind === 'video' || clip.kind === 'audio';
+  const hasAudio = clip.kind === 'video' || clip.kind === 'audio' || clip.kind === 'tts';
   const color = clip.color ?? COLORS[0];
 
   // Color applies to shapes only.
@@ -78,18 +79,25 @@ export const ClipSettingsPanel: FC<ClipSettingsPanelProps> = ({ clip, onDelete, 
   // Sections shown for this clip type, in order. Dividers sit between them:
   // the first and last dividers are 1px tall, the inner ones are 5px.
   const sections: ReactNode[] = [
-    hasAudio && <SpeedControl />,
-    hasAudio && <VolumeControl />,
-    hasAudio && <FadeAudioControl />,
-    clip.kind === 'text' && (
-      <TextSettings
+    clip.kind === 'tts' && (
+      <TtsSettings
         value={clip.label ?? ''}
         onChange={(text) => onEditText(clip.id, text)}
       />
     ),
+    hasAudio && <SpeedControl />,
+    hasAudio && <VolumeControl />,
+    hasAudio && <FadeAudioControl />,
+    (clip.kind === 'text' || clip.kind === 'subtitle') && (
+      <TextSettings
+        value={clip.label ?? ''}
+        onChange={(text) => onEditText(clip.id, text)}
+        textLabel={clip.kind === 'subtitle' ? 'Subtitle text' : 'Text'}
+      />
+    ),
     clip.kind === 'shape' && !!clip.icon && colorField,
-    clip.kind !== 'audio' && <OpacityControl />,
-    clip.kind !== 'audio' && (
+    clip.kind !== 'audio' && clip.kind !== 'tts' && <OpacityControl />,
+    clip.kind !== 'audio' && clip.kind !== 'tts' && (
       <RotationControl
         rotation={clip.rotation ?? 0}
         flipH={!!clip.flipH}

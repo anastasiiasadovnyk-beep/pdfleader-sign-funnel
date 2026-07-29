@@ -166,6 +166,14 @@ export const CanvasElement: FC<CanvasElementProps> = ({
     ) : (
       <div className={cn('h-24 w-40 rounded bg-gradient-to-br', clip.tone)} />
     );
+  } else if (clip.kind === 'subtitle') {
+    // Caption pill: dark translucent background, centered white text, wraps for
+    // long lines. Positioned bottom-center by default but freely movable.
+    content = (
+      <div className='max-w-[70cqw] cursor-move rounded-2 bg-text-primary/70 px-3 py-1 text-center text-lg font-[600] text-common-white [text-shadow:0_1px_4px_rgba(0,0,0,0.4)]'>
+        {clip.label || 'Subtitle'}
+      </div>
+    );
   } else if (clip.kind === 'shape') {
     const Icon = clip.icon;
     content = Icon ? (

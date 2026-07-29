@@ -31,7 +31,9 @@ export const CLIP_KIND_TO_TAB: Record<string, string> = {
   text: 'text',
   audio: 'audio',
   image: 'images',
-  shape: 'elements'
+  shape: 'elements',
+  subtitle: 'subtitles',
+  tts: 'tts'
 };
 
 /** Canvas tab — aspect-ratio presets and background swatches. */
@@ -84,7 +86,7 @@ export const TOTAL_DURATION_SEC = 204;
 /** Horizontal timeline scale at zoom = 1. */
 export const BASE_PX_PER_SECOND = 11;
 
-export type ClipKind = 'video' | 'text' | 'audio' | 'image' | 'shape';
+export type ClipKind = 'video' | 'text' | 'audio' | 'image' | 'shape' | 'subtitle' | 'tts';
 
 export interface TimelineClip {
   id: string;
@@ -121,7 +123,10 @@ export interface TimelineClip {
 /** New canvas elements start centered, unscaled and unrotated. */
 export const DEFAULT_CANVAS_LAYOUT = { xPct: 50, yPct: 50, scale: 1, rotation: 0 };
 
-export type TrackKind = 'audio' | 'video' | 'text' | 'image' | 'shape';
+/** Subtitles default to the bottom-center of the stage (with edge padding), then move freely. */
+export const SUBTITLE_DEFAULT_LAYOUT = { xPct: 50, yPct: 88, scale: 1, rotation: 0 };
+
+export type TrackKind = 'audio' | 'video' | 'text' | 'image' | 'shape' | 'subtitle' | 'tts';
 
 export interface TimelineTrack {
   id: string;
@@ -131,23 +136,26 @@ export interface TimelineTrack {
 
 /**
  * Fixed vertical stacking order, top → bottom on the timeline:
- * shape (top) · image · text · video · audio (bottom). Rows are rendered by
- * this order regardless of insertion order; video is always a single row.
+ * shape (top) · image · text · subtitle · video · tts · audio (bottom). Rows
+ * are rendered by this order regardless of insertion order; video is always a
+ * single row.
  */
 export const TRACK_ZONE_ORDER: Record<TrackKind, number> = {
   shape: 0,
   image: 1,
   text: 2,
-  video: 3,
-  audio: 4
+  subtitle: 3,
+  video: 4,
+  tts: 5,
+  audio: 6
 };
 
 /** Row heights: the video row is the tallest (44px); every other row is 32px. */
 export const VIDEO_ROW_HEIGHT_PX = 44;
 export const OVERLAY_ROW_HEIGHT_PX = 32;
 
-/** Max rows on the timeline: 1 audio + 1 video + up to 3 overlay (text/image/shape). */
-export const MAX_TIMELINE_ROWS = 5;
+/** Max rows: 1 audio + 1 tts + 1 video + up to 4 overlay (text/image/shape/subtitle). */
+export const MAX_TIMELINE_ROWS = 7;
 
 /**
  * Mock timeline. Video clips share a single video row (multiple clips per row);

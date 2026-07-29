@@ -1,5 +1,7 @@
 import { type FC, useState } from 'react';
 
+import 'material-symbols/rounded.css';
+
 import { MdOutlineAudiotrack, MdOutlineCategory, MdOutlineImage, MdOutlineTextFields } from 'react-icons/md';
 
 import { cn } from '@universe-forma/ui-pes';
@@ -147,6 +149,8 @@ const Clip: FC<ClipProps> = ({
       onDragOverRow(null);
       setDragging(false);
       if (!moved) return;
+      // Dropped on another row → move it there (packed at the row's end).
+      // Dropped in place → keep exactly where the user released it.
       const target = canReorder ? rowUnderPointer() : null;
       if (target) onMoveToTrack(clip.id, target);
     };
@@ -223,6 +227,50 @@ const Clip: FC<ClipProps> = ({
         {handles}
         <MdOutlineAudiotrack className='size-4 shrink-0' />
         <span className='truncate text-caption'>{clip.label}</span>
+      </div>
+    );
+  } else if (clip.kind === 'subtitle') {
+    // Light-red chip (base palette / red-light) with the Subtitles-tab glyph.
+    content = (
+      <div
+        onPointerDown={startMove}
+        className={cn(
+          'absolute inset-y-0 flex cursor-grab items-center gap-1.5 overflow-hidden rounded-2 bg-material-bp-red-light pr-3 pl-4 touch-none active:cursor-grabbing',
+          selectedRing
+        )}
+        style={{ left, width }}
+      >
+        {handles}
+        <span
+          aria-hidden='true'
+          className='material-symbols-rounded shrink-0 leading-none text-text-primary'
+          style={{ fontSize: 16, fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20" }}
+        >
+          subtitles
+        </span>
+        <span className='truncate text-caption text-text-primary'>{clip.label || 'Subtitle'}</span>
+      </div>
+    );
+  } else if (clip.kind === 'tts') {
+    // Light-blue chip (base palette / blue-light) with the TTS-tab glyph.
+    content = (
+      <div
+        onPointerDown={startMove}
+        className={cn(
+          'absolute inset-y-0 flex cursor-grab items-center gap-1.5 overflow-hidden rounded-2 bg-material-bp-blue-light pr-3 pl-4 touch-none active:cursor-grabbing',
+          selectedRing
+        )}
+        style={{ left, width }}
+      >
+        {handles}
+        <span
+          aria-hidden='true'
+          className='material-symbols-rounded shrink-0 leading-none text-text-primary'
+          style={{ fontSize: 16, fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20" }}
+        >
+          record_voice_over
+        </span>
+        <span className='truncate text-caption text-text-primary'>{clip.label || 'Text to speech'}</span>
       </div>
     );
   } else if (clip.kind === 'shape') {

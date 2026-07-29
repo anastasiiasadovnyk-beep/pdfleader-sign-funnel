@@ -20,6 +20,8 @@ interface ContentDrawerProps {
   onAddImage: (gradient: string, src?: string) => void;
   onAddVideo: (gradient: string, src?: string) => void;
   onAddElement: (payload: { label?: string; icon?: IconType; category?: string }) => void;
+  onAddSubtitle: (label: string) => void;
+  onAddTts: (label: string) => void;
   onDeleteClip: () => void;
   onLayout: (
     clipId: string,
@@ -48,6 +50,8 @@ export const ContentDrawer: FC<ContentDrawerProps> = ({
   onAddImage,
   onAddVideo,
   onAddElement,
+  onAddSubtitle,
+  onAddTts,
   onDeleteClip,
   onLayout,
   onEditText,
@@ -58,7 +62,12 @@ export const ContentDrawer: FC<ContentDrawerProps> = ({
   const tab = TOOL_TABS.find((t) => t.id === activeTabId);
   const isEditing = !!selectedClip && CLIP_KIND_TO_TAB[selectedClip.kind] === activeTabId;
   // Singular labels for the "Edit <Type>" title (plural tab names read wrong there).
-  const EDIT_LABELS: Record<string, string> = { images: 'Image', elements: 'Element' };
+  const EDIT_LABELS: Record<string, string> = {
+    images: 'Image',
+    elements: 'Element',
+    subtitles: 'subtitle',
+    tts: 'text to speech'
+  };
   const editLabel = EDIT_LABELS[activeTabId] ?? tab?.label;
 
   const renderBody = () => {
@@ -87,6 +96,8 @@ export const ContentDrawer: FC<ContentDrawerProps> = ({
           onAddImage={onAddImage}
           onAddVideo={onAddVideo}
           onAddElement={onAddElement}
+          onAddSubtitle={onAddSubtitle}
+          onAddTts={onAddTts}
         />
       );
     return <p className='text-body-2 text-text-secondary'>No {tab?.label.toLowerCase()} added yet.</p>;
