@@ -60,7 +60,7 @@ export const ContentDrawer: FC<ContentDrawerProps> = ({
   const tab = TOOL_TABS.find((t) => t.id === activeTabId);
   const isEditing = !!selectedClip && CLIP_KIND_TO_TAB[selectedClip.kind] === activeTabId;
   // Singular labels for the "Edit <Type>" title (plural tab names read wrong there).
-  const EDIT_LABELS: Record<string, string> = { images: 'Image', elements: 'Element' };
+  const EDIT_LABELS: Record<string, string> = { images: 'Image', elements: 'Element', subtitles: 'subtitle' };
   const editLabel = EDIT_LABELS[activeTabId] ?? tab?.label;
 
   const renderBody = () => {

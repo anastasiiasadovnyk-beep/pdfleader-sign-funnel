@@ -5,6 +5,7 @@ import type { IconType } from 'react-icons';
 import {
   DEFAULT_CANVAS_LAYOUT,
   MEDIA_ITEMS,
+  SUBTITLE_DEFAULT_LAYOUT,
   TIMELINE_TRACKS,
   TOTAL_DURATION_SEC,
   type MediaItem,
@@ -233,7 +234,13 @@ export const useTimelineEditor = () => {
       setFuture([]);
       setPresent((cur) => {
         const existing = cur.tracks.find((track) => track.kind === 'subtitle');
-        const clip = { id, kind: 'subtitle' as const, ...packedBounds(existing?.clips ?? [], 10), label };
+        const clip = {
+          id,
+          kind: 'subtitle' as const,
+          ...packedBounds(existing?.clips ?? [], 10),
+          label,
+          ...SUBTITLE_DEFAULT_LAYOUT
+        };
         const tracks = existing
           ? cur.tracks.map((track) => (track.kind === 'subtitle' ? { ...track, clips: [...track.clips, clip] } : track))
           : [...cur.tracks, { id: 'subtitle', kind: 'subtitle' as const, clips: [clip] }];

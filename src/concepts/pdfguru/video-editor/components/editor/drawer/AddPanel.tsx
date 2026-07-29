@@ -2,10 +2,12 @@ import { type FC, useState } from 'react';
 
 import type { IconType } from 'react-icons';
 import {
+  MdChevronRight,
   MdOutlineAudiotrack,
   MdOutlineCategory,
   MdOutlineFileUpload,
   MdOutlineImage,
+  MdOutlineKeyboard,
   MdOutlineVideocam,
   MdSearch
 } from 'react-icons/md';
@@ -124,29 +126,31 @@ export const AddPanel: FC<AddPanelProps> = ({
 }) => {
   if (tabId === 'subtitles') {
     return (
-      <div className='flex flex-col gap-4'>
+      <div className='flex flex-col gap-3'>
         <Button
-          variant='filled'
+          variant='filled-tonal'
           color='primary'
           size='md'
-          leftIcon={<MdOutlineFileUpload className='size-5' />}
-          onClick={() => onAddSubtitle('Add your subtitle text')}
+          className='w-full !justify-between'
+          leftIcon={<MdOutlineKeyboard className='size-5' />}
+          rightIcon={<MdChevronRight className='size-5' />}
+          onClick={() => onAddSubtitle('')}
         >
-          Auto subtitles
+          Transcribe manually
         </Button>
-        <div className='flex flex-col gap-2 border-t border-os-divider pt-4'>
-          <span className='text-body-emph text-text-primary'>Add manually</span>
-          <span className='text-body-2 text-text-secondary'>
-            Add a caption line to the timeline, then edit its text.
-          </span>
+        <div className='flex flex-col gap-1.5'>
           <Button
-            variant='filled-tonal'
+            variant='outlined'
             color='primary'
             size='md'
-            onClick={() => onAddSubtitle('Subtitle')}
+            className='w-full !justify-between'
+            leftIcon={<MdOutlineFileUpload className='size-5' />}
+            rightIcon={<MdChevronRight className='size-5' />}
+            onClick={() => onAddSubtitle('')}
           >
-            Add subtitle
+            Upload subtitles file
           </Button>
+          <span className='text-center text-caption text-text-secondary'>Supports: .srt, .ass, .lrc</span>
         </div>
       </div>
     );

@@ -85,11 +85,12 @@ export const ClipSettingsPanel: FC<ClipSettingsPanelProps> = ({ clip, onDelete, 
       <TextSettings
         value={clip.label ?? ''}
         onChange={(text) => onEditText(clip.id, text)}
+        textLabel={clip.kind === 'subtitle' ? 'Subtitle text' : 'Text'}
       />
     ),
     clip.kind === 'shape' && !!clip.icon && colorField,
-    clip.kind !== 'audio' && clip.kind !== 'subtitle' && <OpacityControl />,
-    clip.kind !== 'audio' && clip.kind !== 'subtitle' && (
+    clip.kind !== 'audio' && <OpacityControl />,
+    clip.kind !== 'audio' && (
       <RotationControl
         rotation={clip.rotation ?? 0}
         flipH={!!clip.flipH}

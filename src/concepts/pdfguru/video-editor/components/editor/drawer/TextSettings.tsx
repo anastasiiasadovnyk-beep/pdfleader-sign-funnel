@@ -64,10 +64,12 @@ interface TextSettingsProps {
   /** The selected text layer's content (controlled). */
   value?: string;
   onChange?: (text: string) => void;
+  /** Label for the content field ("Text" for a text layer, "Subtitle text" for a subtitle). */
+  textLabel?: string;
 }
 
 /** Text-layer settings: content, color, font, style and size. */
-export const TextSettings: FC<TextSettingsProps> = ({ value, onChange }) => {
+export const TextSettings: FC<TextSettingsProps> = ({ value, onChange, textLabel = 'Text' }) => {
   const [localText, setLocalText] = useState('Regular text');
   const text = value ?? localText;
   const setText = (next: string) => (onChange ? onChange(next) : setLocalText(next));
@@ -80,7 +82,7 @@ export const TextSettings: FC<TextSettingsProps> = ({ value, onChange }) => {
 
   return (
     <div className='flex flex-col gap-4'>
-      <Field label='Text'>
+      <Field label={textLabel}>
         <textarea
           value={text}
           rows={3}

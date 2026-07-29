@@ -248,7 +248,7 @@ const Clip: FC<ClipProps> = ({
         >
           subtitles
         </span>
-        <span className='truncate text-caption text-text-primary'>{clip.label ?? 'Subtitle'}</span>
+        <span className='truncate text-caption text-text-primary'>{clip.label || 'Subtitle'}</span>
       </div>
     );
   } else if (clip.kind === 'shape') {

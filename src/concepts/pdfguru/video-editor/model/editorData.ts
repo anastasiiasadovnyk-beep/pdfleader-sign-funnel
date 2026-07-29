@@ -122,6 +122,9 @@ export interface TimelineClip {
 /** New canvas elements start centered, unscaled and unrotated. */
 export const DEFAULT_CANVAS_LAYOUT = { xPct: 50, yPct: 50, scale: 1, rotation: 0 };
 
+/** Subtitles default to the bottom-center of the stage (with edge padding), then move freely. */
+export const SUBTITLE_DEFAULT_LAYOUT = { xPct: 50, yPct: 88, scale: 1, rotation: 0 };
+
 export type TrackKind = 'audio' | 'video' | 'text' | 'image' | 'shape' | 'subtitle';
 
 export interface TimelineTrack {

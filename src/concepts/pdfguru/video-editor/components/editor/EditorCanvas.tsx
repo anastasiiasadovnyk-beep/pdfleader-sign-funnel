@@ -32,6 +32,8 @@ interface EditorCanvasProps {
   imageClips: TimelineClip[];
   /** Shape / sticker / emoji layers rendered as selectable overlays. */
   shapeClips: TimelineClip[];
+  /** Subtitle captions rendered on top of everything, bottom-center of the stage. */
+  subtitleClips: TimelineClip[];
   /** Canvas aspect ratio, e.g. '16:9' — applied live to the preview stage. */
   aspectRatio: string;
   selectedClipId: string | null;
@@ -53,6 +55,7 @@ export const EditorCanvas: FC<EditorCanvasProps> = ({
   textClips,
   imageClips,
   shapeClips,
+  subtitleClips,
   aspectRatio,
   selectedClipId,
   onSelectClip,
@@ -60,8 +63,9 @@ export const EditorCanvas: FC<EditorCanvasProps> = ({
   onLayout
 }) => {
   const stageRef = useRef<HTMLDivElement>(null);
-  // Video sits at the bottom of the stack; overlays (image/text/shape) render on top.
-  const elements = [...videoClips, ...imageClips, ...textClips, ...shapeClips];
+  // Video sits at the bottom of the stack; overlays render on top, with
+  // subtitles last of all so captions sit above every other layer.
+  const elements = [...videoClips, ...imageClips, ...textClips, ...shapeClips, ...subtitleClips];
 
   // Largest box with the chosen ratio that fits the (padded) preview area, centered.
   // Uses container-query units so it contains for both landscape and portrait ratios.

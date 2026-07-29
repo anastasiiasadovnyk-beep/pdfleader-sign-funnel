@@ -52,6 +52,7 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack }) => {
   const imageClips = allClips.filter((clip) => clip.kind === 'image' && onStage(clip));
   const shapeClips = allClips.filter((clip) => clip.kind === 'shape' && onStage(clip));
   const videoClips = allClips.filter((clip) => clip.kind === 'video' && onStage(clip));
+  const subtitleClips = allClips.filter((clip) => clip.kind === 'subtitle' && onStage(clip));
 
   // Shared add/edit handlers, used by both the desktop sidebar and the mobile sheet.
   const drawerHandlers = {
@@ -160,6 +161,7 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack }) => {
             textClips={textClips}
             imageClips={imageClips}
             shapeClips={shapeClips}
+            subtitleClips={subtitleClips}
             aspectRatio={editor.canvasAspect.ratio}
             selectedClipId={timeline.selectedClipId}
             onSelectClip={handleCanvasSelect}
