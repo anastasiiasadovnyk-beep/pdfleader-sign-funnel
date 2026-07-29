@@ -14,10 +14,10 @@ interface ToolRailProps {
   className?: string;
 }
 
-/** Material Symbols glyph: 24px, weight 300, outlined (FILL 0) or filled (FILL 1). */
-const symbolStyle = (filled: boolean) => ({
-  fontSize: 24,
-  fontVariationSettings: `'FILL' ${filled ? 1 : 0}, 'wght' 300, 'GRAD' 0, 'opsz' 24`
+/** Material Symbols glyph: `size`px square, weight 300, outlined (FILL 0) or filled (FILL 1). */
+const symbolStyle = (filled: boolean, size: number) => ({
+  fontSize: size,
+  fontVariationSettings: `'FILL' ${filled ? 1 : 0}, 'wght' 300, 'GRAD' 0, 'opsz' ${size}`
 });
 
 /** Icon + label tool tabs (Media, Ratio, Text, …). Active tab tinted + filled. */
@@ -43,14 +43,14 @@ export const ToolRail: FC<ToolRailProps> = ({ activeTabId, onSelect, orientation
             aria-current={isActive}
             className={cn(
               'flex shrink-0 flex-col items-center justify-center gap-1 rounded-4 transition-colors',
-              horizontal ? 'h-14 w-16' : 'size-20',
+              horizontal ? 'h-14 w-16' : 'size-[68px]',
               isActive ? 'bg-secondary-opacity-8 text-secondary' : 'text-text-primary hover:bg-action-hover'
             )}
           >
             <span
               aria-hidden='true'
               className='material-symbols-rounded leading-none'
-              style={symbolStyle(isActive)}
+              style={symbolStyle(isActive, horizontal ? 24 : 28)}
             >
               {iconName}
             </span>
