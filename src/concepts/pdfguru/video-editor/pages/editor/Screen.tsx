@@ -1,9 +1,10 @@
-import { type FC, useCallback, useEffect } from 'react';
+import { type FC, useCallback, useEffect, useState } from 'react';
 
 import type { IconType } from 'react-icons';
 
 import { cn } from '@universe-forma/ui-pes';
 
+import { CompressionModal } from '../../components/editor/CompressionModal';
 import { ContentDrawer } from '../../components/editor/ContentDrawer';
 import { EditorCanvas } from '../../components/editor/EditorCanvas';
 import { EditorHeader } from '../../components/editor/EditorHeader';
@@ -14,7 +15,7 @@ import { useEditorState } from '../../hooks/useEditorState';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { useTimelineEditor } from '../../hooks/useTimelineEditor';
 import { CLIP_KIND_TO_TAB, type TimelineClip } from '../../model/editorData';
-import type { ExportFormat } from '../../model/constants';
+import { EXPORT_SOURCE_FILE, type ExportFormat } from '../../model/constants';
 
 interface EditorScreenProps {
   /** Returns to the landing page (provided by the flow host). */
@@ -34,9 +35,9 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack }) => {
 
   const handleBack = useCallback(() => onBack?.(), [onBack]);
 
-  const handleSelectFormat = useCallback((_format: ExportFormat) => {
-    // The result processing modal (a later screen) hooks in here next.
-  }, []);
+  // Choosing an export format opens the compression modal over the editor.
+  const [exportFormat, setExportFormat] = useState<ExportFormat | null>(null);
+  const handleSelectFormat = useCallback((format: ExportFormat) => setExportFormat(format), []);
 
   // Locate the selected clip so the sidebar can open it in edit state.
   const allClips = timeline.tracks.flatMap((track) => track.clips);
@@ -129,7 +130,7 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack }) => {
   }, [selectedClipId, deleteSelectedClip]);
 
   return (
-    <div className='flex h-screen w-full flex-col overflow-hidden bg-bg-light-grey'>
+    <div className='relative flex h-screen w-full flex-col overflow-hidden bg-bg-light-grey'>
       <EditorHeader
         projectName={editor.projectName}
         onProjectNameChange={editor.setProjectName}
@@ -224,6 +225,15 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack }) => {
         onSelect={handleMobileToolSelect}
         className='md:hidden'
       />
+
+      {/* Export: compression-in-progress modal over the editor. */}
+      {exportFormat && (
+        <CompressionModal
+          fileName={`${EXPORT_SOURCE_FILE.baseName}.${exportFormat.toLowerCase()}`}
+          fileSize={EXPORT_SOURCE_FILE.sizeLabel}
+          onClose={() => setExportFormat(null)}
+        />
+      )}
     </div>
   );
 };
