@@ -7,9 +7,11 @@ import {
   MdOutlineCategory,
   MdOutlineFileUpload,
   MdOutlineImage,
+  MdOutlineDesktopWindows,
   MdOutlineKeyboard,
   MdOutlineMic,
-  MdOutlineMonitor,
+  MdOutlinePictureInPictureAlt,
+  MdOutlineVideoCameraFront,
   MdOutlineVideocam,
   MdSearch
 } from 'react-icons/md';
@@ -42,17 +44,17 @@ const RECORD_OPTIONS: { title: string; description: string; Icon: IconType }[] =
   {
     title: 'Record screen and camera',
     description: 'Record your screen and computer camera at the same time, with or without microphone.',
-    Icon: MdOutlineMonitor
+    Icon: MdOutlinePictureInPictureAlt
   },
   {
     title: 'Record screen',
     description: 'Record with or without camera, microphone, and screen cast.',
-    Icon: MdOutlineMonitor
+    Icon: MdOutlineDesktopWindows
   },
   {
     title: 'Record camera',
     description: 'Record video and audio from your computer camera and microphone.',
-    Icon: MdOutlineMonitor
+    Icon: MdOutlineVideoCameraFront
   },
   {
     title: 'Record audio',
