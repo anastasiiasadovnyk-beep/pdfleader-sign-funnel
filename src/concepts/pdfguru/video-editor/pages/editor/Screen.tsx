@@ -1,10 +1,9 @@
-import { type FC, useCallback, useEffect, useState } from 'react';
+import { type FC, useCallback, useEffect } from 'react';
 
 import type { IconType } from 'react-icons';
 
 import { cn } from '@universe-forma/ui-pes';
 
-import { CompressionModal } from '../../components/editor/CompressionModal';
 import { ContentDrawer } from '../../components/editor/ContentDrawer';
 import { EditorCanvas } from '../../components/editor/EditorCanvas';
 import { EditorHeader } from '../../components/editor/EditorHeader';
@@ -15,11 +14,13 @@ import { useEditorState } from '../../hooks/useEditorState';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { useTimelineEditor } from '../../hooks/useTimelineEditor';
 import { CLIP_KIND_TO_TAB, type TimelineClip } from '../../model/editorData';
-import { EXPORT_SOURCE_FILE, type ExportFormat } from '../../model/constants';
+import type { ExportFormat } from '../../model/constants';
 
 interface EditorScreenProps {
   /** Returns to the landing page (provided by the flow host). */
   onBack?: () => void;
+  /** Advances to the processing step, e.g. after choosing an export format. */
+  onNext?: () => void;
 }
 
 /**
@@ -27,7 +28,7 @@ interface EditorScreenProps {
  * (tool rail + content drawer), the canvas/viewer and the multi-track timeline.
  * Choosing an export format would open the result modal (a later screen).
  */
-const EditorScreen: FC<EditorScreenProps> = ({ onBack }) => {
+const EditorScreen: FC<EditorScreenProps> = ({ onBack, onNext }) => {
   const editor = useEditorState();
   const timeline = useTimelineEditor();
   // Desktop = the sidebar layout (>= md / 1024px, matching the `md:` CSS split).
@@ -35,9 +36,8 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack }) => {
 
   const handleBack = useCallback(() => onBack?.(), [onBack]);
 
-  // Choosing an export format opens the compression modal over the editor.
-  const [exportFormat, setExportFormat] = useState<ExportFormat | null>(null);
-  const handleSelectFormat = useCallback((format: ExportFormat) => setExportFormat(format), []);
+  // Choosing an export format advances to the processing step (Step 3).
+  const handleSelectFormat = useCallback((_format: ExportFormat) => onNext?.(), [onNext]);
 
   // Locate the selected clip so the sidebar can open it in edit state.
   const allClips = timeline.tracks.flatMap((track) => track.clips);
@@ -130,7 +130,7 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack }) => {
   }, [selectedClipId, deleteSelectedClip]);
 
   return (
-    <div className='relative flex h-screen w-full flex-col overflow-hidden bg-bg-light-grey'>
+    <div className='flex h-screen w-full flex-col overflow-hidden bg-bg-light-grey'>
       <EditorHeader
         projectName={editor.projectName}
         onProjectNameChange={editor.setProjectName}
@@ -225,15 +225,6 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack }) => {
         onSelect={handleMobileToolSelect}
         className='md:hidden'
       />
-
-      {/* Export: compression-in-progress modal over the editor. */}
-      {exportFormat && (
-        <CompressionModal
-          fileName={`${EXPORT_SOURCE_FILE.baseName}.${exportFormat.toLowerCase()}`}
-          fileSize={EXPORT_SOURCE_FILE.sizeLabel}
-          onClose={() => setExportFormat(null)}
-        />
-      )}
     </div>
   );
 };

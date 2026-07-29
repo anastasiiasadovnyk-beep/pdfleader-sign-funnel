@@ -38,6 +38,3 @@ export const VIDEO_FILE_INPUT_ACCEPT = 'video/*,.mp4,.mov,.avi,.mkv,.webm,.wmv';
 export const EXPORT_FORMATS = ['MP4', 'MOV', 'WebM', 'GIF'] as const;
 
 export type ExportFormat = (typeof EXPORT_FORMATS)[number];
-
-/** Mock source file shown by the compression modal (no real upload in the concept). */
-export const EXPORT_SOURCE_FILE = { baseName: 'Forma_Short_b_1920x1080', sizeLabel: '980.1 MB' } as const;
