@@ -8,13 +8,40 @@ import {
   TIMELINE_TRACKS,
   TOTAL_DURATION_SEC,
   type MediaItem,
+  type TimelineClip,
   type TimelineTrack
 } from '../model/editorData';
 
-/** A new clip starts at the playhead and runs `defaultDuration`, clamped to the timeline. */
-const clipBounds = (startSec: number, defaultDuration: number) => {
-  const start = Math.max(0, Math.min(startSec, TOTAL_DURATION_SEC - 2));
-  return { startSec: start, endSec: Math.min(start + defaultDuration, TOTAL_DURATION_SEC) };
+/** Shortest a clip can be, in seconds (matches the timeline's trim minimum). */
+const MIN_CLIP_SEC = 2;
+
+/** Where a clip appended to a row starts: at the end of the last clip, or 0 if the row is free. */
+const appendStart = (clips: TimelineClip[]) => (clips.length ? Math.max(...clips.map((clip) => clip.endSec)) : 0);
+
+/**
+ * Bounds for a clip dropped into a row: packed right after the last clip (no
+ * gap), or at 0 when the row is empty. Clamped to the timeline length.
+ */
+const packedBounds = (clips: TimelineClip[], duration: number) => {
+  const start = Math.min(appendStart(clips), Math.max(0, TOTAL_DURATION_SEC - MIN_CLIP_SEC));
+  return { startSec: start, endSec: Math.min(start + duration, TOTAL_DURATION_SEC) };
+};
+
+/**
+ * Lay a row's clips end-to-end starting at 0, in start-time order — removing any
+ * gaps and overlaps so each clip begins exactly where the previous one ends.
+ */
+const packSequential = (clips: TimelineClip[]): TimelineClip[] => {
+  let cursor = 0;
+  return [...clips]
+    .sort((a, b) => a.startSec - b.startSec)
+    .map((clip) => {
+      const duration = clip.endSec - clip.startSec;
+      const startSec = Math.min(cursor, Math.max(0, TOTAL_DURATION_SEC - duration));
+      const endSec = Math.min(startSec + duration, TOTAL_DURATION_SEC);
+      cursor = endSec;
+      return { ...clip, startSec, endSec };
+    });
 };
 
 /** A full snapshot of the editable state, used as one undo/redo step. */
@@ -61,22 +88,22 @@ export const useTimelineEditor = () => {
 
   /** Add a new text layer (from a preset) to the text track and select it. */
   const addTextClip = useCallback(
-    (label: string, startSec: number, styleClassName?: string) => {
+    (label: string, _startSec: number, styleClassName?: string) => {
       textSeq.current += 1;
       const id = `text-${textSeq.current}`;
-      const clip = {
-        id,
-        kind: 'text' as const,
-        ...clipBounds(startSec, 20),
-        label,
-        styleClassName,
-        ...DEFAULT_CANVAS_LAYOUT
-      };
       setPast((prev) => [...prev, present]);
       setFuture([]);
       setPresent((cur) => {
-        const hasTextTrack = cur.tracks.some((track) => track.kind === 'text');
-        const tracks = hasTextTrack
+        const existing = cur.tracks.find((track) => track.kind === 'text');
+        const clip = {
+          id,
+          kind: 'text' as const,
+          ...packedBounds(existing?.clips ?? [], 20),
+          label,
+          styleClassName,
+          ...DEFAULT_CANVAS_LAYOUT
+        };
+        const tracks = existing
           ? cur.tracks.map((track) => (track.kind === 'text' ? { ...track, clips: [...track.clips, clip] } : track))
           : [...cur.tracks, { id: 'text', kind: 'text' as const, clips: [clip] }];
         return { ...cur, tracks };
@@ -97,12 +124,15 @@ export const useTimelineEditor = () => {
       if (!source || !target || source.id === target.id) return cur;
       const clip = source.clips.find((c) => c.id === clipId);
       if (!clip || clip.kind === 'audio' || target.kind === 'audio') return cur;
+      // Drop the clip at the end of the target row (packed after the last clip,
+      // or at 0 when the row is empty), keeping its own duration.
+      const moved = { ...clip, ...packedBounds(target.clips, clip.endSec - clip.startSec) };
       return {
         ...cur,
         tracks: cur.tracks
           .map((track) => {
             if (track.id === source.id) return { ...track, clips: track.clips.filter((c) => c.id !== clipId) };
-            if (track.id === targetTrackId) return { ...track, clips: [...track.clips, clip] };
+            if (track.id === targetTrackId) return { ...track, clips: [...track.clips, moved] };
             return track;
           })
           .filter((track) => track.clips.length > 0)
@@ -110,17 +140,38 @@ export const useTimelineEditor = () => {
     });
   }, []);
 
+  /**
+   * Reflow a row after a within-row drag: lay its clips end-to-end from 0 in
+   * start-time order, so there are no gaps or overlaps and each clip begins
+   * where the previous one ends. The drag already recorded the undo point.
+   */
+  const packTrack = useCallback((trackId: string) => {
+    setPresent((cur) => ({
+      ...cur,
+      tracks: cur.tracks.map((track) =>
+        track.id === trackId ? { ...track, clips: packSequential(track.clips) } : track
+      )
+    }));
+  }, []);
+
   /** Add an image layer (stock gradient, or an uploaded file via `src`) and select it. */
   const addImageClip = useCallback(
-    (tone: string, startSec: number, src?: string) => {
+    (tone: string, _startSec: number, src?: string) => {
       imageSeq.current += 1;
       const id = `image-${imageSeq.current}`;
-      const clip = { id, kind: 'image' as const, ...clipBounds(startSec, 20), tone, src, ...DEFAULT_CANVAS_LAYOUT };
       setPast((prev) => [...prev, present]);
       setFuture([]);
       setPresent((cur) => {
-        const hasImageTrack = cur.tracks.some((track) => track.kind === 'image');
-        const tracks = hasImageTrack
+        const existing = cur.tracks.find((track) => track.kind === 'image');
+        const clip = {
+          id,
+          kind: 'image' as const,
+          ...packedBounds(existing?.clips ?? [], 20),
+          tone,
+          src,
+          ...DEFAULT_CANVAS_LAYOUT
+        };
+        const tracks = existing
           ? cur.tracks.map((track) => (track.kind === 'image' ? { ...track, clips: [...track.clips, clip] } : track))
           : [...cur.tracks, { id: 'image', kind: 'image' as const, clips: [clip] }];
         return { ...cur, tracks };
@@ -132,15 +183,22 @@ export const useTimelineEditor = () => {
 
   /** Add a video clip (stock gradient, or an uploaded file via `src`) and select it. */
   const addVideoClip = useCallback(
-    (tone: string, startSec: number, src?: string) => {
+    (tone: string, _startSec: number, src?: string) => {
       videoSeq.current += 1;
       const id = `video-${videoSeq.current}`;
-      const clip = { id, kind: 'video' as const, ...clipBounds(startSec, 20), tone, src, ...DEFAULT_CANVAS_LAYOUT };
       setPast((prev) => [...prev, present]);
       setFuture([]);
       setPresent((cur) => {
-        const hasVideoTrack = cur.tracks.some((track) => track.kind === 'video');
-        const tracks = hasVideoTrack
+        const existing = cur.tracks.find((track) => track.kind === 'video');
+        const clip = {
+          id,
+          kind: 'video' as const,
+          ...packedBounds(existing?.clips ?? [], 20),
+          tone,
+          src,
+          ...DEFAULT_CANVAS_LAYOUT
+        };
+        const tracks = existing
           ? cur.tracks.map((track) => (track.kind === 'video' ? { ...track, clips: [...track.clips, clip] } : track))
           : [{ id: 'video', kind: 'video' as const, clips: [clip] }, ...cur.tracks];
         return { ...cur, tracks };
@@ -152,15 +210,21 @@ export const useTimelineEditor = () => {
 
   /** Add a shape / sticker / emoji element to the (top) shape row and select it. */
   const addShapeClip = useCallback(
-    (payload: { label?: string; icon?: IconType; category?: string }, startSec: number) => {
+    (payload: { label?: string; icon?: IconType; category?: string }, _startSec: number) => {
       shapeSeq.current += 1;
       const id = `shape-${shapeSeq.current}`;
-      const clip = { id, kind: 'shape' as const, ...clipBounds(startSec, 20), ...payload, ...DEFAULT_CANVAS_LAYOUT };
       setPast((prev) => [...prev, present]);
       setFuture([]);
       setPresent((cur) => {
-        const hasShapeTrack = cur.tracks.some((track) => track.kind === 'shape');
-        const tracks = hasShapeTrack
+        const existing = cur.tracks.find((track) => track.kind === 'shape');
+        const clip = {
+          id,
+          kind: 'shape' as const,
+          ...packedBounds(existing?.clips ?? [], 20),
+          ...payload,
+          ...DEFAULT_CANVAS_LAYOUT
+        };
+        const tracks = existing
           ? cur.tracks.map((track) => (track.kind === 'shape' ? { ...track, clips: [...track.clips, clip] } : track))
           : [...cur.tracks, { id: 'shape', kind: 'shape' as const, clips: [clip] }];
         return { ...cur, tracks };
@@ -172,15 +236,15 @@ export const useTimelineEditor = () => {
 
   /** Add a stock audio track to the (bottom) audio row and select it. */
   const addAudioClip = useCallback(
-    (label: string, startSec: number) => {
+    (label: string, _startSec: number) => {
       audioSeq.current += 1;
       const id = `audio-${audioSeq.current}`;
-      const clip = { id, kind: 'audio' as const, ...clipBounds(startSec, 30), label };
       setPast((prev) => [...prev, present]);
       setFuture([]);
       setPresent((cur) => {
-        const hasAudioTrack = cur.tracks.some((track) => track.kind === 'audio');
-        const tracks = hasAudioTrack
+        const existing = cur.tracks.find((track) => track.kind === 'audio');
+        const clip = { id, kind: 'audio' as const, ...packedBounds(existing?.clips ?? [], 30), label };
+        const tracks = existing
           ? cur.tracks.map((track) => (track.kind === 'audio' ? { ...track, clips: [...track.clips, clip] } : track))
           : [...cur.tracks, { id: 'audio', kind: 'audio' as const, clips: [clip] }];
         return { ...cur, tracks };
@@ -301,6 +365,7 @@ export const useTimelineEditor = () => {
       addVideoClip,
       addShapeClip,
       moveClipToTrack,
+      packTrack,
       updateClipLabel,
       updateClipLayout,
       deleteSelectedClip,
@@ -321,6 +386,7 @@ export const useTimelineEditor = () => {
       addVideoClip,
       addShapeClip,
       moveClipToTrack,
+      packTrack,
       updateClipLabel,
       updateClipLayout,
       deleteSelectedClip,

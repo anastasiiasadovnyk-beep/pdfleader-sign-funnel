@@ -79,6 +79,7 @@ interface ClipProps {
   onBeginChange: () => void;
   onUpdate: (trackId: string, clipId: string, startSec: number, endSec: number) => void;
   onMoveToTrack: (clipId: string, targetTrackId: string) => void;
+  onPackTrack: (trackId: string) => void;
   onDragOverRow: (targetTrackId: string | null) => void;
 }
 
@@ -91,6 +92,7 @@ const Clip: FC<ClipProps> = ({
   onBeginChange,
   onUpdate,
   onMoveToTrack,
+  onPackTrack,
   onDragOverRow
 }) => {
   const { startSec, endSec } = clip;
@@ -148,7 +150,10 @@ const Clip: FC<ClipProps> = ({
       setDragging(false);
       if (!moved) return;
       const target = canReorder ? rowUnderPointer() : null;
+      // Dropped on another row → move + pack there; dropped in place → pack this
+      // row so clips stay gap-free (start where the previous clip ends).
       if (target) onMoveToTrack(clip.id, target);
+      else onPackTrack(trackId);
     };
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
@@ -275,6 +280,7 @@ interface TimelineTracksProps {
   onBeginChange: () => void;
   onUpdateClip: (trackId: string, clipId: string, startSec: number, endSec: number) => void;
   onMoveClipToTrack: (clipId: string, targetTrackId: string) => void;
+  onPackTrack: (trackId: string) => void;
 }
 
 /** Default layout: 4 rows (two 44px, two 32px) shown even when mostly empty. */
@@ -288,7 +294,8 @@ export const TimelineTracks: FC<TimelineTracksProps> = ({
   onSelectClip,
   onBeginChange,
   onUpdateClip,
-  onMoveClipToTrack
+  onMoveClipToTrack,
+  onPackTrack
 }) => {
   const [dropTargetId, setDropTargetId] = useState<string | null>(null);
 
@@ -324,6 +331,7 @@ export const TimelineTracks: FC<TimelineTracksProps> = ({
             onBeginChange={onBeginChange}
             onUpdate={onUpdateClip}
             onMoveToTrack={onMoveClipToTrack}
+            onPackTrack={onPackTrack}
             onDragOverRow={setDropTargetId}
           />
         ))}
