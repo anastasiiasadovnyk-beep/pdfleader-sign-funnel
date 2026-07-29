@@ -27,23 +27,6 @@ const packedBounds = (clips: TimelineClip[], duration: number) => {
   return { startSec: start, endSec: Math.min(start + duration, TOTAL_DURATION_SEC) };
 };
 
-/**
- * Lay a row's clips end-to-end starting at 0, in start-time order — removing any
- * gaps and overlaps so each clip begins exactly where the previous one ends.
- */
-const packSequential = (clips: TimelineClip[]): TimelineClip[] => {
-  let cursor = 0;
-  return [...clips]
-    .sort((a, b) => a.startSec - b.startSec)
-    .map((clip) => {
-      const duration = clip.endSec - clip.startSec;
-      const startSec = Math.min(cursor, Math.max(0, TOTAL_DURATION_SEC - duration));
-      const endSec = Math.min(startSec + duration, TOTAL_DURATION_SEC);
-      cursor = endSec;
-      return { ...clip, startSec, endSec };
-    });
-};
-
 /** A full snapshot of the editable state, used as one undo/redo step. */
 interface EditorSnapshot {
   tracks: TimelineTrack[];
@@ -138,20 +121,6 @@ export const useTimelineEditor = () => {
           .filter((track) => track.clips.length > 0)
       };
     });
-  }, []);
-
-  /**
-   * Reflow a row after a within-row drag: lay its clips end-to-end from 0 in
-   * start-time order, so there are no gaps or overlaps and each clip begins
-   * where the previous one ends. The drag already recorded the undo point.
-   */
-  const packTrack = useCallback((trackId: string) => {
-    setPresent((cur) => ({
-      ...cur,
-      tracks: cur.tracks.map((track) =>
-        track.id === trackId ? { ...track, clips: packSequential(track.clips) } : track
-      )
-    }));
   }, []);
 
   /** Add an image layer (stock gradient, or an uploaded file via `src`) and select it. */
@@ -365,7 +334,6 @@ export const useTimelineEditor = () => {
       addVideoClip,
       addShapeClip,
       moveClipToTrack,
-      packTrack,
       updateClipLabel,
       updateClipLayout,
       deleteSelectedClip,
@@ -386,7 +354,6 @@ export const useTimelineEditor = () => {
       addVideoClip,
       addShapeClip,
       moveClipToTrack,
-      packTrack,
       updateClipLabel,
       updateClipLayout,
       deleteSelectedClip,

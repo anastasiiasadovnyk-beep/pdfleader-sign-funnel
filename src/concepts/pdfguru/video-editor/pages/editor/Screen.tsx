@@ -178,7 +178,6 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack }) => {
             onBeginChange={timeline.beginChange}
             onUpdateClip={timeline.updateClip}
             onMoveClipToTrack={timeline.moveClipToTrack}
-            onPackTrack={timeline.packTrack}
             onDeleteClip={timeline.deleteSelectedClip}
             onSplitClip={timeline.splitSelectedClip}
             onEditSelected={handleEditSelected}

@@ -18,7 +18,6 @@ interface TimelineProps {
   onBeginChange: () => void;
   onUpdateClip: (trackId: string, clipId: string, startSec: number, endSec: number) => void;
   onMoveClipToTrack: (clipId: string, targetTrackId: string) => void;
-  onPackTrack: (trackId: string) => void;
   onDeleteClip: () => void;
   onSplitClip: (atSec: number) => void;
   /** Mobile: open the selected clip's tab in edit state (from the header Edit button). */
@@ -44,7 +43,6 @@ export const Timeline: FC<TimelineProps> = ({
   onBeginChange,
   onUpdateClip,
   onMoveClipToTrack,
-  onPackTrack,
   onDeleteClip,
   onSplitClip,
   onEditSelected
@@ -125,7 +123,6 @@ export const Timeline: FC<TimelineProps> = ({
             onBeginChange={onBeginChange}
             onUpdateClip={onUpdateClip}
             onMoveClipToTrack={onMoveClipToTrack}
-            onPackTrack={onPackTrack}
           />
 
           {/* Draggable playhead spanning the ruler + visible layers area */}
