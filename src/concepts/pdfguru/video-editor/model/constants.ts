@@ -1,4 +1,6 @@
-import { APP_PATH_PREFIX } from 'ts/constants/page-links';
+// Self-contained concept: the real app prefixes routes with `/app`. Kept local
+// so the funnel has no dependency on the host app's route constants.
+const APP_PATH_PREFIX = '/app';
 
 /**
  * Static configuration for the Video Editor funnel.

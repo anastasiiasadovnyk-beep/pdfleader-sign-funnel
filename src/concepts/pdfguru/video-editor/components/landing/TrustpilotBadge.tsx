@@ -1,6 +1,6 @@
 import { type FC } from 'react';
 
-import starsUrl from 'components/Trustpilot/assets/stars.svg';
+import starsUrl from '../../assets/trustpilot-stars.svg';
 
 /** Compact Trustpilot rating shown under the hero card ("Great · 4½ stars · N reviews"). */
 export const TrustpilotBadge: FC = () => (

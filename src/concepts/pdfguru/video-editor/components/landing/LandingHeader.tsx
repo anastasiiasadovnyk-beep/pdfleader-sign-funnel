@@ -2,7 +2,7 @@ import { type FC } from 'react';
 
 import { Button } from '@universe-forma/ui-pes';
 
-import logoUrl from 'assets/img/new-logo-pdf-guru.svg';
+import logoUrl from '../../assets/new-logo-pdf-guru.svg';
 
 /** Top navigation shown above the hero. Matches the marketing header layout. */
 const NAV_LINKS = ['Edit & Sign PDF', 'Convert PDF', 'Forms', 'AI PDF Summarizer'] as const;
