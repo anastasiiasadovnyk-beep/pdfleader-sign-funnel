@@ -1,0 +1,65 @@
+{
+  "source": "designed-from-scratch",
+  "note": "Fidelity contract for upload-error-modal. No Figma reference — designed against ui-pes tokens and the pdfguru compress-modal precedent. `npm run fidelity pdfguru upload-error-modal` renders each scenario × frame on /preview and asserts every region (data-ff) against these.",
+  "frames": {
+    "desktop": { "w": 1440, "h": 1024 },
+    "mobile": { "w": 390, "h": 844 }
+  },
+  "scenarios": ["default", "corrupted", "tooLarge"],
+  "regions": [
+    {
+      "ff": "container",
+      "frame": "desktop",
+      "component": "div (Dialog DS gap — ui-pes ships no Dialog)",
+      "layout": { "flow": "column" },
+      "assert": { "width": 480, "borderRadius": 20 }
+    },
+    {
+      "ff": "container",
+      "frame": "mobile",
+      "component": "div (Dialog DS gap)",
+      "layout": { "flow": "column" },
+      "assert": { "flexDirection": "column" }
+    },
+    {
+      "ff": "error-badge",
+      "assert": { "width": 64, "height": 64, "borderRadius": 999 }
+    },
+    {
+      "ff": "title",
+      "frame": "desktop",
+      "assert": { "fontFamily": "Nunito Sans", "fontSize": 28, "fontWeight": 800 }
+    },
+    {
+      "ff": "title",
+      "frame": "mobile",
+      "assert": { "fontFamily": "Nunito Sans", "fontSize": 22, "fontWeight": 800 }
+    },
+    {
+      "ff": "description",
+      "assert": { "fontFamily": "Nunito Sans", "fontSize": 16, "fontWeight": 400 }
+    },
+    {
+      "ff": "footer",
+      "frame": "desktop",
+      "layout": { "flow": "horizontal", "align": "row-reverse" },
+      "assert": { "flexDirection": "row-reverse" }
+    },
+    {
+      "ff": "footer",
+      "frame": "mobile",
+      "layout": { "flow": "stacked" },
+      "assert": { "flexDirection": "column" }
+    },
+    {
+      "ff": "cta-retry",
+      "component": "Button (color=secondary, size=md)",
+      "assert": { "fontFamily": "Nunito Sans", "fontSize": 16, "fontWeight": 700 }
+    },
+    {
+      "ff": "cta-cancel",
+      "component": "Button (variant=text, color=action, size=md)",
+      "assert": { "fontFamily": "Nunito Sans", "fontSize": 16, "fontWeight": 700 }
+    }
+  ]
+}
