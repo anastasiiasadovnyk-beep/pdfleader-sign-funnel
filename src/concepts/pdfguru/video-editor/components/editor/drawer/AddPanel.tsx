@@ -8,6 +8,8 @@ import {
   MdOutlineFileUpload,
   MdOutlineImage,
   MdOutlineKeyboard,
+  MdOutlineMic,
+  MdOutlineMonitor,
   MdOutlineVideocam,
   MdSearch
 } from 'react-icons/md';
@@ -34,6 +36,30 @@ const UPLOAD_LABELS: Record<string, string> = {
   audio: 'Upload audio',
   images: 'Upload image'
 };
+
+/** Record tab — the recording sources offered, in the order shown. */
+const RECORD_OPTIONS: { title: string; description: string; Icon: IconType }[] = [
+  {
+    title: 'Record screen and camera',
+    description: 'Record your screen and computer camera at the same time, with or without microphone.',
+    Icon: MdOutlineMonitor
+  },
+  {
+    title: 'Record screen',
+    description: 'Record with or without camera, microphone, and screen cast.',
+    Icon: MdOutlineMonitor
+  },
+  {
+    title: 'Record camera',
+    description: 'Record video and audio from your computer camera and microphone.',
+    Icon: MdOutlineMonitor
+  },
+  {
+    title: 'Record audio',
+    description: 'Record audio from your computer microphone.',
+    Icon: MdOutlineMic
+  }
+];
 
 const STOCK_GRADIENTS = [
   'from-slate-300 to-slate-400',
@@ -126,6 +152,27 @@ export const AddPanel: FC<AddPanelProps> = ({
   onAddSubtitle,
   onAddTts
 }) => {
+  if (tabId === 'record') {
+    return (
+      <div className='flex flex-col gap-4'>
+        {RECORD_OPTIONS.map(({ title, description, Icon }) => (
+          <button
+            key={title}
+            type='button'
+            className='flex w-full items-center gap-4 rounded-4 border border-os-divider p-4 text-left transition-colors hover:bg-action-hover'
+          >
+            <Icon className='size-6 shrink-0 text-text-primary' />
+            <span className='flex min-w-0 flex-1 flex-col gap-1'>
+              <span className='text-body-emph text-text-primary'>{title}</span>
+              <span className='text-body-2 text-text-secondary'>{description}</span>
+            </span>
+            <MdChevronRight className='size-5 shrink-0 text-text-secondary' />
+          </button>
+        ))}
+      </div>
+    );
+  }
+
   if (tabId === 'tts') {
     return (
       <div className='flex flex-col gap-3'>
