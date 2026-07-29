@@ -113,6 +113,7 @@ interface AddPanelProps {
   onAddVideo: (gradient: string, src?: string) => void;
   onAddElement: (payload: { label?: string; icon?: IconType; category?: string }) => void;
   onAddSubtitle: (label: string) => void;
+  onAddTts: (label: string) => void;
 }
 
 export const AddPanel: FC<AddPanelProps> = ({
@@ -122,8 +123,41 @@ export const AddPanel: FC<AddPanelProps> = ({
   onAddImage,
   onAddVideo,
   onAddElement,
-  onAddSubtitle
+  onAddSubtitle,
+  onAddTts
 }) => {
+  if (tabId === 'tts') {
+    return (
+      <div className='flex flex-col gap-3'>
+        <Button
+          variant='filled-tonal'
+          color='primary'
+          size='md'
+          className='w-full !justify-between'
+          leftIcon={<MdOutlineKeyboard className='size-5' />}
+          rightIcon={<MdChevronRight className='size-5' />}
+          onClick={() => onAddTts('')}
+        >
+          Input manually
+        </Button>
+        <div className='flex flex-col gap-1.5'>
+          <Button
+            variant='outlined'
+            color='primary'
+            size='md'
+            className='w-full !justify-between'
+            leftIcon={<MdOutlineFileUpload className='size-5' />}
+            rightIcon={<MdChevronRight className='size-5' />}
+            onClick={() => onAddTts('')}
+          >
+            Upload file
+          </Button>
+          <span className='text-center text-caption text-text-secondary'>Supports: .pdf, .docx, .txt</span>
+        </div>
+      </div>
+    );
+  }
+
   if (tabId === 'subtitles') {
     return (
       <div className='flex flex-col gap-3'>

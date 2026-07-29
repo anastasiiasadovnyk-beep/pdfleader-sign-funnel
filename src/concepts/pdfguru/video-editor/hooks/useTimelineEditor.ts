@@ -53,6 +53,7 @@ export const useTimelineEditor = () => {
   const videoSeq = useRef(0);
   const shapeSeq = useRef(0);
   const subtitleSeq = useRef(0);
+  const ttsSeq = useRef(0);
 
   /** Record the current state as an undo point. Call once at the start of an edit. */
   const beginChange = useCallback(() => {
@@ -251,6 +252,26 @@ export const useTimelineEditor = () => {
     [present]
   );
 
+  /** Add a text-to-speech clip to its (own) row and select it. Audio-like. */
+  const addTtsClip = useCallback(
+    (label: string, _startSec: number) => {
+      ttsSeq.current += 1;
+      const id = `tts-${ttsSeq.current}`;
+      setPast((prev) => [...prev, present]);
+      setFuture([]);
+      setPresent((cur) => {
+        const existing = cur.tracks.find((track) => track.kind === 'tts');
+        const clip = { id, kind: 'tts' as const, ...packedBounds(existing?.clips ?? [], 20), label };
+        const tracks = existing
+          ? cur.tracks.map((track) => (track.kind === 'tts' ? { ...track, clips: [...track.clips, clip] } : track))
+          : [...cur.tracks, { id: 'tts', kind: 'tts' as const, clips: [clip] }];
+        return { ...cur, tracks };
+      });
+      setSelectedClipId(id);
+    },
+    [present]
+  );
+
   /** Update a clip's canvas layout (position / scale / rotation). */
   const updateClipLayout = useCallback(
     (
@@ -362,6 +383,7 @@ export const useTimelineEditor = () => {
       addVideoClip,
       addShapeClip,
       addSubtitleClip,
+      addTtsClip,
       moveClipToTrack,
       updateClipLabel,
       updateClipLayout,
@@ -383,6 +405,7 @@ export const useTimelineEditor = () => {
       addVideoClip,
       addShapeClip,
       addSubtitleClip,
+      addTtsClip,
       moveClipToTrack,
       updateClipLabel,
       updateClipLayout,
