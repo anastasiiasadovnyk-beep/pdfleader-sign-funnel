@@ -36,20 +36,13 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack, onNext }) => {
   const isDesktop = useMediaQuery('min-md');
 
   // The editor "boots" for ~5s after the upload: show the skeleton, then reveal
-  // the editor with the uploaded video selected and the Video tab in edit state.
+  // the editor. The uploaded video is the only timeline/canvas layer, and the
+  // Video tab opens in its default (Add) state — nothing is selected.
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 5000);
     return () => clearTimeout(timer);
   }, []);
-  useEffect(() => {
-    if (isLoading) return;
-    const firstVideo = timeline.tracks.flatMap((track) => track.clips).find((clip) => clip.kind === 'video');
-    if (firstVideo) {
-      editor.setActiveTabId('video');
-      timeline.selectClip(firstVideo.id);
-    }
-  }, [isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleBack = useCallback(() => onBack?.(), [onBack]);
 
