@@ -1,6 +1,6 @@
 import { type FC } from 'react';
 
-import { MdArrowBack, MdCheck, MdOutlineEdit, MdOutlineShare, MdReply } from 'react-icons/md';
+import { MdCheck, MdOutlineEdit, MdOutlineShare, MdReply } from 'react-icons/md';
 
 import { Button, IconButton, Input } from '@universe-forma/ui-pes';
 
@@ -37,22 +37,12 @@ export const EditorHeader: FC<EditorHeaderProps> = ({
   canRedo
 }) => (
   <header className='flex w-full items-center justify-between gap-4 px-4 py-3'>
-    {/* Left — desktop: back button + project name */}
+    {/* Left — desktop: logo + project name */}
     <div className='hidden min-w-0 flex-1 items-center gap-3 md:flex'>
-      <IconButton
-        variant='text'
-        color='action'
-        size='md'
-        onClick={onBack}
-        aria-label='Back'
-      >
-        <MdArrowBack className='size-6' />
-      </IconButton>
-
       <img
         src={logoMark}
         alt='PDF Guru'
-        className='mr-1 size-9 shrink-0'
+        className='size-9 shrink-0'
       />
 
       <Input
