@@ -34,7 +34,7 @@ const LandingScreen: FC<LandingScreenProps> = ({ onNext }) => {
             <header className='flex flex-col items-center gap-4 text-center'>
               <h1 className='text-desktop-title-2 text-text-primary sm:text-desktop-title-1'>Edit Video Online</h1>
               <p className='max-w-2xl text-desktop-title-6 font-normal text-text-secondary'>
-                Reduce video file size while maintaining quality. Download as MP4 or WebM.
+                Create and fine-tune your videos effortlessly. Export in MP4, WebM, or any format you need.
               </p>
             </header>
 
@@ -45,6 +45,25 @@ const LandingScreen: FC<LandingScreenProps> = ({ onNext }) => {
             <div className='mt-10'>
               <TrustpilotBadge />
             </div>
+
+            {/* Legal footer */}
+            <p className='mt-auto max-w-md pt-10 text-center text-caption text-text-secondary'>
+              By uploading a file, you agree to our{' '}
+              <a
+                href='#'
+                className='text-primary underline'
+              >
+                Terms of Use
+              </a>{' '}
+              and acknowledge our{' '}
+              <a
+                href='#'
+                className='text-primary underline'
+              >
+                Privacy Policy
+              </a>
+              .
+            </p>
           </main>
         </div>
       </div>

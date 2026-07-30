@@ -73,12 +73,8 @@ export interface MediaItem {
   text?: string;
 }
 
-/** Mock contents of the Media drawer ("Your media:"). */
-export const MEDIA_ITEMS: MediaItem[] = [
-  { id: 'm1', type: 'video', name: 'user_video_kcdn…' },
-  { id: 'm2', type: 'video', name: 'user_video_kcdn…' },
-  { id: 't1', type: 'text', text: 'Hello world!' }
-];
+/** Mock contents of the Media drawer ("Your media:") — the uploaded video. */
+export const MEDIA_ITEMS: MediaItem[] = [{ id: 'm1', type: 'video', name: 'my_video.mp4' }];
 
 /** Total project duration in seconds (03:24 in the reference). */
 export const TOTAL_DURATION_SEC = 204;
@@ -158,8 +154,9 @@ export const OVERLAY_ROW_HEIGHT_PX = 32;
 export const MAX_TIMELINE_ROWS = 7;
 
 /**
- * Mock timeline. Video clips share a single video row (multiple clips per row);
- * text / image / shape elements each get their own overlay row above the video.
+ * Initial timeline — a single video layer: the clip the user uploaded on the
+ * landing page. Everything else (text, audio, subtitles, …) is added from the
+ * tool rail.
  */
 export const TIMELINE_TRACKS: TimelineTrack[] = [
   {
@@ -167,28 +164,14 @@ export const TIMELINE_TRACKS: TimelineTrack[] = [
     kind: 'video',
     clips: [
       {
-        id: 'c1',
+        id: 'uploaded',
         kind: 'video',
         startSec: 0,
-        endSec: 15,
+        endSec: 60,
         tone: 'from-sky-200 to-indigo-200',
         mediaId: 'm1',
         ...DEFAULT_CANVAS_LAYOUT
-      },
-      {
-        id: 'c3',
-        kind: 'video',
-        startSec: 16,
-        endSec: 31,
-        tone: 'from-amber-200 to-orange-300',
-        mediaId: 'm2',
-        ...DEFAULT_CANVAS_LAYOUT
       }
     ]
-  },
-  {
-    id: 'text',
-    kind: 'text',
-    clips: [{ id: 'c2', kind: 'text', startSec: 18, endSec: 40, label: 'Hello world!', mediaId: 't1' }]
   }
 ];
