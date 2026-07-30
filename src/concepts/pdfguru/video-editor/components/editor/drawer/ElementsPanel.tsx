@@ -37,7 +37,7 @@ const Section: FC<{ title: string; divided?: boolean; children: ReactNode }> = (
     <Button
       variant='text'
       color='action'
-      size='ms'
+      size='sm'
       className='self-center'
       rightIcon={<MdKeyboardArrowDown className='size-5' />}
     >
