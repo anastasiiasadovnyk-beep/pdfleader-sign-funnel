@@ -36,13 +36,13 @@ export const EditorHeader: FC<EditorHeaderProps> = ({
   canUndo,
   canRedo
 }) => (
-  <header className='flex w-full items-center justify-between gap-4 px-4 py-3'>
+  <header className='flex w-full items-center justify-between gap-4 px-4 py-3 md:h-[72px] md:py-0'>
     {/* Left — desktop: logo + project name */}
     <div className='hidden min-w-0 flex-1 items-center gap-3 md:flex'>
       <img
         src={logoMark}
         alt='PDF Guru'
-        className='size-9 shrink-0'
+        className='size-[55px] shrink-0'
       />
 
       <Input
