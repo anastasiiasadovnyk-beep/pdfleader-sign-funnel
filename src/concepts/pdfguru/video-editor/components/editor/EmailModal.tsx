@@ -7,6 +7,8 @@ import { Button, Input } from '@universe-forma/ui-pes';
 interface EmailModalProps {
   /** Close control (top-right X). */
   onClose?: () => void;
+  /** Valid email submitted — advances the funnel to the plan step. */
+  onSubmit?: () => void;
 }
 
 const EMAIL_RE = /\S+@\S+\.\S+/;
@@ -17,7 +19,7 @@ const EMAIL_RE = /\S+@\S+\.\S+/;
  * desktop is a centered ≤592px card. Self-contained — no i18n, A/B copy,
  * email suggestions or real submission (concept).
  */
-export const EmailModal: FC<EmailModalProps> = ({ onClose }) => {
+export const EmailModal: FC<EmailModalProps> = ({ onClose, onSubmit }) => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +29,8 @@ export const EmailModal: FC<EmailModalProps> = ({ onClose }) => {
       return;
     }
     setError(null);
-    // Concept: no real account/download.
+    // Concept: no real account/download — advance to the plan step.
+    onSubmit?.();
   };
 
   return (
