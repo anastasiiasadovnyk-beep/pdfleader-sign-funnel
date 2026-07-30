@@ -70,6 +70,12 @@ export const ContentDrawer: FC<ContentDrawerProps> = ({
     tts: 'text to speech'
   };
   const editLabel = EDIT_LABELS[activeTabId] ?? tab?.label;
+  // File-backed elements (video / image / audio) show their source file name
+  // next to the "Edit <Type>" title.
+  const fileName =
+    isEditing && selectedClip && ['video', 'image', 'audio'].includes(selectedClip.kind)
+      ? selectedClip.fileName
+      : undefined;
 
   const renderBody = () => {
     if (isEditing && selectedClip)
@@ -128,7 +134,12 @@ export const ContentDrawer: FC<ContentDrawerProps> = ({
               <MdChevronLeft className='size-5' />
             </IconButton>
           )}
-          <h2 className='text-subtitle-emph text-text-primary'>{isEditing ? `Edit ${editLabel}` : tab?.label}</h2>
+          <h2 className='shrink-0 text-subtitle-emph text-text-primary'>
+            {isEditing ? `Edit ${editLabel}` : tab?.label}
+          </h2>
+          {fileName && (
+            <span className='min-w-0 flex-1 truncate text-caption text-text-disabled'>{fileName}</span>
+          )}
         </div>
       </div>
       {/* Scrollable content */}

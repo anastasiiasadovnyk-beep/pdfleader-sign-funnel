@@ -8,6 +8,8 @@ import {
   SUBTITLE_DEFAULT_LAYOUT,
   TIMELINE_TRACKS,
   TOTAL_DURATION_SEC,
+  isCanvasClip,
+  layerRank,
   type MediaItem,
   type TimelineClip,
   type TimelineTrack
@@ -141,6 +143,7 @@ export const useTimelineEditor = () => {
           ...packedBounds(existing?.clips ?? [], 20),
           tone,
           src,
+          fileName: `image_${imageSeq.current}.png`,
           ...DEFAULT_CANVAS_LAYOUT
         };
         const tracks = existing
@@ -168,6 +171,7 @@ export const useTimelineEditor = () => {
           ...packedBounds(existing?.clips ?? [], 20),
           tone,
           src,
+          fileName: `video_${videoSeq.current}.mp4`,
           ...DEFAULT_CANVAS_LAYOUT
         };
         const tracks = existing
@@ -215,7 +219,13 @@ export const useTimelineEditor = () => {
       setFuture([]);
       setPresent((cur) => {
         const existing = cur.tracks.find((track) => track.kind === 'audio');
-        const clip = { id, kind: 'audio' as const, ...packedBounds(existing?.clips ?? [], 30), label };
+        const clip = {
+          id,
+          kind: 'audio' as const,
+          ...packedBounds(existing?.clips ?? [], 30),
+          label,
+          fileName: `${label}.mp3`
+        };
         const tracks = existing
           ? cur.tracks.map((track) => (track.kind === 'audio' ? { ...track, clips: [...track.clips, clip] } : track))
           : [...cur.tracks, { id: 'audio', kind: 'audio' as const, clips: [clip] }];
@@ -284,8 +294,6 @@ export const useTimelineEditor = () => {
         flipH: boolean;
         flipV: boolean;
         color: string;
-        cropW: number;
-        cropH: number;
       }>
     ) => {
       setPresent((cur) => ({
@@ -353,6 +361,41 @@ export const useTimelineEditor = () => {
     [selectedClipId, present]
   );
 
+  /**
+   * Re-layer the selected canvas element by one step: dir = +1 brings it forward
+   * (nearer the viewer), dir = -1 sends it backward. Works off the same stacking
+   * order the canvas renders (explicit `z`, else the kind default), reassigning
+   * `z` across all canvas clips so the new order sticks. No-op for audio / TTS.
+   */
+  const reorderSelected = useCallback(
+    (dir: 1 | -1) => {
+      if (!selectedClipId) return;
+      const all = present.tracks.flatMap((track) => track.clips);
+      const order = all
+        .filter((clip) => isCanvasClip(clip.kind))
+        .sort((a, b) => layerRank(a) - layerRank(b) || all.indexOf(a) - all.indexOf(b));
+      const index = order.findIndex((clip) => clip.id === selectedClipId);
+      const target = index + dir;
+      if (index < 0 || target < 0 || target >= order.length) return;
+
+      [order[index], order[target]] = [order[target], order[index]];
+      const zById = new Map(order.map((clip, position) => [clip.id, position]));
+      setPast((prev) => [...prev, present]);
+      setFuture([]);
+      setPresent((cur) => ({
+        ...cur,
+        tracks: cur.tracks.map((track) => ({
+          ...track,
+          clips: track.clips.map((clip) => (zById.has(clip.id) ? { ...clip, z: zById.get(clip.id) } : clip))
+        }))
+      }));
+    },
+    [selectedClipId, present]
+  );
+
+  const bringForward = useCallback(() => reorderSelected(1), [reorderSelected]);
+  const sendBackward = useCallback(() => reorderSelected(-1), [reorderSelected]);
+
   const undo = useCallback(() => {
     if (!past.length) return;
     setFuture((f) => [present, ...f]);
@@ -389,6 +432,8 @@ export const useTimelineEditor = () => {
       updateClipLayout,
       deleteSelectedClip,
       splitSelectedClip,
+      bringForward,
+      sendBackward,
       undo,
       redo,
       canUndo: past.length > 0,
@@ -411,6 +456,8 @@ export const useTimelineEditor = () => {
       updateClipLayout,
       deleteSelectedClip,
       splitSelectedClip,
+      bringForward,
+      sendBackward,
       undo,
       redo,
       past.length,

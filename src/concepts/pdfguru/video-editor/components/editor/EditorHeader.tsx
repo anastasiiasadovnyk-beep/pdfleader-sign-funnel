@@ -4,7 +4,7 @@ import 'material-symbols/rounded.css';
 
 import { MdCheck, MdOutlineEdit, MdOutlineShare } from 'react-icons/md';
 
-import { Button, IconButton, Input } from '@universe-forma/ui-pes';
+import { Button, IconButton, Input, cn } from '@universe-forma/ui-pes';
 
 import logoMark from '../../assets/pdf-guru-mark.svg';
 
@@ -77,6 +77,7 @@ export const EditorHeader: FC<EditorHeaderProps> = ({
         aria-label='Undo'
         disabled={!canUndo}
         onClick={onUndo}
+        className={cn(canUndo && '!text-text-primary')}
       >
         <span
           aria-hidden='true'
@@ -93,6 +94,7 @@ export const EditorHeader: FC<EditorHeaderProps> = ({
         aria-label='Redo'
         disabled={!canRedo}
         onClick={onRedo}
+        className={cn(canRedo && '!text-text-primary')}
       >
         <span
           aria-hidden='true'

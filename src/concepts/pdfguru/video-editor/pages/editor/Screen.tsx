@@ -197,6 +197,8 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack, onNext }) => {
             onMoveClipToTrack={timeline.moveClipToTrack}
             onDeleteClip={timeline.deleteSelectedClip}
             onSplitClip={timeline.splitSelectedClip}
+            onBringForward={timeline.bringForward}
+            onSendBackward={timeline.sendBackward}
             onEditSelected={handleEditSelected}
           />
 

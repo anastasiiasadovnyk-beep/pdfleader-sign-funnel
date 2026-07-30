@@ -2,18 +2,17 @@ import { type CSSProperties, type FC, useEffect, useRef, useState } from 'react'
 
 import 'material-symbols/rounded.css';
 
-import { IconButton } from '@universe-forma/ui-pes';
+import { IconButton, cn } from '@universe-forma/ui-pes';
 
-import type { TimelineClip } from '../../model/editorData';
+import { layerRank, type TimelineClip } from '../../model/editorData';
 import { CanvasElement } from './CanvasElement';
+import { Tooltip } from './Tooltip';
 
 type LayoutPatch = Partial<{
   xPct: number;
   yPct: number;
   scale: number;
   rotation: number;
-  cropW: number;
-  cropH: number;
 }>;
 
 /** Material Symbols undo/redo glyphs: 24px, weight 300. */
@@ -66,7 +65,12 @@ export const EditorCanvas: FC<EditorCanvasProps> = ({
   const viewportRef = useRef<HTMLDivElement>(null);
   // Video sits at the bottom of the stack; overlays render on top, with
   // subtitles last of all so captions sit above every other layer.
-  const elements = [...videoClips, ...imageClips, ...textClips, ...shapeClips, ...subtitleClips];
+  // Stacking: default kind order (video → image → text → shape → subtitle), then
+  // any per-clip `z` overrides from Bring forward / Send backward. Stable sort
+  // keeps the kind grouping for ties.
+  const elements = [...videoClips, ...imageClips, ...textClips, ...shapeClips, ...subtitleClips].sort(
+    (a, b) => layerRank(a) - layerRank(b)
+  );
 
   // Zoom the preview: desktop = trackpad pinch (wheel + ctrlKey), mobile =
   // two-finger pinch. Clamped to 0.5×–3×.
@@ -134,38 +138,44 @@ export const EditorCanvas: FC<EditorCanvasProps> = ({
       className='relative flex flex-1 touch-none items-center justify-center overflow-hidden bg-bg-light-grey p-4 [container-type:size] md:p-8'
     >
       <div className='absolute top-4 right-4 z-10 hidden items-center gap-1 rounded-3 bg-bg-white-bg p-1 shadow-sm md:flex'>
-        <IconButton
-          variant='text'
-          color='action'
-          size='sm'
-          aria-label='Undo'
-          disabled={!canUndo}
-          onClick={onUndo}
-        >
-          <span
-            aria-hidden='true'
-            className='material-symbols-rounded leading-none'
-            style={ICON_STYLE}
+        <Tooltip label='Undo'>
+          <IconButton
+            variant='text'
+            color='action'
+            size='sm'
+            aria-label='Undo'
+            disabled={!canUndo}
+            onClick={onUndo}
+            className={cn(canUndo && '!text-text-primary')}
           >
-            undo
-          </span>
-        </IconButton>
-        <IconButton
-          variant='text'
-          color='action'
-          size='sm'
-          aria-label='Redo'
-          disabled={!canRedo}
-          onClick={onRedo}
-        >
-          <span
-            aria-hidden='true'
-            className='material-symbols-rounded leading-none'
-            style={ICON_STYLE}
+            <span
+              aria-hidden='true'
+              className='material-symbols-rounded leading-none'
+              style={ICON_STYLE}
+            >
+              undo
+            </span>
+          </IconButton>
+        </Tooltip>
+        <Tooltip label='Redo'>
+          <IconButton
+            variant='text'
+            color='action'
+            size='sm'
+            aria-label='Redo'
+            disabled={!canRedo}
+            onClick={onRedo}
+            className={cn(canRedo && '!text-text-primary')}
           >
-            redo
-          </span>
-        </IconButton>
+            <span
+              aria-hidden='true'
+              className='material-symbols-rounded leading-none'
+              style={ICON_STYLE}
+            >
+              redo
+            </span>
+          </IconButton>
+        </Tooltip>
       </div>
 
       {/* Output frame — resizes live to the selected aspect ratio, staying centered. */}

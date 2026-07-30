@@ -20,6 +20,9 @@ interface TimelineProps {
   onMoveClipToTrack: (clipId: string, targetTrackId: string) => void;
   onDeleteClip: () => void;
   onSplitClip: (atSec: number) => void;
+  /** Layer the selected element up / down (bring forward / send backward). */
+  onBringForward: () => void;
+  onSendBackward: () => void;
   /** Mobile: open the selected clip's tab in edit state (from the header Edit button). */
   onEditSelected: () => void;
 }
@@ -45,6 +48,8 @@ export const Timeline: FC<TimelineProps> = ({
   onMoveClipToTrack,
   onDeleteClip,
   onSplitClip,
+  onBringForward,
+  onSendBackward,
   onEditSelected
 }) => {
   const pxPerSec = BASE_PX_PER_SECOND * zoom;
@@ -92,6 +97,9 @@ export const Timeline: FC<TimelineProps> = ({
         onSplit={() => onSplitClip(playheadSec)}
         canDelete={selectedClipId !== null}
         onDelete={onDeleteClip}
+        canReorder={selectedClipId !== null}
+        onBringForward={onBringForward}
+        onSendBackward={onSendBackward}
         onEdit={onEditSelected}
       />
 

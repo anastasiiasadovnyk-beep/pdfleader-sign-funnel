@@ -109,11 +109,12 @@ export interface TimelineClip {
   rotation?: number;
   flipH?: boolean;
   flipV?: boolean;
-  /** Video crop: fraction (0–1) of the fitted frame kept along each axis. */
-  cropW?: number;
-  cropH?: number;
   /** Object URL of an uploaded image/video, rendered on the canvas when set. */
   src?: string;
+  /** Source file name shown next to the "Edit <Type>" title (video/image/audio). */
+  fileName?: string;
+  /** Canvas stacking override (higher = nearer the viewer). Unset = default kind order. */
+  z?: number;
 }
 
 /** New canvas elements start centered, unscaled and unrotated. */
@@ -131,20 +132,23 @@ export interface TimelineTrack {
 }
 
 /**
- * Fixed vertical stacking order, top → bottom on the timeline:
- * shape (top) · image · text · subtitle · video · tts · audio (bottom). Rows
- * are rendered by this order regardless of insertion order; video is always a
- * single row.
+ * Default canvas stacking of the on-screen element kinds (bottom → top), used
+ * when a clip has no explicit `z`. "Bring forward"/"Send backward" assign `z`
+ * relative to these to reorder layers. Audio / TTS don't render on the canvas.
  */
-export const TRACK_ZONE_ORDER: Record<TrackKind, number> = {
-  shape: 0,
+export const CANVAS_LAYER_ORDER: Partial<Record<ClipKind, number>> = {
+  video: 0,
   image: 1,
   text: 2,
-  subtitle: 3,
-  video: 4,
-  tts: 5,
-  audio: 6
+  shape: 3,
+  subtitle: 4
 };
+
+/** A clip that renders on the canvas (and can be layered). */
+export const isCanvasClip = (kind: ClipKind) => kind in CANVAS_LAYER_ORDER;
+
+/** Effective canvas stacking rank of a clip (explicit `z`, else its kind default). */
+export const layerRank = (clip: TimelineClip) => clip.z ?? CANVAS_LAYER_ORDER[clip.kind] ?? 0;
 
 /** Row heights: the video row is the tallest (44px); every other row is 32px. */
 export const VIDEO_ROW_HEIGHT_PX = 44;
@@ -170,6 +174,7 @@ export const TIMELINE_TRACKS: TimelineTrack[] = [
         endSec: 60,
         tone: 'from-sky-200 to-indigo-200',
         mediaId: 'm1',
+        fileName: 'my_video.mp4',
         ...DEFAULT_CANVAS_LAYOUT
       }
     ]
