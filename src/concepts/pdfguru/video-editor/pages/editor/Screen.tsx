@@ -1,4 +1,4 @@
-import { type FC, useCallback, useEffect } from 'react';
+import { type FC, useCallback, useEffect, useState } from 'react';
 
 import type { IconType } from 'react-icons';
 
@@ -8,6 +8,7 @@ import { ContentDrawer } from '../../components/editor/ContentDrawer';
 import { EditorCanvas } from '../../components/editor/EditorCanvas';
 import { EditorHeader } from '../../components/editor/EditorHeader';
 import { EditorSidebar } from '../../components/editor/EditorSidebar';
+import { EditorSkeleton } from '../../components/editor/EditorSkeleton';
 import { ToolRail } from '../../components/editor/ToolRail';
 import { Timeline } from '../../components/editor/timeline/Timeline';
 import { useEditorState } from '../../hooks/useEditorState';
@@ -33,6 +34,22 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack, onNext }) => {
   const timeline = useTimelineEditor();
   // Desktop = the sidebar layout (>= md / 1024px, matching the `md:` CSS split).
   const isDesktop = useMediaQuery('min-md');
+
+  // The editor "boots" for ~5s after the upload: show the skeleton, then reveal
+  // the editor with the uploaded video selected and the Video tab in edit state.
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 5000);
+    return () => clearTimeout(timer);
+  }, []);
+  useEffect(() => {
+    if (isLoading) return;
+    const firstVideo = timeline.tracks.flatMap((track) => track.clips).find((clip) => clip.kind === 'video');
+    if (firstVideo) {
+      editor.setActiveTabId('video');
+      timeline.selectClip(firstVideo.id);
+    }
+  }, [isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleBack = useCallback(() => onBack?.(), [onBack]);
 
@@ -128,6 +145,8 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack, onNext }) => {
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [selectedClipId, deleteSelectedClip]);
+
+  if (isLoading) return <EditorSkeleton />;
 
   return (
     <div className='flex h-screen w-full flex-col overflow-hidden bg-bg-light-grey'>
