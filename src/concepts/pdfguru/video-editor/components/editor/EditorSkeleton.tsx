@@ -2,8 +2,8 @@ import { type FC } from 'react';
 
 import { cn } from '@universe-forma/ui-pes';
 
-import logoMark from '../../assets/pdf-guru.svg';
-import logoWordmark from '../../assets/new-logo-pdf-guru.svg';
+import logoMobile from '../../assets/pdf-guru.svg';
+import logoDesktop from '../../assets/pdf-guru-mark.svg';
 
 /** A pulsing grey placeholder block. */
 const Skel: FC<{ className?: string }> = ({ className }) => (
@@ -19,15 +19,15 @@ const Skel: FC<{ className?: string }> = ({ className }) => (
 export const EditorSkeleton: FC = () => (
   <div className='flex h-screen w-full flex-col overflow-hidden bg-bg-light-grey'>
     {/* Header */}
-    <header className='flex items-center justify-between gap-4 px-4 py-3'>
+    <header className='flex items-center justify-between gap-4 px-4 py-3 md:h-[72px] md:py-0'>
       <div className='flex min-w-0 items-center gap-3'>
         <img
-          src={logoWordmark}
+          src={logoDesktop}
           alt='PDF Guru'
-          className='hidden h-7 w-auto md:block'
+          className='hidden size-[55px] shrink-0 md:block'
         />
         <img
-          src={logoMark}
+          src={logoMobile}
           alt='PDF Guru'
           className='size-8 md:hidden'
         />
