@@ -51,18 +51,13 @@ export const RenderingCard: FC<RenderingCardProps> = ({ onBack }) => {
 
       {/* Animation area — desktop: left column; mobile: fixed 192px band on top,
           full width. Lavender panel matches the animation's own background. */}
-      <div className='h-[192px] w-full shrink-0 overflow-hidden bg-primary-opacity-8 md:h-auto md:w-[430px]'>
-        {/* Mobile: cover the full-width band edge-to-edge. */}
-        <LottiePlayer
-          animationData={audioToVideoAnimation}
-          preserveAspectRatio='xMidYMid slice'
-          className='h-full w-full md:hidden'
-        />
-        {/* Desktop: fit within the left column. */}
+      <div className='flex h-[192px] w-full shrink-0 items-center justify-center overflow-hidden bg-primary-opacity-8 md:h-auto md:w-[430px]'>
+        {/* The whole illustration stays visible (contain); the lavender panel
+            fills the rest of the full-width band, matching the Figma. */}
         <LottiePlayer
           animationData={audioToVideoAnimation}
           preserveAspectRatio='xMidYMid meet'
-          className='hidden h-full w-full md:block'
+          className='h-full w-full'
         />
       </div>
 
