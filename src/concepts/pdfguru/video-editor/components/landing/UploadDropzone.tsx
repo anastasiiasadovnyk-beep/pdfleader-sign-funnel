@@ -49,7 +49,7 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({ onFileAccepted }) => {
           />
 
           <div className='flex flex-col gap-1'>
-            <p className='text-desktop-title-6 text-text-primary'>Drop file here to start</p>
+            <p className='text-desktop-title-6 text-text-primary'>Upload file here to start</p>
             <p className='text-caption text-text-secondary'>
               Size up {MAX_UPLOAD_SIZE_MB} MB&nbsp;&nbsp;·&nbsp;&nbsp;{SUPPORTED_VIDEO_FORMATS.join(', ')}
             </p>
@@ -59,6 +59,7 @@ export const UploadDropzone: FC<UploadDropzoneProps> = ({ onFileAccepted }) => {
             variant='filled'
             color='primary'
             size='lg'
+            className='w-full sm:w-auto'
             leftIcon={<MdOutlineFileUpload className='size-5' />}
             onClick={(event) => {
               // The zone itself opens the picker; stop the outer handler firing twice.

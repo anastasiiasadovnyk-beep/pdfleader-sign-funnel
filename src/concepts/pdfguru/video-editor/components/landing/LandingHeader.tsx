@@ -1,6 +1,8 @@
 import { type FC } from 'react';
 
-import { Button } from '@universe-forma/ui-pes';
+import { MdMenu } from 'react-icons/md';
+
+import { Button, IconButton } from '@universe-forma/ui-pes';
 
 import logoUrl from '../../assets/new-logo-pdf-guru.svg';
 
@@ -27,12 +29,23 @@ export const LandingHeader: FC = () => (
       ))}
     </nav>
 
+    {/* Desktop: Log in. Mobile: a hamburger menu. */}
     <Button
       variant='outlined'
       color='action'
       size='md'
+      className='hidden md:inline-flex'
     >
       Log in
     </Button>
+    <IconButton
+      variant='text'
+      color='action'
+      size='md'
+      aria-label='Menu'
+      className='md:hidden'
+    >
+      <MdMenu className='size-6' />
+    </IconButton>
   </header>
 );
