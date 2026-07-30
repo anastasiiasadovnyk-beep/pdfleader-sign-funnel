@@ -1,4 +1,4 @@
-import { type FC, useState } from 'react';
+import { type FC, useLayoutEffect, useRef, useState } from 'react';
 
 import 'material-symbols/rounded.css';
 
@@ -341,6 +341,33 @@ export const TimelineTracks: FC<TimelineTracksProps> = ({
 }) => {
   const [dropTargetId, setDropTargetId] = useState<string | null>(null);
 
+  // FLIP animation: when a row changes vertical position (e.g. Bring forward /
+  // Send backward reorders the rows), slide it from its old spot to the new one
+  // via a CSS transform transition, so the move is visible instead of a jump.
+  const listRef = useRef<HTMLDivElement>(null);
+  const rowTops = useRef<Map<string, number>>(new Map());
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const rows = Array.from(list.querySelectorAll<HTMLElement>('[data-track-id]'));
+    const seen = new Set<string>();
+    rows.forEach((row) => {
+      const id = row.dataset.trackId ?? '';
+      seen.add(id);
+      const top = row.offsetTop;
+      const prev = rowTops.current.get(id);
+      rowTops.current.set(id, top);
+      if (prev === undefined || prev === top) return;
+      row.style.transition = 'none';
+      row.style.transform = `translateY(${prev - top}px)`;
+      requestAnimationFrame(() => {
+        row.style.transition = 'transform 220ms ease';
+        row.style.transform = '';
+      });
+    });
+    for (const id of rowTops.current.keys()) if (!seen.has(id)) rowTops.current.delete(id);
+  });
+
   // A track's row position follows its front-most canvas clip's stacking rank, so
   // Bring forward / Send backward move the selected element's row up / down here
   // in step with the canvas. TTS then audio stay pinned at the bottom.
@@ -391,7 +418,10 @@ export const TimelineTracks: FC<TimelineTracksProps> = ({
   };
 
   return (
-    <div className='flex flex-col gap-1 py-3'>
+    <div
+      ref={listRef}
+      className='flex flex-col gap-1 py-3'
+    >
       {nonAudio.map(renderTrackRow)}
       {placeholders.map((placeholder) => (
         <div
