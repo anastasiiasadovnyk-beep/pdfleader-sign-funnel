@@ -5,6 +5,7 @@ import { MdArrowBack, MdCheck, MdOutlineEdit, MdOutlineShare, MdReply } from 're
 import { Button, IconButton, Input } from '@universe-forma/ui-pes';
 
 import logoUrl from '../../assets/pdf-guru.svg';
+import logoWordmark from '../../assets/pdf-guru-logo.svg';
 
 import type { ExportFormat } from '../../model/constants';
 import { DownloadMenu } from './DownloadMenu';
@@ -47,6 +48,12 @@ export const EditorHeader: FC<EditorHeaderProps> = ({
       >
         <MdArrowBack className='size-6' />
       </IconButton>
+
+      <img
+        src={logoWordmark}
+        alt='PDF Guru'
+        className='mr-1 h-7 w-auto shrink-0'
+      />
 
       <Input
         size='dense'
