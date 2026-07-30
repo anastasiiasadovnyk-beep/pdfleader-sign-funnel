@@ -127,11 +127,11 @@ export const Timeline: FC<TimelineProps> = ({
 
           {/* Draggable playhead spanning the ruler + visible layers area */}
           <div
-            className='pointer-events-none absolute top-0 bottom-0 z-[5] w-px bg-secondary'
+            className='pointer-events-none absolute top-0 bottom-0 z-[5] w-px bg-material-red-400'
             style={{ left: playheadSec * pxPerSec }}
           >
             <span
-              className='pointer-events-auto sticky top-0 -ml-[7px] block size-3.5 -translate-y-0.5 cursor-ew-resize rounded-t-sm rounded-b-2 bg-secondary'
+              className='pointer-events-auto sticky top-0 -ml-[7px] block size-3.5 -translate-y-0.5 cursor-ew-resize rounded-t-sm rounded-b-2 bg-material-red-400'
               onPointerDown={startScrub}
             />
           </div>
