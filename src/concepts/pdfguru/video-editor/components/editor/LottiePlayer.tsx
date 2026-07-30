@@ -7,10 +7,17 @@ interface LottiePlayerProps {
   animationData: unknown;
   className?: string;
   loop?: boolean;
+  /** SVG preserveAspectRatio — e.g. 'xMidYMid meet' (fit) or '…slice' (cover). */
+  preserveAspectRatio?: string;
 }
 
 /** Renders a Lottie animation (SVG) that fits its container, looping by default. */
-export const LottiePlayer: FC<LottiePlayerProps> = ({ animationData, className, loop = true }) => {
+export const LottiePlayer: FC<LottiePlayerProps> = ({
+  animationData,
+  className,
+  loop = true,
+  preserveAspectRatio = 'xMidYMid meet'
+}) => {
   const container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -20,10 +27,11 @@ export const LottiePlayer: FC<LottiePlayerProps> = ({ animationData, className, 
       renderer: 'svg',
       autoplay: true,
       loop,
-      animationData
+      animationData,
+      rendererSettings: { preserveAspectRatio }
     });
     return () => animation.destroy();
-  }, [animationData, loop]);
+  }, [animationData, loop, preserveAspectRatio]);
 
   return (
     <div

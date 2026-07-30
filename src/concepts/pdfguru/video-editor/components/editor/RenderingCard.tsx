@@ -74,10 +74,18 @@ export const RenderingCard: FC = () => {
     <div className='flex h-full w-full flex-col overflow-hidden bg-bg-white-bg md:h-auto md:max-w-[816px] md:flex-row md:rounded-6 md:shadow-[0_20px_60px_-15px_rgba(33,33,52,0.25)]'>
       {/* Animation area — mobile: a fixed 192px band on top, full width;
           desktop: the left column of the modal. */}
-      <div className='flex h-[192px] w-full shrink-0 items-center justify-center overflow-hidden bg-bg-light-grey md:h-auto md:w-[398px]'>
+      <div className='h-[192px] w-full shrink-0 overflow-hidden bg-bg-light-grey md:h-auto md:w-[398px]'>
+        {/* Mobile: cover the full-width band edge-to-edge. */}
         <LottiePlayer
           animationData={audioToVideoAnimation}
-          className='h-full w-full'
+          preserveAspectRatio='xMidYMid slice'
+          className='h-full w-full md:hidden'
+        />
+        {/* Desktop: fit within the left column. */}
+        <LottiePlayer
+          animationData={audioToVideoAnimation}
+          preserveAspectRatio='xMidYMid meet'
+          className='hidden h-full w-full md:block'
         />
       </div>
 
