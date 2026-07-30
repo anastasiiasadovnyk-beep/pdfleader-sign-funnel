@@ -96,6 +96,7 @@ export const EditorHeader: FC<EditorHeaderProps> = ({
         color='action'
         size='md'
         leftIcon={<MdOutlineShare className='size-5' />}
+        onClick={() => onSelectFormat('MP4')}
       >
         Share
       </Button>
