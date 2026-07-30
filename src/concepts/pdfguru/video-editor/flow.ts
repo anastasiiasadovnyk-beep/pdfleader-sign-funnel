@@ -6,7 +6,10 @@ const flow: Flow = {
     { slug: 'landing', title: 'Landing', next: 'editor' },
     { slug: 'editor', title: 'Editor', next: 'processing' },
     { slug: 'processing', title: 'Processing', next: 'email' },
-    { slug: 'email', title: 'Email' },
+    { slug: 'email', title: 'Email', next: 'plan' },
+    { slug: 'plan', title: 'Select Plan', next: 'payment' },
+    { slug: 'payment', title: 'Payment', next: 'thankyou' },
+    { slug: 'thankyou', title: 'Thank You' },
   ],
 };
 
