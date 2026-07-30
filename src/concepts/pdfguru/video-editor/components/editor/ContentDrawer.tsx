@@ -7,6 +7,7 @@ import { IconButton } from '@universe-forma/ui-pes';
 import type { IconType } from 'react-icons';
 
 import { CLIP_KIND_TO_TAB, TOOL_TABS, type AspectRatioOption, type TimelineClip } from '../../model/editorData';
+import { THIN_SCROLLBAR } from './scrollbar';
 import { AddPanel } from './drawer/AddPanel';
 import { CanvasPanel } from './drawer/CanvasPanel';
 import { ClipSettingsPanel } from './drawer/ClipSettingsPanel';
@@ -131,7 +132,7 @@ export const ContentDrawer: FC<ContentDrawerProps> = ({
         </div>
       </div>
       {/* Scrollable content */}
-      <div className='min-h-0 flex-1 overflow-y-auto px-4 pt-4 pb-4'>{renderBody()}</div>
+      <div className={`min-h-0 flex-1 overflow-y-auto px-4 pt-4 pb-4 ${THIN_SCROLLBAR}`}>{renderBody()}</div>
     </div>
   );
 };

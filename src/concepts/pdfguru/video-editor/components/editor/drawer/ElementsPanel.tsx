@@ -15,6 +15,8 @@ import {
 
 import { Search, cn } from '@universe-forma/ui-pes';
 
+import { THIN_SCROLLBAR_X } from '../scrollbar';
+
 const SHAPES: IconType[] = [
   MdSquare,
   MdCircle,
@@ -36,7 +38,10 @@ const Section: FC<{ title: string; divided?: boolean; children: ReactNode }> = (
 );
 
 const cellClass =
-  'flex aspect-square items-center justify-center rounded-3 bg-bg-light-grey transition-colors hover:bg-action-hover';
+  'flex size-[76px] shrink-0 items-center justify-center rounded-3 bg-bg-light-grey transition-colors hover:bg-action-hover';
+
+/** Horizontally-scrolling row with the thin always-on horizontal scrollbar. */
+const rowClass = cn('flex gap-4 overflow-x-auto pb-2', THIN_SCROLLBAR_X);
 
 interface ElementsPanelProps {
   onSelect: (payload: { label?: string; icon?: IconType; category?: string }) => void;
@@ -58,8 +63,8 @@ export const ElementsPanel: FC<ElementsPanelProps> = ({ onSelect }) => {
       />
 
       <Section title='Shapes'>
-        <div className='grid grid-cols-3 gap-4'>
-          {SHAPES.slice(0, 6).map((Icon, index) => (
+        <div className={rowClass}>
+          {SHAPES.map((Icon, index) => (
             <button
               key={index}
               type='button'
@@ -77,8 +82,8 @@ export const ElementsPanel: FC<ElementsPanelProps> = ({ onSelect }) => {
         title='Stickers'
         divided
       >
-        <div className='grid grid-cols-3 gap-4'>
-          {STICKERS.slice(0, 6).map((sticker, index) => (
+        <div className={rowClass}>
+          {STICKERS.map((sticker, index) => (
             <button
               key={index}
               type='button'
@@ -96,8 +101,8 @@ export const ElementsPanel: FC<ElementsPanelProps> = ({ onSelect }) => {
         title='Emoji'
         divided
       >
-        <div className='grid grid-cols-3 gap-4'>
-          {EMOJIS.slice(0, 6).map((emoji, index) => (
+        <div className={rowClass}>
+          {EMOJIS.map((emoji, index) => (
             <button
               key={index}
               type='button'
