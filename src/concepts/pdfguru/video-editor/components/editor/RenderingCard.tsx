@@ -85,7 +85,7 @@ export const RenderingCard: FC = () => {
       <div className='flex flex-1 flex-col justify-between gap-6 p-6 md:p-10'>
         <div className='flex flex-col gap-6'>
           <div className='flex flex-col gap-1'>
-            <h2 className='text-desktop-title-4 text-text-primary'>Rendering your video</h2>
+            <h2 className='text-desktop-title-4 text-text-primary'>Rendering your video...</h2>
             <p className='text-body-2 text-text-secondary'>It may take some time</p>
           </div>
 
