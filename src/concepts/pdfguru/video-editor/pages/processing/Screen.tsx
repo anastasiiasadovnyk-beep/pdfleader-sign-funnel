@@ -8,7 +8,8 @@ import { RenderingCard } from '../../components/editor/RenderingCard';
  * turned into a finished file.
  */
 const ProcessingScreen: FC = () => (
-  <div className='flex h-screen w-full items-center justify-center bg-text-primary/50 p-4'>
+  // Mobile: the modal fills the whole screen. Desktop: a centered card.
+  <div className='flex h-screen w-full items-stretch justify-center bg-text-primary/50 md:items-center md:p-4'>
     <RenderingCard />
   </div>
 );

@@ -4,6 +4,9 @@ import { MdCheckCircle, MdOutlineAutorenew, MdOutlineRadioButtonUnchecked } from
 
 import { cn } from '@universe-forma/ui-pes';
 
+import audioToVideoAnimation from '../../assets/audio-to-video.json';
+import { LottiePlayer } from './LottiePlayer';
+
 /**
  * The stages of turning a timeline into a finished video, in order. Product copy
  * chosen to read as a real, substantial render pipeline (assemble → sync →
@@ -68,32 +71,46 @@ export const RenderingCard: FC = () => {
   };
 
   return (
-    <div className='flex w-full max-w-[460px] flex-col gap-6 rounded-6 bg-bg-white-bg px-6 py-8 shadow-[0_20px_60px_-15px_rgba(33,33,52,0.25)] md:px-10'>
-      <div className='flex flex-col gap-1 text-center'>
-        <h2 className='text-desktop-title-4 text-text-primary'>Rendering your video</h2>
-        <p className='text-body-2 text-text-secondary'>It may take some time</p>
+    <div className='flex h-full w-full flex-col overflow-hidden bg-bg-white-bg md:h-auto md:max-w-[816px] md:flex-row md:rounded-6 md:shadow-[0_20px_60px_-15px_rgba(33,33,52,0.25)]'>
+      {/* Animation area — mobile: a fixed 192px band on top, full width;
+          desktop: the left column of the modal. */}
+      <div className='flex h-[192px] w-full shrink-0 items-center justify-center overflow-hidden bg-bg-light-grey md:h-auto md:w-[398px]'>
+        <LottiePlayer
+          animationData={audioToVideoAnimation}
+          className='h-full w-full'
+        />
       </div>
 
-      <div className='flex flex-col gap-2'>
-        <div className='relative h-1 w-full overflow-hidden rounded'>
-          <div className='absolute inset-0 rounded bg-primary/20' />
-          <div
-            className='absolute inset-y-0 left-0 rounded bg-primary transition-[width] duration-500 ease-out'
-            style={{ width: `${progress}%` }}
-          />
+      {/* Content */}
+      <div className='flex flex-1 flex-col justify-between gap-6 p-6 md:p-10'>
+        <div className='flex flex-col gap-6'>
+          <div className='flex flex-col gap-1'>
+            <h2 className='text-desktop-title-4 text-text-primary'>Rendering your video</h2>
+            <p className='text-body-2 text-text-secondary'>It may take some time</p>
+          </div>
+
+          <div className='flex flex-col gap-2'>
+            <div className='relative h-1 w-full overflow-hidden rounded'>
+              <div className='absolute inset-0 rounded bg-primary/20' />
+              <div
+                className='absolute inset-y-0 left-0 rounded bg-primary transition-[width] duration-500 ease-out'
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <span className='text-body-2-emph text-text-primary'>{progress}%</span>
+          </div>
+
+          <ul className='flex flex-col gap-3'>
+            {RENDER_STEPS.map((label, index) => (
+              <StepRow
+                key={label}
+                label={label}
+                status={statusOf(index)}
+              />
+            ))}
+          </ul>
         </div>
-        <span className='text-body-2-emph text-text-primary'>{progress}%</span>
       </div>
-
-      <ul className='flex flex-col gap-3'>
-        {RENDER_STEPS.map((label, index) => (
-          <StepRow
-            key={label}
-            label={label}
-            status={statusOf(index)}
-          />
-        ))}
-      </ul>
     </div>
   );
 };
