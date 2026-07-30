@@ -1,10 +1,11 @@
 import { type FC } from 'react';
 
-import { MdArrowBack, MdCheck, MdOutlineEdit, MdOutlineShare, MdReply } from 'react-icons/md';
+import { MdCheck, MdOutlineEdit, MdOutlineShare, MdReply } from 'react-icons/md';
 
 import { Button, IconButton, Input } from '@universe-forma/ui-pes';
 
 import logoUrl from '../../assets/pdf-guru.svg';
+import logoMark from '../../assets/pdf-guru-mark.svg';
 
 import type { ExportFormat } from '../../model/constants';
 import { DownloadMenu } from './DownloadMenu';
@@ -35,18 +36,14 @@ export const EditorHeader: FC<EditorHeaderProps> = ({
   canUndo,
   canRedo
 }) => (
-  <header className='flex w-full items-center justify-between gap-4 px-4 py-3'>
-    {/* Left — desktop: back button + project name */}
+  <header className='flex w-full items-center justify-between gap-4 px-4 py-3 md:h-[72px] md:py-0'>
+    {/* Left — desktop: logo + project name */}
     <div className='hidden min-w-0 flex-1 items-center gap-3 md:flex'>
-      <IconButton
-        variant='text'
-        color='action'
-        size='md'
-        onClick={onBack}
-        aria-label='Back'
-      >
-        <MdArrowBack className='size-6' />
-      </IconButton>
+      <img
+        src={logoMark}
+        alt='PDF Guru'
+        className='size-[55px] shrink-0'
+      />
 
       <Input
         size='dense'
@@ -99,6 +96,7 @@ export const EditorHeader: FC<EditorHeaderProps> = ({
         color='action'
         size='md'
         leftIcon={<MdOutlineShare className='size-5' />}
+        onClick={() => onSelectFormat('MP4')}
       >
         Share
       </Button>

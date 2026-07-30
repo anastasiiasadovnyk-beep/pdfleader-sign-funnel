@@ -1,4 +1,4 @@
-import { type CSSProperties, type FC, useRef } from 'react';
+import { type CSSProperties, type FC, useEffect, useRef, useState } from 'react';
 
 import 'material-symbols/rounded.css';
 
@@ -63,21 +63,77 @@ export const EditorCanvas: FC<EditorCanvasProps> = ({
   onLayout
 }) => {
   const stageRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
   // Video sits at the bottom of the stack; overlays render on top, with
   // subtitles last of all so captions sit above every other layer.
   const elements = [...videoClips, ...imageClips, ...textClips, ...shapeClips, ...subtitleClips];
+
+  // Zoom the preview: desktop = trackpad pinch (wheel + ctrlKey), mobile =
+  // two-finger pinch. Clamped to 0.5×–3×.
+  const [zoom, setZoom] = useState(1);
+  const zoomRef = useRef(1);
+  zoomRef.current = zoom;
+
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return;
+    const clampZoom = (value: number) => Math.min(3, Math.max(0.5, value));
+
+    const onWheel = (event: WheelEvent) => {
+      // A trackpad pinch (and Ctrl+wheel) arrives as a wheel event with ctrlKey;
+      // plain scrolling is left alone.
+      if (!event.ctrlKey) return;
+      event.preventDefault();
+      setZoom((z) => clampZoom(z * Math.exp(-event.deltaY * 0.01)));
+    };
+
+    const distance = (touches: TouchList) =>
+      Math.hypot(touches[0].clientX - touches[1].clientX, touches[0].clientY - touches[1].clientY);
+    let startDist = 0;
+    let startZoom = 1;
+
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length !== 2) return;
+      startDist = distance(event.touches);
+      startZoom = zoomRef.current;
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      if (event.touches.length !== 2 || startDist === 0) return;
+      event.preventDefault();
+      setZoom(clampZoom((startZoom * distance(event.touches)) / startDist));
+    };
+    const onTouchEnd = (event: TouchEvent) => {
+      if (event.touches.length < 2) startDist = 0;
+    };
+
+    el.addEventListener('wheel', onWheel, { passive: false });
+    el.addEventListener('touchstart', onTouchStart, { passive: false });
+    el.addEventListener('touchmove', onTouchMove, { passive: false });
+    el.addEventListener('touchend', onTouchEnd);
+    return () => {
+      el.removeEventListener('wheel', onWheel);
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
+    };
+  }, []);
 
   // Largest box with the chosen ratio that fits the (padded) preview area, centered.
   // Uses container-query units so it contains for both landscape and portrait ratios.
   const [w, h] = aspectRatio.split(':').map(Number);
   const stageStyle: CSSProperties = {
     aspectRatio: `${w} / ${h}`,
-    width: `min(100cqw, calc(100cqh * ${w / h}), 48rem)`
+    width: `min(100cqw, calc(100cqh * ${w / h}), 48rem)`,
+    transform: `scale(${zoom})`,
+    transformOrigin: 'center'
   };
 
   return (
-    <div className='relative flex flex-1 items-center justify-center overflow-hidden bg-bg-light-grey p-4 [container-type:size] md:p-8'>
-      <div className='absolute top-4 right-4 z-10 hidden items-center gap-1 rounded-3 border border-os-divider bg-bg-white-bg p-1 shadow-sm md:flex'>
+    <div
+      ref={viewportRef}
+      className='relative flex flex-1 touch-none items-center justify-center overflow-hidden bg-bg-light-grey p-4 [container-type:size] md:p-8'
+    >
+      <div className='absolute top-4 right-4 z-10 hidden items-center gap-1 rounded-3 bg-bg-white-bg p-1 shadow-sm md:flex'>
         <IconButton
           variant='text'
           color='action'

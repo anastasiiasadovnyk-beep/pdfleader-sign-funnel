@@ -5,6 +5,7 @@ import 'material-symbols/rounded.css';
 import { cn } from '@universe-forma/ui-pes';
 
 import { TOOL_TABS } from '../../model/editorData';
+import { THIN_SCROLLBAR } from './scrollbar';
 
 interface ToolRailProps {
   activeTabId: string;
@@ -29,7 +30,7 @@ export const ToolRail: FC<ToolRailProps> = ({ activeTabId, onSelect, orientation
         'flex shrink-0 gap-1 bg-bg-white-bg',
         horizontal
           ? 'w-full items-center overflow-x-auto border-t border-os-divider px-2 py-1'
-          : 'h-full w-[84px] flex-col items-center overflow-y-auto border-r border-os-divider p-2',
+          : `h-full w-[84px] flex-col items-center overflow-y-auto border-r border-os-divider p-2 ${THIN_SCROLLBAR}`,
         className
       )}
     >

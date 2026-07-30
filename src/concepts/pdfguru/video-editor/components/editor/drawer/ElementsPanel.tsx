@@ -6,6 +6,7 @@ import {
   MdCircle,
   MdFavorite,
   MdHexagon,
+  MdKeyboardArrowDown,
   MdPentagon,
   MdSearch,
   MdSquare,
@@ -13,7 +14,7 @@ import {
   MdStarBorder
 } from 'react-icons/md';
 
-import { Search, cn } from '@universe-forma/ui-pes';
+import { Button, Search, cn } from '@universe-forma/ui-pes';
 
 const SHAPES: IconType[] = [
   MdSquare,
@@ -28,10 +29,20 @@ const SHAPES: IconType[] = [
 const STICKERS = ['🎉', '✨', '🔥', '💯', '⭐', '🌈', '🎈', '👍'];
 const EMOJIS = ['😀', '😍', '😎', '🥳', '😂', '😭', '🤔', '👏', '🙌', '❤️'];
 
+/** A titled section: a 3-per-row grid (two rows) + a "Show more" button. */
 const Section: FC<{ title: string; divided?: boolean; children: ReactNode }> = ({ title, divided, children }) => (
-  <div className={cn('flex flex-col gap-4', divided && 'border-t border-os-divider pt-4')}>
+  <div className={cn('flex flex-col gap-3', divided && 'border-t border-os-divider pt-4')}>
     <span className='text-body-emph text-text-primary'>{title}</span>
-    {children}
+    <div className='grid grid-cols-3 gap-4'>{children}</div>
+    <Button
+      variant='text'
+      color='action'
+      size='sm'
+      className='self-center'
+      rightIcon={<MdKeyboardArrowDown className='size-5' />}
+    >
+      Show more
+    </Button>
   </div>
 );
 
@@ -58,57 +69,51 @@ export const ElementsPanel: FC<ElementsPanelProps> = ({ onSelect }) => {
       />
 
       <Section title='Shapes'>
-        <div className='grid grid-cols-3 gap-4'>
-          {SHAPES.slice(0, 6).map((Icon, index) => (
-            <button
-              key={index}
-              type='button'
-              aria-label={`Shape ${index + 1}`}
-              onClick={() => onSelect({ icon: Icon, category: 'Shape' })}
-              className={cn(cellClass, 'text-text-primary')}
-            >
-              <Icon className='size-7' />
-            </button>
-          ))}
-        </div>
+        {SHAPES.slice(0, 6).map((Icon, index) => (
+          <button
+            key={index}
+            type='button'
+            aria-label={`Shape ${index + 1}`}
+            onClick={() => onSelect({ icon: Icon, category: 'Shape' })}
+            className={cn(cellClass, 'text-text-primary')}
+          >
+            <Icon className='size-7' />
+          </button>
+        ))}
       </Section>
 
       <Section
         title='Stickers'
         divided
       >
-        <div className='grid grid-cols-3 gap-4'>
-          {STICKERS.slice(0, 6).map((sticker, index) => (
-            <button
-              key={index}
-              type='button'
-              aria-label={`Sticker ${index + 1}`}
-              onClick={() => onSelect({ label: sticker, category: 'Sticker' })}
-              className={cn(cellClass, 'text-2xl')}
-            >
-              {sticker}
-            </button>
-          ))}
-        </div>
+        {STICKERS.slice(0, 6).map((sticker, index) => (
+          <button
+            key={index}
+            type='button'
+            aria-label={`Sticker ${index + 1}`}
+            onClick={() => onSelect({ label: sticker, category: 'Sticker' })}
+            className={cn(cellClass, 'text-2xl')}
+          >
+            {sticker}
+          </button>
+        ))}
       </Section>
 
       <Section
         title='Emoji'
         divided
       >
-        <div className='grid grid-cols-3 gap-4'>
-          {EMOJIS.slice(0, 6).map((emoji, index) => (
-            <button
-              key={index}
-              type='button'
-              aria-label={`Emoji ${index + 1}`}
-              onClick={() => onSelect({ label: emoji, category: 'Emoji' })}
-              className={cn(cellClass, 'text-xl')}
-            >
-              {emoji}
-            </button>
-          ))}
-        </div>
+        {EMOJIS.slice(0, 6).map((emoji, index) => (
+          <button
+            key={index}
+            type='button'
+            aria-label={`Emoji ${index + 1}`}
+            onClick={() => onSelect({ label: emoji, category: 'Emoji' })}
+            className={cn(cellClass, 'text-xl')}
+          >
+            {emoji}
+          </button>
+        ))}
       </Section>
     </div>
   );

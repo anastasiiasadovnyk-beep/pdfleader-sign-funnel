@@ -13,7 +13,7 @@ import {
   MdSkipPrevious
 } from 'react-icons/md';
 
-import { IconButton } from '@universe-forma/ui-pes';
+import { IconButton, cn } from '@universe-forma/ui-pes';
 
 import { TOTAL_DURATION_SEC } from '../../../model/editorData';
 import { formatTimecode } from '../../../model/formatTimecode';
@@ -58,7 +58,7 @@ export const TimelineControls: FC<TimelineControlsProps> = ({
         aria-label='Delete'
         disabled={!canDelete}
         onClick={onDelete}
-        className='max-md:size-8'
+        className={cn('max-md:size-8', canDelete && '!text-text-primary')}
       >
         <MdDeleteOutline className='size-5' />
       </IconButton>
@@ -69,7 +69,7 @@ export const TimelineControls: FC<TimelineControlsProps> = ({
         aria-label='Split'
         disabled={!canSplit}
         onClick={onSplit}
-        className='max-md:size-8'
+        className={cn('max-md:size-8', canSplit && '!text-text-primary')}
       >
         <MdContentCut className='size-5' />
       </IconButton>
@@ -146,7 +146,7 @@ export const TimelineControls: FC<TimelineControlsProps> = ({
         aria-label='Zoom out'
         disabled={zoom <= ZOOM_MIN}
         onClick={() => onZoomChange(clampZoom(zoom - ZOOM_STEP))}
-        className='max-md:size-8'
+        className={cn('max-md:size-8', zoom > ZOOM_MIN && '!text-text-primary')}
       >
         <MdRemove className='size-5' />
       </IconButton>
@@ -168,7 +168,7 @@ export const TimelineControls: FC<TimelineControlsProps> = ({
         aria-label='Zoom in'
         disabled={zoom >= ZOOM_MAX}
         onClick={() => onZoomChange(clampZoom(zoom + ZOOM_STEP))}
-        className='max-md:size-8'
+        className={cn('max-md:size-8', zoom < ZOOM_MAX && '!text-text-primary')}
       >
         <MdAdd className='size-5' />
       </IconButton>
