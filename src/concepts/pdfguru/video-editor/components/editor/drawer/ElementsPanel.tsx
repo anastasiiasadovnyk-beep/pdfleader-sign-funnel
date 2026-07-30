@@ -6,7 +6,7 @@ import {
   MdCircle,
   MdFavorite,
   MdHexagon,
-  MdKeyboardArrowRight,
+  MdKeyboardArrowDown,
   MdPentagon,
   MdSearch,
   MdSquare,
@@ -14,9 +14,7 @@ import {
   MdStarBorder
 } from 'react-icons/md';
 
-import { Search, cn } from '@universe-forma/ui-pes';
-
-import { THIN_SCROLLBAR_X } from '../scrollbar';
+import { Button, Search, cn } from '@universe-forma/ui-pes';
 
 const SHAPES: IconType[] = [
   MdSquare,
@@ -31,25 +29,25 @@ const SHAPES: IconType[] = [
 const STICKERS = ['🎉', '✨', '🔥', '💯', '⭐', '🌈', '🎈', '👍'];
 const EMOJIS = ['😀', '😍', '😎', '🥳', '😂', '😭', '🤔', '👏', '🙌', '❤️'];
 
+/** A titled section: a 3-per-row grid (two rows) + a "Show more" button. */
 const Section: FC<{ title: string; divided?: boolean; children: ReactNode }> = ({ title, divided, children }) => (
   <div className={cn('flex flex-col gap-3', divided && 'border-t border-os-divider pt-4')}>
     <span className='text-body-emph text-text-primary'>{title}</span>
-    {children}
-    <button
-      type='button'
-      className='flex items-center gap-0.5 self-start text-body-2 font-[600] text-primary transition-colors hover:text-primary-hover'
+    <div className='grid grid-cols-3 gap-4'>{children}</div>
+    <Button
+      variant='text'
+      color='action'
+      size='ms'
+      className='self-center'
+      rightIcon={<MdKeyboardArrowDown className='size-5' />}
     >
       Show more
-      <MdKeyboardArrowRight className='size-4' />
-    </button>
+    </Button>
   </div>
 );
 
 const cellClass =
-  'flex size-[76px] shrink-0 items-center justify-center rounded-3 bg-bg-light-grey transition-colors hover:bg-action-hover';
-
-/** Horizontally-scrolling row with the thin always-on horizontal scrollbar. */
-const rowClass = cn('flex gap-4 overflow-x-auto pb-2', THIN_SCROLLBAR_X);
+  'flex aspect-square items-center justify-center rounded-3 bg-bg-light-grey transition-colors hover:bg-action-hover';
 
 interface ElementsPanelProps {
   onSelect: (payload: { label?: string; icon?: IconType; category?: string }) => void;
@@ -71,57 +69,51 @@ export const ElementsPanel: FC<ElementsPanelProps> = ({ onSelect }) => {
       />
 
       <Section title='Shapes'>
-        <div className={rowClass}>
-          {SHAPES.map((Icon, index) => (
-            <button
-              key={index}
-              type='button'
-              aria-label={`Shape ${index + 1}`}
-              onClick={() => onSelect({ icon: Icon, category: 'Shape' })}
-              className={cn(cellClass, 'text-text-primary')}
-            >
-              <Icon className='size-7' />
-            </button>
-          ))}
-        </div>
+        {SHAPES.slice(0, 6).map((Icon, index) => (
+          <button
+            key={index}
+            type='button'
+            aria-label={`Shape ${index + 1}`}
+            onClick={() => onSelect({ icon: Icon, category: 'Shape' })}
+            className={cn(cellClass, 'text-text-primary')}
+          >
+            <Icon className='size-7' />
+          </button>
+        ))}
       </Section>
 
       <Section
         title='Stickers'
         divided
       >
-        <div className={rowClass}>
-          {STICKERS.map((sticker, index) => (
-            <button
-              key={index}
-              type='button'
-              aria-label={`Sticker ${index + 1}`}
-              onClick={() => onSelect({ label: sticker, category: 'Sticker' })}
-              className={cn(cellClass, 'text-2xl')}
-            >
-              {sticker}
-            </button>
-          ))}
-        </div>
+        {STICKERS.slice(0, 6).map((sticker, index) => (
+          <button
+            key={index}
+            type='button'
+            aria-label={`Sticker ${index + 1}`}
+            onClick={() => onSelect({ label: sticker, category: 'Sticker' })}
+            className={cn(cellClass, 'text-2xl')}
+          >
+            {sticker}
+          </button>
+        ))}
       </Section>
 
       <Section
         title='Emoji'
         divided
       >
-        <div className={rowClass}>
-          {EMOJIS.map((emoji, index) => (
-            <button
-              key={index}
-              type='button'
-              aria-label={`Emoji ${index + 1}`}
-              onClick={() => onSelect({ label: emoji, category: 'Emoji' })}
-              className={cn(cellClass, 'text-xl')}
-            >
-              {emoji}
-            </button>
-          ))}
-        </div>
+        {EMOJIS.slice(0, 6).map((emoji, index) => (
+          <button
+            key={index}
+            type='button'
+            aria-label={`Emoji ${index + 1}`}
+            onClick={() => onSelect({ label: emoji, category: 'Emoji' })}
+            className={cn(cellClass, 'text-xl')}
+          >
+            {emoji}
+          </button>
+        ))}
       </Section>
     </div>
   );
