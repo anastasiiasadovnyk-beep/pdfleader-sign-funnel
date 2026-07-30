@@ -77,7 +77,7 @@ export const EditorCanvas: FC<EditorCanvasProps> = ({
 
   return (
     <div className='relative flex flex-1 items-center justify-center overflow-hidden bg-bg-light-grey p-4 [container-type:size] md:p-8'>
-      <div className='absolute top-4 right-4 z-10 hidden items-center gap-1 rounded-3 border border-os-divider bg-bg-white-bg p-1 shadow-sm md:flex'>
+      <div className='absolute top-4 right-4 z-10 hidden items-center gap-1 rounded-3 bg-bg-white-bg p-1 shadow-sm md:flex'>
         <IconButton
           variant='text'
           color='action'
