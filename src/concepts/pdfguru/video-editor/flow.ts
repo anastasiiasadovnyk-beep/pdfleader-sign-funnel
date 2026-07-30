@@ -5,7 +5,8 @@ const flow: Flow = {
   pages: [
     { slug: 'landing', title: 'Landing', next: 'editor' },
     { slug: 'editor', title: 'Editor', next: 'processing' },
-    { slug: 'processing', title: 'Processing' },
+    { slug: 'processing', title: 'Processing', next: 'email' },
+    { slug: 'email', title: 'Email' },
   ],
 };
 
