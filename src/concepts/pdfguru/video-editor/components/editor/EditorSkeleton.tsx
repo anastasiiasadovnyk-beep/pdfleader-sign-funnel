@@ -49,11 +49,11 @@ export const EditorSkeleton: FC = () => (
       {/* Sidebar (desktop): tool-rail icon placeholders + drawer placeholders */}
       <div className='hidden h-full shrink-0 pb-3 pl-3 md:flex'>
         <div className='flex h-full overflow-hidden rounded-6 bg-bg-white-bg shadow-[0_8px_30px_-10px_rgba(33,33,52,0.18)]'>
-          <div className='flex h-full w-[84px] flex-col items-center gap-2 border-r border-os-divider p-2 pt-3'>
+          <div className='flex h-full w-[84px] shrink-0 flex-col items-center gap-1 overflow-hidden border-r border-os-divider p-2'>
             {Array.from({ length: 9 }).map((_, index) => (
               <Skel
                 key={index}
-                className='h-9 w-11'
+                className='size-[68px] shrink-0'
               />
             ))}
           </div>
