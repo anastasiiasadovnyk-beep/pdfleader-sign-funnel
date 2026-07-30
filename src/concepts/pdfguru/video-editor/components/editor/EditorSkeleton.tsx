@@ -2,8 +2,7 @@ import { type FC } from 'react';
 
 import { cn } from '@universe-forma/ui-pes';
 
-import logoMark from '../../assets/pdf-guru.svg';
-import logoWordmark from '../../assets/new-logo-pdf-guru.svg';
+import logoMark from '../../assets/pdf-guru-mark.svg';
 
 /** A pulsing grey placeholder block. */
 const Skel: FC<{ className?: string }> = ({ className }) => (
@@ -19,26 +18,21 @@ const Skel: FC<{ className?: string }> = ({ className }) => (
 export const EditorSkeleton: FC = () => (
   <div className='flex h-screen w-full flex-col overflow-hidden bg-bg-light-grey'>
     {/* Header */}
-    <header className='flex items-center justify-between gap-4 px-4 py-3'>
+    <header className='relative flex items-center justify-between gap-4 px-4 py-3 md:h-[72px] md:py-0'>
       <div className='flex min-w-0 items-center gap-3'>
-        <img
-          src={logoWordmark}
-          alt='PDF Guru'
-          className='hidden h-7 w-auto md:block'
-        />
         <img
           src={logoMark}
           alt='PDF Guru'
-          className='size-8 md:hidden'
+          className='size-[55px] shrink-0'
         />
         {/* desktop: project-name placeholder */}
         <Skel className='hidden h-8 w-52 rounded-3 md:block' />
-        {/* mobile: undo / redo placeholders */}
-        <span className='flex items-center gap-1 md:hidden'>
-          <Skel className='size-8' />
-          <Skel className='size-8' />
-        </span>
       </div>
+      {/* mobile: undo / redo placeholders — centered */}
+      <span className='absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1 md:hidden'>
+        <Skel className='size-8' />
+        <Skel className='size-8' />
+      </span>
       <div className='flex items-center gap-2'>
         <Skel className='hidden size-9 md:block' />
         <Skel className='h-9 w-24' />

@@ -9,8 +9,9 @@ import { cn } from '@universe-forma/ui-pes';
 import {
   OVERLAY_ROW_HEIGHT_PX,
   TOTAL_DURATION_SEC,
-  TRACK_ZONE_ORDER,
   VIDEO_ROW_HEIGHT_PX,
+  isCanvasClip,
+  layerRank,
   type TimelineClip,
   type TimelineTrack
 } from '../../../model/editorData';
@@ -340,11 +341,21 @@ export const TimelineTracks: FC<TimelineTracksProps> = ({
 }) => {
   const [dropTargetId, setDropTargetId] = useState<string | null>(null);
 
-  const sorted = [...tracks].sort((a, b) => TRACK_ZONE_ORDER[a.kind] - TRACK_ZONE_ORDER[b.kind]);
-  const nonAudio = sorted.filter((track) => track.kind !== 'audio');
-  const audio = sorted.filter((track) => track.kind === 'audio');
+  // A track's row position follows its front-most canvas clip's stacking rank, so
+  // Bring forward / Send backward move the selected element's row up / down here
+  // in step with the canvas. TTS then audio stay pinned at the bottom.
+  const trackRank = (track: TimelineTrack) => {
+    const canvasClips = track.clips.filter((clip) => isCanvasClip(clip.kind));
+    return canvasClips.length ? Math.max(...canvasClips.map(layerRank)) : 0;
+  };
+  const canvasTracks = tracks
+    .filter((track) => isCanvasClip(track.kind))
+    .sort((a, b) => trackRank(b) - trackRank(a));
+  const ttsTracks = tracks.filter((track) => track.kind === 'tts');
+  const nonAudio = [...canvasTracks, ...ttsTracks];
+  const audio = tracks.filter((track) => track.kind === 'audio');
   // Pad with empty placeholder rows (above the audio row) up to the default count.
-  const placeholders = Array.from({ length: Math.max(0, MIN_ROWS - sorted.length) }, (_, index) => ({
+  const placeholders = Array.from({ length: Math.max(0, MIN_ROWS - tracks.length) }, (_, index) => ({
     id: `placeholder-${index}`,
     height: DEFAULT_ROW_HEIGHTS[nonAudio.length + index] ?? OVERLAY_ROW_HEIGHT_PX
   }));

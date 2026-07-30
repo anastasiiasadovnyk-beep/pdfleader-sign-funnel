@@ -197,6 +197,8 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack, onNext }) => {
             onMoveClipToTrack={timeline.moveClipToTrack}
             onDeleteClip={timeline.deleteSelectedClip}
             onSplitClip={timeline.splitSelectedClip}
+            onBringForward={timeline.bringForward}
+            onSendBackward={timeline.sendBackward}
             onEditSelected={handleEditSelected}
           />
 
@@ -230,12 +232,13 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack, onNext }) => {
         </div>
       </div>
 
-      {/* Mobile: bottom tool bar (the desktop tool rail, laid out horizontally). */}
+      {/* Mobile: bottom tool bar (the desktop tool rail, laid out horizontally).
+          mb lifts it clear of the sandbox flow bar in the preview. */}
       <ToolRail
         orientation='horizontal'
         activeTabId={editor.activeTabId}
         onSelect={handleMobileToolSelect}
-        className='md:hidden'
+        className='mb-11 md:hidden'
       />
     </div>
   );

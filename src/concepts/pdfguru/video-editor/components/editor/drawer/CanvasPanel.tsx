@@ -16,7 +16,7 @@ interface CanvasPanelProps {
 /** Canvas tab — project-level settings only (aspect ratio + background color). */
 export const CanvasPanel: FC<CanvasPanelProps> = ({ aspect, onSelectAspect }) => {
   const [open, setOpen] = useState(false);
-  const [bg, setBg] = useState<string>('none');
+  const [bg, setBg] = useState<string>('#ffffff');
   // Custom colors chosen via the picker; they persist as swatches before it.
   const [picked, setPicked] = useState<string[]>([]);
   const TriggerIcon = aspect.icon;
@@ -81,21 +81,19 @@ export const CanvasPanel: FC<CanvasPanelProps> = ({ aspect, onSelectAspect }) =>
 
       <div className='flex flex-col gap-2'>
         <span className='text-body-2 text-text-secondary'>Background color</span>
-        {/* Starts as 6 slots: No background + 4 colors + picker. Picked custom
-            colors append before the picker, wrapping it onto a new row. */}
+        {/* Starts as 6 slots: white + 4 colors + picker. Picked custom colors
+            append before the picker, wrapping it onto a new row. */}
         <div className='flex flex-wrap gap-2'>
-          {/* Default: no background (transparent) */}
+          {/* Default: white background */}
           <button
             type='button'
-            aria-label='No background'
-            onClick={() => setBg('none')}
+            aria-label='White background'
+            onClick={() => setBg('#ffffff')}
             className={cn(
-              'size-9 overflow-hidden rounded-2 border border-os-divider bg-bg-white-bg transition-transform hover:scale-105',
-              bg === 'none' && 'ring-2 ring-primary ring-offset-2'
+              'size-9 rounded-2 border border-os-divider bg-common-white transition-transform hover:scale-105',
+              bg === '#ffffff' && 'ring-2 ring-primary ring-offset-2'
             )}
-          >
-            <span className='block h-full w-full bg-[linear-gradient(135deg,transparent_46%,#d2294b_46%,#d2294b_54%,transparent_54%)]' />
-          </button>
+          />
           {[...BACKGROUND_COLORS.slice(0, 4), ...picked].map((color) => (
             <button
               key={color}
@@ -110,7 +108,7 @@ export const CanvasPanel: FC<CanvasPanelProps> = ({ aspect, onSelectAspect }) =>
             />
           ))}
           <ColorPickerSwatch
-            value={bg === 'none' ? BACKGROUND_COLORS[0] : bg}
+            value={bg}
             onChange={handlePick}
           />
         </div>

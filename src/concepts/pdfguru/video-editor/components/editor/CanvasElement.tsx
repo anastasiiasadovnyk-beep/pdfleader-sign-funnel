@@ -6,13 +6,15 @@ import { cn } from '@universe-forma/ui-pes';
 
 import type { TimelineClip } from '../../model/editorData';
 
+/** Size of an image element on the canvas, in px (w-40 × h-24). */
+const IMAGE_W = 160;
+const IMAGE_H = 96;
+
 type LayoutPatch = Partial<{
   xPct: number;
   yPct: number;
   scale: number;
   rotation: number;
-  cropW: number;
-  cropH: number;
 }>;
 
 interface CanvasElementProps {
@@ -30,17 +32,15 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
  * 8 resize dots around the selection frame (corners + edge midpoints). Each is
  * pinned to a frame corner/edge and centered on it via `translate`, so the dot
  * size can be driven in constant pixels independent of the element's scale.
- * `axis` marks the crop direction for edge handles ('x' = width, 'y' = height);
- * corner handles (no axis) scale uniformly.
  */
-const HANDLES: { pos: CSSProperties; translate: string; cursor: string; axis?: 'x' | 'y' }[] = [
+const HANDLES: { pos: CSSProperties; translate: string; cursor: string }[] = [
   { pos: { top: 0, left: 0 }, translate: 'translate(-50%, -50%)', cursor: 'cursor-nwse-resize' },
-  { pos: { top: 0, left: '50%' }, translate: 'translate(-50%, -50%)', cursor: 'cursor-ns-resize', axis: 'y' },
+  { pos: { top: 0, left: '50%' }, translate: 'translate(-50%, -50%)', cursor: 'cursor-ns-resize' },
   { pos: { top: 0, right: 0 }, translate: 'translate(50%, -50%)', cursor: 'cursor-nesw-resize' },
-  { pos: { top: '50%', left: 0 }, translate: 'translate(-50%, -50%)', cursor: 'cursor-ew-resize', axis: 'x' },
-  { pos: { top: '50%', right: 0 }, translate: 'translate(50%, -50%)', cursor: 'cursor-ew-resize', axis: 'x' },
+  { pos: { top: '50%', left: 0 }, translate: 'translate(-50%, -50%)', cursor: 'cursor-ew-resize' },
+  { pos: { top: '50%', right: 0 }, translate: 'translate(50%, -50%)', cursor: 'cursor-ew-resize' },
   { pos: { bottom: 0, left: 0 }, translate: 'translate(-50%, 50%)', cursor: 'cursor-nesw-resize' },
-  { pos: { bottom: 0, left: '50%' }, translate: 'translate(-50%, 50%)', cursor: 'cursor-ns-resize', axis: 'y' },
+  { pos: { bottom: 0, left: '50%' }, translate: 'translate(-50%, 50%)', cursor: 'cursor-ns-resize' },
   { pos: { bottom: 0, right: 0 }, translate: 'translate(50%, 50%)', cursor: 'cursor-nwse-resize' }
 ];
 
@@ -64,7 +64,7 @@ export const CanvasElement: FC<CanvasElementProps> = ({
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [editing, setEditing] = useState(false);
-  const { xPct = 50, yPct = 50, scale = 1, rotation = 0, flipH, flipV, cropW = 1, cropH = 1 } = clip;
+  const { xPct = 50, yPct = 50, scale = 1, rotation = 0, flipH, flipV } = clip;
   const isVideo = clip.kind === 'video';
   // The element is drawn scaled, so the selection chrome (border + handles) is
   // counter-scaled by 1/scale to keep a constant on-screen size at any zoom/scale.
@@ -99,24 +99,6 @@ export const CanvasElement: FC<CanvasElementProps> = ({
     onWindowDrag((ev) => {
       const dist = Math.hypot(ev.clientX - cx, ev.clientY - cy);
       onLayout(clip.id, { scale: clamp((scale * dist) / startDist, 0.3, 5) });
-    });
-  };
-
-  /** Crop a video's width ('x') or height ('y') by dragging an edge handle. */
-  const startCrop = (axis: 'x' | 'y') => (event: React.PointerEvent) => {
-    event.stopPropagation();
-    event.preventDefault();
-    onSelect(clip.id);
-    const rect = ref.current?.getBoundingClientRect();
-    if (!rect) return;
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const start = axis === 'x' ? cropW : cropH;
-    const startDist = (axis === 'x' ? Math.abs(event.clientX - cx) : Math.abs(event.clientY - cy)) || 1;
-    onWindowDrag((ev) => {
-      const dist = axis === 'x' ? Math.abs(ev.clientX - cx) : Math.abs(ev.clientY - cy);
-      const next = clamp((start * dist) / startDist, 0.1, 1);
-      onLayout(clip.id, axis === 'x' ? { cropW: next } : { cropH: next });
     });
   };
 
@@ -156,15 +138,20 @@ export const CanvasElement: FC<CanvasElementProps> = ({
       </div>
     );
   } else if (clip.kind === 'image') {
+    const imgStyle: CSSProperties = { width: `${IMAGE_W}px`, height: `${IMAGE_H}px` };
     content = clip.src ? (
       <img
         src={clip.src}
         alt=''
         draggable={false}
-        className='h-24 w-40 rounded object-cover'
+        style={imgStyle}
+        className='rounded object-cover'
       />
     ) : (
-      <div className={cn('h-24 w-40 rounded bg-gradient-to-br', clip.tone)} />
+      <div
+        style={imgStyle}
+        className={cn('rounded bg-gradient-to-br', clip.tone)}
+      />
     );
   } else if (clip.kind === 'subtitle') {
     // Caption pill: dark translucent background, centered white text, wraps for
@@ -185,7 +172,7 @@ export const CanvasElement: FC<CanvasElementProps> = ({
       <span className='text-6xl leading-none [filter:drop-shadow(0_1px_4px_rgba(0,0,0,0.35))]'>{clip.label}</span>
     );
   } else if (clip.src) {
-    // Uploaded video — fills its (crop-sized) box, showing the first frame.
+    // Uploaded video — fills its box, showing the first frame.
     content = (
       <video
         src={clip.src}
@@ -208,8 +195,8 @@ export const CanvasElement: FC<CanvasElementProps> = ({
       style={{
         left: `${xPct}%`,
         top: `${yPct}%`,
-        // Video is fitted to the stage (100% × 100%) then trimmed by its crop.
-        ...(isVideo ? { width: `${cropW * 100}%`, height: `${cropH * 100}%` } : {}),
+        // Video is fitted to the stage (100% × 100%).
+        ...(isVideo ? { width: '100%', height: '100%' } : {}),
         transform: `translate(-50%, -50%) rotate(${rotation}deg) scale(${scale * (flipH ? -1 : 1)}, ${scale * (flipV ? -1 : 1)})`,
         transformOrigin: 'center'
       }}
@@ -224,7 +211,7 @@ export const CanvasElement: FC<CanvasElementProps> = ({
           {HANDLES.map((handle, index) => (
             <span
               key={index}
-              onPointerDown={isVideo && handle.axis ? startCrop(handle.axis) : startResize}
+              onPointerDown={startResize}
               style={{
                 ...handle.pos,
                 width: `${10 * inv}px`,

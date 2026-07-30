@@ -1,14 +1,18 @@
-import { type FC } from 'react';
+import { type CSSProperties, type FC } from 'react';
 
-import { MdCheck, MdOutlineEdit, MdOutlineShare, MdReply } from 'react-icons/md';
+import 'material-symbols/rounded.css';
 
-import { Button, IconButton, Input } from '@universe-forma/ui-pes';
+import { MdCheck, MdOutlineEdit, MdOutlineShare } from 'react-icons/md';
 
-import logoUrl from '../../assets/pdf-guru.svg';
+import { Button, IconButton, Input, cn } from '@universe-forma/ui-pes';
+
 import logoMark from '../../assets/pdf-guru-mark.svg';
 
 import type { ExportFormat } from '../../model/constants';
 import { DownloadMenu } from './DownloadMenu';
+
+/** Material Symbols undo/redo glyphs: 24px, weight 300 — same as the desktop canvas toolbar. */
+const ICON_STYLE: CSSProperties = { fontSize: 24, fontVariationSettings: "'wght' 300, 'opsz' 24" };
 
 interface EditorHeaderProps {
   projectName: string;
@@ -36,7 +40,7 @@ export const EditorHeader: FC<EditorHeaderProps> = ({
   canUndo,
   canRedo
 }) => (
-  <header className='flex w-full items-center justify-between gap-4 px-4 py-3 md:h-[72px] md:py-0'>
+  <header className='relative flex w-full items-center justify-between gap-4 px-4 py-3 md:h-[72px] md:py-0'>
     {/* Left — desktop: logo + project name */}
     <div className='hidden min-w-0 flex-1 items-center gap-3 md:flex'>
       <img
@@ -57,13 +61,15 @@ export const EditorHeader: FC<EditorHeaderProps> = ({
       />
     </div>
 
-    {/* Left — mobile: logo + undo / redo + overflow */}
-    <div className='flex items-center gap-1 md:hidden'>
-      <img
-        src={logoUrl}
-        alt='PDF Guru'
-        className='mr-1 size-8'
-      />
+    {/* Left — mobile: logo */}
+    <img
+      src={logoMark}
+      alt='PDF Guru'
+      className='size-[55px] shrink-0 md:hidden'
+    />
+
+    {/* Mobile: undo / redo — centered in the header, same glyphs as desktop */}
+    <div className='absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1 md:hidden'>
       <IconButton
         variant='text'
         color='action'
@@ -71,8 +77,15 @@ export const EditorHeader: FC<EditorHeaderProps> = ({
         aria-label='Undo'
         disabled={!canUndo}
         onClick={onUndo}
+        className={cn(canUndo && '!text-text-primary')}
       >
-        <MdReply className='size-6' />
+        <span
+          aria-hidden='true'
+          className='material-symbols-rounded leading-none'
+          style={ICON_STYLE}
+        >
+          undo
+        </span>
       </IconButton>
       <IconButton
         variant='text'
@@ -81,11 +94,15 @@ export const EditorHeader: FC<EditorHeaderProps> = ({
         aria-label='Redo'
         disabled={!canRedo}
         onClick={onRedo}
+        className={cn(canRedo && '!text-text-primary')}
       >
-        <MdReply
-          className='size-6'
-          style={{ transform: 'scaleX(-1)' }}
-        />
+        <span
+          aria-hidden='true'
+          className='material-symbols-rounded leading-none'
+          style={ICON_STYLE}
+        >
+          redo
+        </span>
       </IconButton>
     </div>
 
