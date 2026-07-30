@@ -1,4 +1,4 @@
-import { type FC, useEffect, useState } from 'react';
+import { type FC, useEffect, useRef, useState } from 'react';
 
 import { MdCheck, MdChevronLeft, MdLightbulb, MdPlayArrow } from 'react-icons/md';
 
@@ -16,6 +16,8 @@ const RENDER_STEPS = [
 interface RenderingCardProps {
   /** Back control (top-left) — returns to the editor. */
   onBack?: () => void;
+  /** Fired once all render steps are done (all checks green) — opens the email step. */
+  onComplete?: () => void;
 }
 
 /**
@@ -24,7 +26,7 @@ interface RenderingCardProps {
  * full-screen sheet with a fixed 192px full-width animation band on top.
  * Self-contained: progress is animated locally (no real render pipeline).
  */
-export const RenderingCard: FC<RenderingCardProps> = ({ onBack }) => {
+export const RenderingCard: FC<RenderingCardProps> = ({ onBack, onComplete }) => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -36,6 +38,17 @@ export const RenderingCard: FC<RenderingCardProps> = ({ onBack }) => {
 
   const perStep = 100 / RENDER_STEPS.length;
   const doneCount = Math.min(RENDER_STEPS.length, Math.floor(progress / perStep));
+
+  // Once every step is checked (all green), pause briefly on the completed
+  // state, then hand off to the next step (the email modal).
+  const completedRef = useRef(false);
+  const allDone = doneCount >= RENDER_STEPS.length;
+  useEffect(() => {
+    if (!allDone || completedRef.current || !onComplete) return;
+    completedRef.current = true;
+    const timer = setTimeout(onComplete, 1000);
+    return () => clearTimeout(timer);
+  }, [allDone, onComplete]);
 
   return (
     <div className='relative flex h-full w-full flex-col overflow-hidden bg-bg-white-bg md:h-auto md:min-h-[520px] md:max-w-[864px] md:flex-row md:rounded-6 md:shadow-[0_20px_32px_rgba(0,0,0,0.16),0_0_12px_-8px_rgba(0,0,0,0.08)]'>
