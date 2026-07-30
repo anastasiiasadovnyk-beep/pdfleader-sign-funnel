@@ -13,7 +13,7 @@ interface EmailScreenProps {
  * the screen; desktop is a centered card.
  */
 const EmailScreen: FC<EmailScreenProps> = ({ onBack }) => (
-  <div className='flex h-screen w-full items-stretch justify-center bg-text-primary/50 md:items-center md:p-4'>
+  <div className='flex h-screen w-full items-stretch justify-center bg-black/60 sm:items-center sm:p-6'>
     <EmailModal onClose={onBack} />
   </div>
 );
