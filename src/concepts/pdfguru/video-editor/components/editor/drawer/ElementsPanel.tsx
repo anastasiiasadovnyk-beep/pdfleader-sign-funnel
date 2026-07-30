@@ -6,6 +6,7 @@ import {
   MdCircle,
   MdFavorite,
   MdHexagon,
+  MdKeyboardArrowRight,
   MdPentagon,
   MdSearch,
   MdSquare,
@@ -31,9 +32,16 @@ const STICKERS = ['🎉', '✨', '🔥', '💯', '⭐', '🌈', '🎈', '👍'];
 const EMOJIS = ['😀', '😍', '😎', '🥳', '😂', '😭', '🤔', '👏', '🙌', '❤️'];
 
 const Section: FC<{ title: string; divided?: boolean; children: ReactNode }> = ({ title, divided, children }) => (
-  <div className={cn('flex flex-col gap-4', divided && 'border-t border-os-divider pt-4')}>
+  <div className={cn('flex flex-col gap-3', divided && 'border-t border-os-divider pt-4')}>
     <span className='text-body-emph text-text-primary'>{title}</span>
     {children}
+    <button
+      type='button'
+      className='flex items-center gap-0.5 self-start text-body-2 font-[600] text-primary transition-colors hover:text-primary-hover'
+    >
+      Show more
+      <MdKeyboardArrowRight className='size-4' />
+    </button>
   </div>
 );
 
