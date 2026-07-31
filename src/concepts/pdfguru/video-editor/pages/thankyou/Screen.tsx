@@ -11,6 +11,8 @@ import logo from '../../assets/new-logo-pdf-guru.svg';
 interface ThankYouScreenProps {
   /** Returns to the previous step. */
   onBack?: () => void;
+  /** "Go to All Documents" — opens the dashboard. */
+  onNext?: () => void;
 }
 
 /**
@@ -19,7 +21,7 @@ interface ThankYouScreenProps {
  * us!" confirmation with the subscription note, the Download / Edit / All
  * Documents actions, a cross-sell card and the bookmark / support banner.
  */
-const ThankYouScreen: FC<ThankYouScreenProps> = () => (
+const ThankYouScreen: FC<ThankYouScreenProps> = ({ onNext }) => (
   <div className='flex min-h-screen w-full flex-col bg-bg-light-grey'>
     <ProdNoteBadge />
     {/* Centered logo bar */}
@@ -68,6 +70,7 @@ const ThankYouScreen: FC<ThankYouScreenProps> = () => (
             size='lg'
             className='w-full sm:w-auto sm:px-6'
             leftIcon={<MdFolderOpen className='size-5' />}
+            onClick={onNext}
           >
             Go to All Documents
           </Button>

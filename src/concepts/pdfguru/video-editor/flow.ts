@@ -9,7 +9,8 @@ const flow: Flow = {
     { slug: 'email', title: 'Email', next: 'plan' },
     { slug: 'plan', title: 'Select Plan', next: 'payment' },
     { slug: 'payment', title: 'Payment', next: 'thankyou' },
-    { slug: 'thankyou', title: 'Thank You' },
+    { slug: 'thankyou', title: 'Thank You', next: 'dashboard' },
+    { slug: 'dashboard', title: 'Dashboard' },
   ],
 };
 
