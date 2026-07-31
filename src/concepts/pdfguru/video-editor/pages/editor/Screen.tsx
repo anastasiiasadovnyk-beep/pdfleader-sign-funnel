@@ -35,13 +35,19 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack, onNext }) => {
   // Desktop = the sidebar layout (>= md / 1024px, matching the `md:` CSS split).
   const isDesktop = useMediaQuery('min-md');
 
-  // The editor "boots" for ~5s after the upload: show the skeleton, then reveal
-  // the editor. The uploaded video is the only timeline/canvas layer, and the
-  // Video tab opens in its default (Add) state — nothing is selected.
-  const [isLoading, setIsLoading] = useState(true);
+  // The editor boots in three phases after the upload: (1) a skeleton, (2) a
+  // "preparing" state where the chrome is fully loaded but the uploaded video is
+  // still processing (the canvas stage and its timeline clip show "Preparing…"),
+  // then (3) the ready editor with the video in place. The Video tab opens in its
+  // default (Add) state — nothing is selected.
+  const [phase, setPhase] = useState<'skeleton' | 'preparing' | 'ready'>('skeleton');
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 5000);
-    return () => clearTimeout(timer);
+    const toPreparing = setTimeout(() => setPhase('preparing'), 3500);
+    const toReady = setTimeout(() => setPhase('ready'), 7000);
+    return () => {
+      clearTimeout(toPreparing);
+      clearTimeout(toReady);
+    };
   }, []);
 
   const handleBack = useCallback(() => onBack?.(), [onBack]);
@@ -139,7 +145,8 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack, onNext }) => {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [selectedClipId, deleteSelectedClip]);
 
-  if (isLoading) return <EditorSkeleton />;
+  if (phase === 'skeleton') return <EditorSkeleton />;
+  const preparing = phase === 'preparing';
 
   return (
     <div className='flex h-screen w-full flex-col overflow-hidden bg-bg-light-grey'>
@@ -181,6 +188,7 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack, onNext }) => {
             onSelectClip={handleCanvasSelect}
             onEditText={timeline.updateClipLabel}
             onLayout={timeline.updateClipLayout}
+            preparing={preparing}
           />
           <Timeline
             isPlaying={editor.isPlaying}
@@ -200,6 +208,7 @@ const EditorScreen: FC<EditorScreenProps> = ({ onBack, onNext }) => {
             onBringForward={timeline.bringForward}
             onSendBackward={timeline.sendBackward}
             onEditSelected={handleEditSelected}
+            preparing={preparing}
           />
 
           {/* Mobile: outside-tap catcher that dismisses a tab-bar-opened sheet.

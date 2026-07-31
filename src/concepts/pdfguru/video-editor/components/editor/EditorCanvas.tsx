@@ -39,6 +39,8 @@ interface EditorCanvasProps {
   onSelectClip: (clipId: string | null) => void;
   onEditText: (clipId: string, label: string) => void;
   onLayout: (clipId: string, patch: LayoutPatch) => void;
+  /** Boot "preparing" state — the video is still processing, so the stage shows a placeholder. */
+  preparing?: boolean;
 }
 
 /**
@@ -59,7 +61,8 @@ export const EditorCanvas: FC<EditorCanvasProps> = ({
   selectedClipId,
   onSelectClip,
   onEditText,
-  onLayout
+  onLayout,
+  preparing
 }) => {
   const stageRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -178,24 +181,33 @@ export const EditorCanvas: FC<EditorCanvasProps> = ({
         </Tooltip>
       </div>
 
-      {/* Output frame — resizes live to the selected aspect ratio, staying centered. */}
+      {/* Output frame — resizes live to the selected aspect ratio, staying centered.
+          While the uploaded video is still processing, the stage shows a neutral
+          "Preparing…" placeholder instead of the layers. */}
       <div
         ref={stageRef}
         onPointerDown={() => onSelectClip(null)}
         style={stageStyle}
-        className='relative overflow-hidden bg-slate-900 shadow-[0_8px_30px_-8px_rgba(33,33,52,0.25)]'
+        className={cn(
+          'relative overflow-hidden shadow-[0_8px_30px_-8px_rgba(33,33,52,0.25)]',
+          preparing ? 'flex items-center justify-center bg-os-divider' : 'bg-slate-900'
+        )}
       >
-        {elements.map((clip) => (
-          <CanvasElement
-            key={clip.id}
-            clip={clip}
-            isSelected={selectedClipId === clip.id}
-            stageRef={stageRef}
-            onSelect={onSelectClip}
-            onLayout={onLayout}
-            onEditText={onEditText}
-          />
-        ))}
+        {preparing ? (
+          <span className='animate-pulse text-body font-medium text-text-secondary'>Preparing…</span>
+        ) : (
+          elements.map((clip) => (
+            <CanvasElement
+              key={clip.id}
+              clip={clip}
+              isSelected={selectedClipId === clip.id}
+              stageRef={stageRef}
+              onSelect={onSelectClip}
+              onLayout={onLayout}
+              onEditText={onEditText}
+            />
+          ))
+        )}
       </div>
     </div>
   );
