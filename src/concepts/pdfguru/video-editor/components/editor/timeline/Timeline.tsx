@@ -1,4 +1,4 @@
-import { type FC, useCallback, useRef } from 'react';
+import { type FC, useCallback, useEffect, useRef } from 'react';
 
 import { BASE_PX_PER_SECOND, TOTAL_DURATION_SEC, type TimelineTrack } from '../../../model/editorData';
 import { TimelineControls } from './TimelineControls';
@@ -25,6 +25,8 @@ interface TimelineProps {
   onSendBackward: () => void;
   /** Mobile: open the selected clip's tab in edit state (from the header Edit button). */
   onEditSelected: () => void;
+  /** Boot "preparing" state — the video clip is still processing. */
+  preparing?: boolean;
 }
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
@@ -50,11 +52,26 @@ export const Timeline: FC<TimelineProps> = ({
   onSplitClip,
   onBringForward,
   onSendBackward,
-  onEditSelected
+  onEditSelected,
+  preparing
 }) => {
   const pxPerSec = BASE_PX_PER_SECOND * zoom;
   const totalWidth = TOTAL_DURATION_SEC * pxPerSec;
   const contentRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Mobile default: set the initial zoom so ~60s of ruler fills the visible
+  // timeline width (desktop keeps the default zoom). Runs once, on mount.
+  const didFitMobile = useRef(false);
+  useEffect(() => {
+    if (didFitMobile.current) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    didFitMobile.current = true;
+    if (!window.matchMedia('(max-width: 1023px)').matches) return;
+    const contentWidth = el.clientWidth - 32; // px-4 both sides
+    onZoomChange(clamp(contentWidth / (60 * BASE_PX_PER_SECOND), 0.5, 3));
+  }, [onZoomChange]);
 
   const selectedClip = tracks.flatMap((track) => track.clips).find((clip) => clip.id === selectedClipId);
   const canSplit = !!selectedClip && playheadSec > selectedClip.startSec && playheadSec < selectedClip.endSec;
@@ -107,7 +124,10 @@ export const Timeline: FC<TimelineProps> = ({
           pinned to the top while the layer rows scroll vertically (capped so the
           layers area never exceeds 280px), and the vertical scrollbar sits at the
           visible right edge. */}
-      <div className='max-h-[308px] overflow-auto px-4 pb-4'>
+      <div
+        ref={scrollRef}
+        className='max-h-[308px] overflow-auto px-4 pb-4'
+      >
         <div
           ref={contentRef}
           className='relative'
@@ -131,6 +151,7 @@ export const Timeline: FC<TimelineProps> = ({
             onBeginChange={onBeginChange}
             onUpdateClip={onUpdateClip}
             onMoveClipToTrack={onMoveClipToTrack}
+            preparing={preparing}
           />
 
           {/* Draggable playhead spanning the ruler + visible layers area */}

@@ -83,6 +83,7 @@ interface ClipProps {
   onUpdate: (trackId: string, clipId: string, startSec: number, endSec: number) => void;
   onMoveToTrack: (clipId: string, targetTrackId: string) => void;
   onDragOverRow: (targetTrackId: string | null) => void;
+  preparing?: boolean;
 }
 
 const Clip: FC<ClipProps> = ({
@@ -94,7 +95,8 @@ const Clip: FC<ClipProps> = ({
   onBeginChange,
   onUpdate,
   onMoveToTrack,
-  onDragOverRow
+  onDragOverRow,
+  preparing
 }) => {
   const { startSec, endSec } = clip;
   const left = startSec * pxPerSec;
@@ -290,6 +292,16 @@ const Clip: FC<ClipProps> = ({
         <span className='truncate text-caption text-text-primary'>{clip.category ?? 'Element'}</span>
       </div>
     );
+  } else if (preparing) {
+    // Video still processing — a neutral "Preparing…" clip (no trim handles yet).
+    content = (
+      <div
+        className='absolute inset-y-0 flex items-center justify-center overflow-hidden rounded-2 bg-os-divider'
+        style={{ left, width }}
+      >
+        <span className='animate-pulse text-caption text-text-secondary'>Preparing…</span>
+      </div>
+    );
   } else {
     content = (
       <div
@@ -324,6 +336,7 @@ interface TimelineTracksProps {
   onBeginChange: () => void;
   onUpdateClip: (trackId: string, clipId: string, startSec: number, endSec: number) => void;
   onMoveClipToTrack: (clipId: string, targetTrackId: string) => void;
+  preparing?: boolean;
 }
 
 /** Default layout: 4 rows (two 44px, two 32px) shown even when mostly empty. */
@@ -337,7 +350,8 @@ export const TimelineTracks: FC<TimelineTracksProps> = ({
   onSelectClip,
   onBeginChange,
   onUpdateClip,
-  onMoveClipToTrack
+  onMoveClipToTrack,
+  preparing
 }) => {
   const [dropTargetId, setDropTargetId] = useState<string | null>(null);
 
@@ -411,6 +425,7 @@ export const TimelineTracks: FC<TimelineTracksProps> = ({
             onUpdate={onUpdateClip}
             onMoveToTrack={onMoveClipToTrack}
             onDragOverRow={setDropTargetId}
+            preparing={preparing && clip.kind === 'video'}
           />
         ))}
       </div>
