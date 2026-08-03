@@ -2,6 +2,7 @@ import { type FC, type ReactNode, useState } from 'react';
 
 import type { IconType } from 'react-icons';
 import {
+  MdAdd,
   MdCheck,
   MdDeleteOutline,
   MdImage,
@@ -13,6 +14,7 @@ import {
   MdOutlineFileUpload,
   MdOutlinePermMedia,
   MdOutlineQrCode2,
+  MdOutlineSettings,
   MdOutlineShare,
   MdOutlineSyncAlt,
   MdOutlineWidgets,
@@ -237,11 +239,11 @@ const MediaCard: FC<{ item: MediaItem }> = ({ item }) => {
   return (
     <div
       className={cn(
-        'group relative flex flex-col gap-2.5 rounded-5 p-2 transition-colors',
+        'group relative flex h-[176px] w-full max-w-[297px] flex-col items-start gap-2 rounded-5 p-2 transition-colors md:h-[274px] md:gap-2.5 md:pb-2.5',
         menuOpen ? 'bg-bg-white-bg' : 'hover:bg-bg-white-bg'
       )}
     >
-      <div className='relative flex h-[200px] items-center justify-center overflow-hidden rounded-5 bg-[#efe9fc] p-4 transition-colors group-hover:bg-[#ededf1]'>
+      <div className='relative flex w-full flex-1 items-center justify-center overflow-hidden rounded-5 bg-[#efe9fc] p-4 transition-colors group-hover:bg-[#ededf1]'>
         {item.thumb}
 
         {/* Duration badge (video + audio) */}
@@ -266,11 +268,11 @@ const MediaCard: FC<{ item: MediaItem }> = ({ item }) => {
           {checked && <MdCheck className='size-4' />}
         </button>
 
-        {/* More actions (top-right) */}
+        {/* More actions (top-right) — always visible on mobile (no hover), hover-reveal on desktop. */}
         <div
           className={cn(
             'absolute right-3 top-3 transition-opacity',
-            menuOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+            menuOpen ? 'opacity-100' : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'
           )}
         >
           <BaseDropdown
@@ -324,13 +326,13 @@ const MediaCard: FC<{ item: MediaItem }> = ({ item }) => {
         </div>
       </div>
 
-      <div className='flex flex-col gap-1 px-1'>
-        <span className='truncate text-body font-bold text-text-primary'>{item.title}</span>
-        <span className='flex items-center gap-2 text-body-2 text-text-secondary'>
+      <div className='flex w-full shrink-0 flex-col gap-1 px-1'>
+        <span className='truncate text-body-2 font-bold text-text-primary md:text-body'>{item.title}</span>
+        <span className='flex items-center gap-1.5 whitespace-nowrap text-caption text-text-secondary md:gap-2 md:text-body-2'>
           <FormatBadge kind={item.kind} />
-          <span className='size-1 rounded-full bg-text-secondary' />
+          <span className='size-1 shrink-0 rounded-full bg-text-secondary' />
           {item.date}
-          <span className='size-1 rounded-full bg-text-secondary' />
+          <span className='size-1 shrink-0 rounded-full bg-text-secondary' />
           {item.size}
         </span>
       </div>
@@ -338,11 +340,45 @@ const MediaCard: FC<{ item: MediaItem }> = ({ item }) => {
   );
 };
 
+/** Mobile bottom navigation: My files · Media · (+) · Tools · Settings. */
+const MobileBottomBar: FC<{ active: string; onSelect: (id: string) => void }> = ({ active, onSelect }) => {
+  const item = ({ id, label, Icon }: { id: string; label: string; Icon: FC<{ className?: string }> }) => (
+    <button
+      key={id}
+      type='button'
+      onClick={() => onSelect(id)}
+      className={cn(
+        'flex flex-1 flex-col items-center gap-1 rounded-3 py-1.5 text-caption font-medium transition-colors',
+        active === id ? 'bg-[#00000014] text-text-primary' : 'text-text-secondary'
+      )}
+    >
+      <Icon className='size-6' />
+      {label}
+    </button>
+  );
+
+  return (
+    <nav className='fixed inset-x-0 bottom-16 z-40 flex items-center gap-1 border-t border-os-divider bg-bg-white-bg px-2 pb-2 pt-1.5 md:hidden'>
+      {item({ id: 'files', label: 'My files', Icon: HomeIcon })}
+      {item({ id: 'media', label: 'Media', Icon: MdOutlinePermMedia })}
+      <button
+        type='button'
+        aria-label='Create'
+        className='mx-1 flex size-14 shrink-0 -translate-y-1 items-center justify-center rounded-4 bg-primary text-common-white shadow-[0_10px_22px_-6px_rgba(95,48,226,0.6)]'
+      >
+        <MdAdd className='size-7' />
+      </button>
+      {item({ id: 'tools', label: 'Tools', Icon: MdOutlineWidgets })}
+      {item({ id: 'settings', label: 'Settings', Icon: MdOutlineSettings })}
+    </nav>
+  );
+};
+
 /**
  * Step 8 — Dashboard (Media tab). Opened from the Thank-you "Go to All Documents"
- * action. Recreates PDF Guru's dashboard shell (left navbar, header with search +
- * Upload, quick-action tool cards, filter tabs, file grid) with the new **Media**
- * tab active — its layout matches the Figma design (A/B Testing · PDF Guru).
+ * action. Recreates PDF Guru's dashboard shell (left navbar / mobile bottom bar,
+ * header with search + Upload, quick-action tool cards, filter tabs, file grid)
+ * with the new **Media** tab active — matching the Figma design (A/B Testing).
  */
 const DashboardScreen: FC<DashboardScreenProps> = () => {
   const [activeTab, setActiveTab] = useState('media');
@@ -354,9 +390,9 @@ const DashboardScreen: FC<DashboardScreenProps> = () => {
   const visibleMedia = activeFilter === 'ALL' ? MEDIA : MEDIA.filter((item) => item.kind === FILTER_KIND[activeFilter]);
 
   return (
-    <div className='flex min-h-screen w-full gap-2 bg-bg-light-grey p-4 [font-family:var(--font-primary)]'>
-      {/* Left vertical navbar */}
-      <aside className='flex w-[76px] shrink-0 flex-col items-center gap-4 pb-6 pt-[19px] md:pt-[35px]'>
+    <div className='flex min-h-screen w-full flex-col bg-bg-light-grey [font-family:var(--font-primary)] md:flex-row md:gap-2 md:p-4'>
+      {/* Left vertical navbar — desktop only (mobile uses the bottom tab bar). */}
+      <aside className='hidden w-[76px] shrink-0 flex-col items-center gap-4 pb-6 pt-[19px] md:flex md:pt-[35px]'>
         <img
           src={logoMark}
           alt='PDF Guru'
@@ -398,13 +434,14 @@ const DashboardScreen: FC<DashboardScreenProps> = () => {
         </div>
       </aside>
 
-      {/* Main content card */}
-      <main className='flex min-w-0 flex-1 flex-col gap-6 rounded-6 bg-bg-white-bg p-6 shadow-[0_10px_24px_-12px_rgba(86,72,135,0.18)] md:p-10'>
+      {/* Main content — a white card on desktop, plain on the grey mobile page. */}
+      <main className='flex min-w-0 flex-1 flex-col gap-6 p-4 pb-32 md:rounded-6 md:bg-bg-white-bg md:p-10 md:shadow-[0_10px_24px_-12px_rgba(86,72,135,0.18)]'>
         {/* Header */}
         <header className='flex items-start justify-between gap-4'>
-          <h1 className='text-[31.2px] font-[800] leading-[1.2] text-text-primary'>Media files</h1>
-          <div className='flex items-center gap-3'>
-            <div className='hidden w-[260px] sm:block'>
+          <h1 className='text-[26px] font-[800] leading-[1.2] text-text-primary md:text-[31.2px]'>Media files</h1>
+          {/* Desktop: search + Upload in the header (mobile uses the search below and the + FAB). */}
+          <div className='hidden items-center gap-3 md:flex'>
+            <div className='w-[260px]'>
               <Search
                 size='dense'
                 bg='default'
@@ -433,11 +470,11 @@ const DashboardScreen: FC<DashboardScreenProps> = () => {
           {TOOLS.map(({ label, src }) => (
             <li
               key={label}
-              className='shrink-0 grow basis-[172px]'
+              className='shrink-0 grow basis-[104px] md:basis-[172px]'
             >
               <button
                 type='button'
-                className='flex min-h-[60px] w-full items-center gap-2 rounded-4 border border-action-stroke px-3 text-left text-body-2 font-bold text-text-primary transition-colors hover:bg-[#0000000a]'
+                className='flex size-full min-h-[104px] flex-col items-center justify-center gap-1 rounded-4 border border-action-stroke bg-bg-white-bg p-2 text-center text-body-2 font-bold text-text-primary transition-colors hover:bg-[#0000000a] md:min-h-[60px] md:flex-row md:justify-start md:gap-2 md:px-3 md:text-left'
               >
                 <img
                   src={src}
@@ -450,8 +487,24 @@ const DashboardScreen: FC<DashboardScreenProps> = () => {
           ))}
         </ul>
 
-        {/* Filter tabs + grid */}
-        <section className='flex flex-col rounded-5 border border-os-divider'>
+        {/* Mobile: search sits below the tool cards (desktop keeps it in the header). */}
+        <div className='md:hidden'>
+          <Search
+            size='dense'
+            bg='default'
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder='Search files...'
+            aria-label='Search files'
+            findText=''
+            containerClassName='!border-0'
+            leftIcon={<SearchFramedIcon className='size-5 shrink-0 text-text-secondary' />}
+          />
+        </div>
+
+        {/* Filter tabs + grid. On mobile it spans edge-to-edge with only its top
+            corners rounded (16px); on desktop it's a bordered, rounded card. */}
+        <section className='-mx-4 flex flex-col rounded-t-5 bg-bg-white-bg md:mx-0 md:rounded-5 md:border md:border-os-divider'>
           <div className='flex items-center gap-1 border-b border-action-stroke p-3'>
             {FILTERS.map(({ label, count }) => {
               const active = label === activeFilter;
@@ -484,6 +537,11 @@ const DashboardScreen: FC<DashboardScreenProps> = () => {
           </div>
         </section>
       </main>
+
+      <MobileBottomBar
+        active={activeTab}
+        onSelect={setActiveTab}
+      />
     </div>
   );
 };
