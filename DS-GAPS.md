@@ -13,6 +13,8 @@ Against **ui-pes 0.5.45**.
 | No `Divider` | `h-px bg-os-divider` | ab-testing-modal, payment-details |
 | No `Checkbox` (only `Switch` ships) | `<button role="checkbox">` with token styling | payment-details |
 | No `Stepper` / progress indicator | composed from token utilities | payment-details |
+| No `Progress` / linear-progress bar | token track (`bg-primary-filled-50`) + `bg-primary` fill, width = `progress%` | vocal-remover-processing |
+| No `Alert` / `Callout` (bordered info box) | `border-primary rounded-3 bg-bg-white-bg` box + tonal icon chip + text | vocal-remover-processing |
 | No `Card` primitive | `rounded-4 bg-bg-white-bg` divs | ab-testing-modal, payment-details |
 | No icon set | inline SVG (`stroke="currentColor"`, token `h-*/w-*`) | all |
 
