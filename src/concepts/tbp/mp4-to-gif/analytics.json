@@ -1,0 +1,121 @@
+{
+  "version": 2,
+  "product": "tbp",
+  "concept": "mp4-to-gif",
+  "events": [
+    {
+      "id": "evt_1",
+      "page": "screen",
+      "category": "navigation",
+      "trigger": "page_view",
+      "event": "mp4_to_gif_builder_view",
+      "data": { "tool": "mp4_to_gif", "screen_config_name": "gif_builder" },
+      "notes": "Fires once when the GIF builder screen mounts."
+    },
+    {
+      "id": "evt_2",
+      "page": "screen",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "change_file_tap",
+      "data": { "place": "builder", "tool": "mp4_to_gif" },
+      "element": {
+        "selector": "[data-ff=\"file-name\"] + button",
+        "tag": "button",
+        "role": "button",
+        "label": "Change file"
+      },
+      "notes": "Discards the current clip and returns to upload."
+    },
+    {
+      "id": "evt_3",
+      "page": "screen",
+      "category": "form",
+      "trigger": "select_change",
+      "event": "gif_ratio_change",
+      "data": { "feature_name": "gif_ratio" },
+      "element": {
+        "selector": "[data-ff=\"ratio-field\"]",
+        "tag": "button",
+        "role": "button",
+        "label": "Ratio"
+      },
+      "notes": "Opens the ratio menu / commits a new aspect ratio."
+    },
+    {
+      "id": "evt_4",
+      "page": "screen",
+      "category": "form",
+      "trigger": "toggle",
+      "event": "gif_speed_change",
+      "data": { "feature_name": "gif_speed" },
+      "element": {
+        "selector": "[data-ff=\"speed-tabs\"]",
+        "tag": "div",
+        "role": "tablist",
+        "label": "Speed"
+      },
+      "notes": "Selects a playback speed tab (0.5x–3x)."
+    },
+    {
+      "id": "evt_5",
+      "page": "screen",
+      "category": "form",
+      "trigger": "select_change",
+      "event": "gif_fps_change",
+      "data": { "feature_name": "gif_fps" },
+      "element": {
+        "selector": "[data-ff=\"fps-field\"]",
+        "tag": "button",
+        "role": "button",
+        "label": "Frame rate (FPS)"
+      },
+      "notes": "Opens the frame-rate menu / commits a new FPS value."
+    },
+    {
+      "id": "evt_6",
+      "page": "screen",
+      "category": "form",
+      "trigger": "select_change",
+      "event": "gif_quality_change",
+      "data": { "feature_name": "gif_quality" },
+      "element": {
+        "selector": "[data-ff=\"quality-field\"]",
+        "tag": "button",
+        "role": "button",
+        "label": "GIF's quality"
+      },
+      "notes": "Opens the quality menu / commits a new quality value."
+    },
+    {
+      "id": "evt_7",
+      "page": "screen",
+      "category": "form",
+      "trigger": "toggle",
+      "event": "gif_loop_change",
+      "data": { "feature_name": "gif_loop" },
+      "element": {
+        "selector": "[role=\"switch\"]",
+        "tag": "button",
+        "role": "switch",
+        "label": "Loop"
+      },
+      "notes": "Toggles GIF auto-replay."
+    },
+    {
+      "id": "evt_8",
+      "page": "screen",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "convert_download_tap",
+      "data": { "tool": "mp4_to_gif", "file_format": "gif", "method": "click" },
+      "element": {
+        "selector": "[data-ff=\"cta\"]",
+        "tag": "button",
+        "role": "button",
+        "label": "Convert & download"
+      },
+      "notes": "Primary CTA — starts conversion with the current trim + settings."
+    }
+  ]
+}

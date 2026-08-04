@@ -1,0 +1,102 @@
+{
+  "source": "figma://mHGmB1eJ1Y0FvdNIg122GM?node-id=29970-54507",
+  "note": "MP4 → GIF builder (TheBestPDF). Ground truth from the Figma frames: Builder 1440px (node 29970:54154), Builder 375px (node 29970:54169). Font Inter. Values pulled via get_variable_defs / get_design_context.",
+  "frames": {
+    "desktop": { "w": 1440, "h": 1000, "node": "29970:54154" },
+    "mobile": { "w": 375, "h": 1160, "node": "29970:54169" }
+  },
+  "scenarios": ["default", "portrait"],
+  "regions": [
+    {
+      "ff": "header",
+      "frame": "desktop",
+      "component": "header (product shell)",
+      "assert": { "height": 80 }
+    },
+    {
+      "ff": "header",
+      "frame": "mobile",
+      "component": "header (product shell)",
+      "assert": { "height": 60 }
+    },
+    {
+      "ff": "builder-card",
+      "component": "section — left card (no Card primitive — DS gap), white, radius-3, modal shadow",
+      "layout": { "flow": "two cards side-by-side @desktop (gap 20), stacked @mobile (gap 16)" },
+      "assert": { "borderRadius": 10 }
+    },
+    {
+      "ff": "settings-card",
+      "component": "aside — right card (no Card primitive — DS gap), white, radius-3, modal shadow",
+      "assert": { "borderRadius": 10 }
+    },
+    {
+      "ff": "panel-title",
+      "frame": "desktop",
+      "component": "h2 · text-desktop-title-5",
+      "copy": "GIF settings",
+      "assert": { "fontFamily": "Inter", "fontSize": 23, "fontWeight": 700 }
+    },
+    {
+      "ff": "setting-label",
+      "component": "span · text-body-emph",
+      "copy": "Ratio",
+      "assert": { "fontFamily": "Inter", "fontSize": 16, "fontWeight": 600 }
+    },
+    {
+      "ff": "file-name",
+      "component": "div · text-body-2",
+      "copy": "screen_recording_userfile.mp4 2.1MB",
+      "assert": { "fontSize": 14 }
+    },
+    {
+      "ff": "hint",
+      "component": "p · text-body-2 · text-text-secondary",
+      "copy": "Choose 2 to 6 seconds of your video to turn into a GIF.",
+      "assert": { "fontSize": 14, "textAlign": "center" }
+    },
+    {
+      "ff": "ruler-label",
+      "component": "span · text-caption · text-text-secondary",
+      "copy": "0:00",
+      "assert": { "fontSize": 13 }
+    },
+    {
+      "ff": "video-stage",
+      "frame": "mobile",
+      "component": "div · bg-bg-white-bg (fixed height on mobile)",
+      "assert": { "height": 208 }
+    },
+    {
+      "ff": "ratio-field",
+      "component": "button (no Select field — DS gap; filled input styling, radius-1)",
+      "assert": { "height": 40, "borderRadius": 4 }
+    },
+    {
+      "ff": "speed-tabs",
+      "component": "TabsList (color=grey, size=md)",
+      "layout": { "flow": "row" },
+      "assert": { "flexDirection": "row" }
+    },
+    {
+      "ff": "trim-band",
+      "component": "div · border-2 border-primary · bg-primary-opacity-16 · radius-2",
+      "assert": { "borderRadius": 8 }
+    },
+    {
+      "ff": "badge-start",
+      "component": "span · bg-bg-dark · text-common-white (timecode chip)",
+      "copy": "0:00",
+      "nearestToken": true,
+      "note": "design badge is 10px/700 (Badge dense); nearest ui-pes type token is text-caption-xs (11px).",
+      "assert": { "fontSize": 11, "textContent": "0:00" }
+    },
+    {
+      "ff": "cta",
+      "frame": "desktop",
+      "component": "Button (variant=filled, color=primary, size=lg)",
+      "copy": "Convert & download",
+      "assert": { "height": 48, "textContent": "Convert & download" }
+    }
+  ]
+}

@@ -16,6 +16,7 @@ Against **ui-pes 0.5.45**.
 | No `Progress` / linear-progress bar | token track (`bg-primary-filled-50`) + `bg-primary` fill, width = `progress%` | vocal-remover-processing |
 | No `Alert` / `Callout` (bordered info box) | `border-primary rounded-3 bg-bg-white-bg` box + tonal icon chip + text | vocal-remover-processing |
 | No `Card` primitive | `rounded-4 bg-bg-white-bg` divs | ab-testing-modal, payment-details |
+| No `Select` / combobox field (trigger + option list, selected state, rich two-line items) | token-styled `<button>` trigger + composed popover `<ul role=listbox>` (outside-click / Escape close, `bg-primary-opacity-8` selected row); `BaseDropdown` is action-menu-shaped, not a value select | mp4-to-gif |
 | No icon set | inline SVG (`stroke="currentColor"`, token `h-*/w-*`) | all |
 
 ## Component prop gaps
@@ -23,6 +24,7 @@ Against **ui-pes 0.5.45**.
 |---|---|---|
 | `Button` has no `success` color (only `primary`/`secondary`/`action`/`error`) | green CTAs composed via `bg-success-main text-success-contrast-text` override | payment-details |
 | `Badge` ships no default `type`; `size="dense"` sets no font-size | badge padding/radius/font compounds never apply → size forced via token/arbitrary | ab-testing-modal |
+| No small-bold type token (~10px/700) for a compact timecode chip | nearest is `text-caption-xs` (11px/400); asserted as a `nearestToken` approximation | mp4-to-gif |
 
 ## Token / build gaps
 | Gap | Impact | Status |
