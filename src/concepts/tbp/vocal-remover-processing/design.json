@@ -9,8 +9,16 @@
   "regions": [
     {
       "ff": "container",
-      "component": "div (no Dialog primitive — DS gap; rounded-4 bg-bg-white-bg shadow-modal-card over bg-os-backdrop-overlay)",
+      "frame": "desktop",
+      "component": "div (no Dialog primitive — DS gap; centered card: rounded-4 bg-bg-white-bg shadow-modal-card over bg-os-backdrop-overlay)",
       "assert": { "borderRadius": 12 }
+    },
+    {
+      "ff": "container",
+      "frame": "mobile",
+      "component": "div (no Dialog primitive — DS gap; full-bleed on mobile: fills the screen, no radius/shadow)",
+      "layout": { "flow": "fullscreen — full width + full height, square corners" },
+      "assert": { "borderRadius": 0, "width": 375, "height": 812 }
     },
     {
       "ff": "title",
