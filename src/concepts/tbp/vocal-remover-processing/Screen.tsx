@@ -20,15 +20,17 @@ export default function Screen(props: VocalRemoverProcessingProps) {
   const { title, file, progress, estimatedTimeLabel, info } = props;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-os-backdrop-overlay p-4">
+    <div className="flex min-h-screen justify-center bg-os-backdrop-overlay md:items-center md:p-4">
+      {/* Mobile: full-bleed (fills the screen, no radius/shadow).
+          Desktop: centered card, max-w 860, rounded-4. */}
       <div
         data-ff="container"
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="w-full max-w-[860px] overflow-hidden rounded-4 bg-bg-white-bg shadow-modal-card"
+        className="flex min-h-screen w-full flex-col bg-bg-white-bg md:min-h-0 md:max-w-[860px] md:overflow-hidden md:rounded-4 md:shadow-modal-card"
       >
-        <div className="grid grid-cols-1 gap-4 p-4 md:min-h-[600px] md:grid-cols-[354px_minmax(0,1fr)] md:grid-rows-[1fr_auto_auto_1fr_auto] md:gap-x-8 md:gap-y-4 md:p-8">
+        <div className="flex flex-1 flex-col gap-4 p-4 md:grid md:min-h-[600px] md:grid-cols-[354px_minmax(0,1fr)] md:grid-rows-[1fr_auto_auto_1fr_auto] md:gap-x-8 md:gap-y-4 md:p-8">
           {/* Title — mobile: top, centered; desktop: right column, second row */}
           <h1
             data-ff="title"
@@ -38,7 +40,7 @@ export default function Screen(props: VocalRemoverProcessingProps) {
           </h1>
 
           {/* Animation — mobile: fixed band; desktop: full-height left column */}
-          <AnimationPanel className="h-[280px] md:col-start-1 md:row-span-5 md:row-start-1 md:h-auto md:self-stretch" />
+          <AnimationPanel className="h-[280px] shrink-0 md:col-start-1 md:row-span-5 md:row-start-1 md:h-auto md:self-stretch" />
 
           {/* File + progress core */}
           <div className="flex flex-col gap-4 md:col-start-2 md:row-start-3">
@@ -52,7 +54,7 @@ export default function Screen(props: VocalRemoverProcessingProps) {
           </div>
 
           {/* Reassurance callout — pinned to the bottom row on desktop */}
-          <InfoCallout className="md:col-start-2 md:row-start-5">{info}</InfoCallout>
+          <InfoCallout className="mt-auto md:col-start-2 md:row-start-5 md:mt-0">{info}</InfoCallout>
         </div>
       </div>
     </div>
