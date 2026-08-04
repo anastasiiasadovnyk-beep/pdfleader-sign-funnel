@@ -1,0 +1,95 @@
+{
+  "source": "figma://mHGmB1eJ1Y0FvdNIg122GM?node-id=28316-5090",
+  "note": "Vocal Remover file-processing modal (TheBestPDF). Ground truth from the Figma frames: desktop Dialog 860×640 (node 28294:6776), mobile Dialog 375×680 (node 28294:7460). Font Inter. Dialog radius 12 (radius-4). Values pulled via get_variable_defs / get_screenshot. Fidelity viewports are wider/narrower than the dialog so the md: breakpoint resolves correctly.",
+  "frames": {
+    "desktop": { "w": 1440, "h": 1000, "node": "28294:6776" },
+    "mobile": { "w": 375, "h": 812, "node": "28294:7460" }
+  },
+  "scenarios": ["default", "start"],
+  "regions": [
+    {
+      "ff": "container",
+      "component": "div (no Dialog primitive — DS gap; rounded-4 bg-bg-white-bg shadow-modal-card over bg-os-backdrop-overlay)",
+      "assert": { "borderRadius": 12 }
+    },
+    {
+      "ff": "title",
+      "frame": "desktop",
+      "component": "h1 · text-desktop-title-4",
+      "copy": "Splitting your track...",
+      "assert": { "fontFamily": "Inter", "fontSize": 28, "fontWeight": 700, "textAlign": "left", "textContent": "Splitting your track" }
+    },
+    {
+      "ff": "title",
+      "frame": "mobile",
+      "component": "h1 · text-mobile-title-4",
+      "copy": "Splitting your track...",
+      "nearestToken": true,
+      "note": "Figma Title 4 Mobile is 22px/Bold (~700); nearest ui-pes token at 22px is text-mobile-title-4 (22px/800).",
+      "assert": { "fontFamily": "Inter", "fontSize": 22, "fontWeight": 800, "textAlign": "center" }
+    },
+    {
+      "ff": "animation",
+      "frame": "desktop",
+      "component": "div · bg-primary-opacity-8 · rounded-4, hosts the 354×528 Lottie",
+      "layout": { "flow": "left column, full height" },
+      "assert": { "width": 354, "borderRadius": 12 }
+    },
+    {
+      "ff": "animation",
+      "frame": "mobile",
+      "component": "div · bg-primary-opacity-8 · rounded-4, hosts the 327×280 Lottie",
+      "layout": { "flow": "top band, full width" },
+      "assert": { "height": 280, "borderRadius": 12 }
+    },
+    {
+      "ff": "format-badge",
+      "component": "Badge (type=badge, style=filled-tonal, color=primary, size=dense)",
+      "copy": "MP3",
+      "assert": { "textTransform": "uppercase", "textContent": "MP3" }
+    },
+    {
+      "ff": "file-name",
+      "component": "p · text-body-emph · text-text-primary",
+      "copy": "users_song.mp3",
+      "assert": { "fontFamily": "Inter", "fontSize": 16, "fontWeight": 600, "textContent": "users_song.mp3" }
+    },
+    {
+      "ff": "file-meta",
+      "component": "p · text-body-2 · text-text-secondary",
+      "copy": "12.87 MB · 1:25s",
+      "assert": { "fontSize": 14, "textContent": "12.87 MB" }
+    },
+    {
+      "ff": "progress-track",
+      "component": "div (no Progress primitive — DS gap; token track + primary fill)",
+      "assert": { "height": 6 }
+    },
+    {
+      "ff": "progress-pct",
+      "frame": "desktop",
+      "scenario": "default",
+      "component": "span · text-caption · text-text-secondary",
+      "copy": "85%",
+      "assert": { "fontSize": 13, "textContent": "85%" }
+    },
+    {
+      "ff": "estimate",
+      "component": "p · text-caption · text-text-secondary",
+      "copy": "Estimated time: 1m",
+      "assert": { "fontSize": 13, "textContent": "Estimated time" }
+    },
+    {
+      "ff": "callout",
+      "component": "div (no Alert primitive — DS gap; border-primary rounded-3 bg-bg-white-bg)",
+      "layout": { "flow": "row: icon chip + text" },
+      "assert": { "borderRadius": 10, "flexDirection": "row" }
+    },
+    {
+      "ff": "callout-text",
+      "component": "p · text-body-2 · text-text-primary",
+      "copy": "We split your song into clean vocals and an instrumental track – perfect for karaoke, remixes and covers.",
+      "assert": { "fontSize": 14, "textContent": "We split your song" }
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "product": "tbp",
+  "concept": "vocal-remover-processing",
+  "events": [
+    {
+      "id": "evt_1",
+      "page": "screen",
+      "category": "navigation",
+      "trigger": "page_view",
+      "event": "vocal_remover_processing_view",
+      "data": { "funnel": "vocal_remover", "status": "processing" },
+      "notes": "Processing modal shown over the vocal-remover landing right after the user uploads a track."
+    },
+    {
+      "id": "evt_2",
+      "page": "screen",
+      "category": "media",
+      "trigger": "complete",
+      "event": "vocal_remover_split_complete",
+      "data": { "status": "success", "file_format": "mp3" },
+      "notes": "Fires when progress reaches 100% and the split finishes; the modal then closes / routes to the result."
+    }
+  ]
+}
