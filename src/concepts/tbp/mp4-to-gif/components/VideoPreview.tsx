@@ -7,6 +7,11 @@ type VideoPreviewProps = {
   video: VideoMeta;
   ratio: AspectRatio;
   changeLabel: string;
+  /** Playback is constrained to this window — only the trimmed segment plays. */
+  trimStart: number;
+  trimEnd: number;
+  /** When the segment ends: loop back to start (true) or pause (false). */
+  loop: boolean;
   onChangeFile?: () => void;
 };
 
@@ -16,9 +21,46 @@ type VideoPreviewProps = {
  * so shrinking the window shrinks the preview, never the timeline. The video
  * itself is cropped to the ratio (object-cover), not letterboxed. A locally-picked
  * clip renders as a real <video>; else a placeholder. */
-export default function VideoPreview({ video, ratio, changeLabel, onChangeFile }: VideoPreviewProps) {
+export default function VideoPreview({
+  video,
+  ratio,
+  changeLabel,
+  trimStart,
+  trimEnd,
+  loop,
+  onChangeFile,
+}: VideoPreviewProps) {
   const stageRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [box, setBox] = useState<{ w: number; h: number } | null>(null);
+
+  // Keep the shown frame inside the trim window when the selection changes.
+  useLayoutEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.currentTime < trimStart || v.currentTime > trimEnd) v.currentTime = trimStart;
+  }, [trimStart, trimEnd, video.src]);
+
+  // Only the trimmed segment plays: seek into the window on play, and loop back
+  // to (or pause at) the start once the segment end is reached.
+  const onPlay = () => {
+    const v = videoRef.current;
+    if (v && (v.currentTime < trimStart || v.currentTime >= trimEnd)) v.currentTime = trimStart;
+  };
+  const onTimeUpdate = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.currentTime < trimStart) v.currentTime = trimStart;
+    if (v.currentTime >= trimEnd) {
+      if (loop) {
+        v.currentTime = trimStart;
+        void v.play();
+      } else {
+        v.pause();
+        v.currentTime = trimEnd;
+      }
+    }
+  };
 
   useLayoutEffect(() => {
     const el = stageRef.current;
@@ -77,10 +119,14 @@ export default function VideoPreview({ video, ratio, changeLabel, onChangeFile }
           {video.src ? (
             <video
               key={video.src}
+              ref={videoRef}
               src={video.src}
               controls
               playsInline
               poster={video.posterSrc}
+              onPlay={onPlay}
+              onTimeUpdate={onTimeUpdate}
+              onLoadedMetadata={onPlay}
               className="h-full w-full object-cover"
             />
           ) : (
