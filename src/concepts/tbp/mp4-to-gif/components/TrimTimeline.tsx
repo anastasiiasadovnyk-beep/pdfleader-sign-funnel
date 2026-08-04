@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
 import type { TrimState } from '../types';
-import { formatClock, pct, rulerMarkers } from '../lib/timeline';
+import { formatClock, pct, rulerMarkers, rulerStep } from '../lib/timeline';
 
 type TrimTimelineProps = {
   durationSec: number;
@@ -34,7 +34,7 @@ export default function TrimTimeline({
   const trackRef = useRef<HTMLDivElement>(null);
   const drag = useRef<DragState | null>(null);
 
-  const markers = rulerMarkers(durationSec, 5);
+  const markers = rulerMarkers(durationSec, rulerStep(durationSec));
   const startPct = pct(trim.startSec, durationSec);
   const endPct = pct(trim.endSec, durationSec);
   const widthPct = Math.max(0, endPct - startPct);
