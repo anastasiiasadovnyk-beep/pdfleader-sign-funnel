@@ -12,9 +12,10 @@ type VideoPreviewProps = {
 
 /** Top of the builder: the file-name row + the video stage. On desktop the stage
  * flexes to fill the space left above the pinned timeline; the video frame is
- * sized to the selected ratio and fitted inside the stage (letterboxed) via a
- * ResizeObserver — so shrinking the window shrinks the preview, never the
- * timeline. A locally-picked clip renders as a real <video>; else a placeholder. */
+ * sized to the selected ratio and fitted inside the stage via a ResizeObserver —
+ * so shrinking the window shrinks the preview, never the timeline. The video
+ * itself is cropped to the ratio (object-cover), not letterboxed. A locally-picked
+ * clip renders as a real <video>; else a placeholder. */
 export default function VideoPreview({ video, ratio, changeLabel, onChangeFile }: VideoPreviewProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const [box, setBox] = useState<{ w: number; h: number } | null>(null);
@@ -80,7 +81,7 @@ export default function VideoPreview({ video, ratio, changeLabel, onChangeFile }
               controls
               playsInline
               poster={video.posterSrc}
-              className="h-full w-full object-contain"
+              className="h-full w-full object-cover"
             />
           ) : (
             <>

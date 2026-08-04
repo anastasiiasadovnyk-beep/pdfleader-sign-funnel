@@ -9,6 +9,15 @@ export const formatClock = (totalSeconds: number): string => {
   return `${mm}:${String(ss).padStart(2, '0')}`;
 };
 
+/** Spacing between labelled ruler markers, scaled to the clip length:
+ * ≤30s → 5s, ≤1min → 10s, ≤3min → 30s, longer → 1min. */
+export const rulerStep = (durationSec: number): number => {
+  if (durationSec <= 30) return 5;
+  if (durationSec <= 60) return 10;
+  if (durationSec <= 180) return 30;
+  return 60;
+};
+
 /** Labelled ruler markers: every `stepSec` from 0, always including the final
  * duration. A regular tick within `stepSec/2` of the end is dropped so its label
  * never collides with the right-aligned final one. */
