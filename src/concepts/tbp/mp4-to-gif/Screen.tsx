@@ -82,6 +82,9 @@ export default function Screen(props: Mp4ToGifProps) {
             video={state.video}
             ratio={derived.ratio}
             changeLabel={props.changeLabel}
+            trimStart={state.trim.startSec}
+            trimEnd={state.trim.endSec}
+            loop={state.settings.loop}
             onChangeFile={openFilePicker}
           />
           <div className="h-px shrink-0 bg-os-divider" />
