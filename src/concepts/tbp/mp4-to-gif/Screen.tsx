@@ -129,8 +129,8 @@ export default function Screen(props: Mp4ToGifProps) {
         </aside>
       </main>
 
-      {/* mobile CTA — fixed bottom bar */}
-      <div className="fixed inset-x-0 bottom-0 border-t border-os-divider bg-bg-white-bg px-4 py-4 md:hidden">
+      {/* mobile CTA — fixed bottom bar (above the scrolling content) */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-os-divider bg-bg-white-bg px-4 py-4 md:hidden">
         {cta}
       </div>
     </div>
