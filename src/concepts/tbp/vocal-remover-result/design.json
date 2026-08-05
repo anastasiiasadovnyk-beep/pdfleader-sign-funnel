@@ -1,0 +1,120 @@
+{
+  "source": "figma://mHGmB1eJ1Y0FvdNIg122GM?node-id=28372-5213",
+  "note": "Vocal Remover result page (TheBestPDF) — variant B of the result A/B test. Ground truth from the Figma desktop Builder frame 1440px (node 28372:5213), values pulled via get_variable_defs / get_screenshot. Font Inter. Only a desktop frame exists in Figma; the mobile frame here is an adapted single-column layout (no dedicated Figma mobile node), so Figma-derived assertions are scoped frame: desktop and mobile only asserts the responsive flips this concept designs.",
+  "frames": {
+    "desktop": { "w": 1440, "h": 1048, "node": "28372:5213" },
+    "mobile": { "w": 390, "h": 920, "node": "28372:5213", "adapted": true }
+  },
+  "scenarios": ["default", "playing", "rated"],
+  "regions": [
+    {
+      "ff": "title",
+      "frame": "desktop",
+      "component": "h1 · text-desktop-title-3 + font-bold",
+      "copy": "Voice is removed",
+      "note": "Figma Title 3 Desktop is 32px/Bold(700); text-desktop-title-3 gives 32px/36 line but weight 800, so font-bold pins it to the design 700.",
+      "assert": { "fontFamily": "Inter", "fontSize": 32, "fontWeight": 700, "textAlign": "center", "textContent": "Voice is removed" }
+    },
+    {
+      "ff": "subtitle",
+      "component": "p · text-body · text-text-secondary",
+      "copy": "Preview the first 30 seconds of each track. Download to get the full-lenght vocals and instrumental.",
+      "assert": { "fontFamily": "Inter", "fontSize": 16, "fontWeight": 400, "textAlign": "center", "textContent": "Preview the first 30 seconds" }
+    },
+    {
+      "ff": "feature",
+      "component": "li · CheckIcon (primary) + text-body-2 · text-primary",
+      "copy": "Full-lenght tracks",
+      "nearestToken": true,
+      "note": "Figma feature label is Inter 14px/Medium(500); nearest ui-pes token is text-body-2 (14px/400).",
+      "assert": { "fontFamily": "Inter", "fontSize": 14, "textContent": "Full-lenght tracks" }
+    },
+    {
+      "ff": "card",
+      "frame": "desktop",
+      "component": "section (no ui-pes Card — DS gap; rounded-3 bg-bg-white-bg shadow-modal-card)",
+      "note": "Desktop content container is a true 676px wide (Figma Voice-options frame width).",
+      "assert": { "borderRadius": 10, "width": 676 }
+    },
+    {
+      "ff": "original-title",
+      "component": "h2 · text-subtitle-emph · text-text-primary",
+      "copy": "Original track",
+      "assert": { "fontFamily": "Inter", "fontSize": 18, "fontWeight": 600, "textContent": "Original track" }
+    },
+    {
+      "ff": "file-name",
+      "component": "p · text-body-emph · text-text-primary",
+      "copy": "users_song.mp3",
+      "assert": { "fontFamily": "Inter", "fontSize": 16, "fontWeight": 600, "textContent": "users_song.mp3" }
+    },
+    {
+      "ff": "file-meta",
+      "component": "p · text-caption · text-text-secondary",
+      "copy": "12.87 MB · 1:25s",
+      "assert": { "fontSize": 13, "textContent": "12.87 MB" }
+    },
+    {
+      "ff": "change-btn",
+      "component": "Button (variant=text, color=action, size=sm) + RefreshIcon",
+      "copy": "Change",
+      "assert": { "textContent": "Change" }
+    },
+    {
+      "ff": "separated-title",
+      "component": "h2 · text-subtitle-emph · text-text-primary",
+      "copy": "Separated tracks",
+      "assert": { "fontFamily": "Inter", "fontSize": 18, "fontWeight": 600, "textContent": "Separated tracks" }
+    },
+    {
+      "ff": "separated-header",
+      "frame": "desktop",
+      "layout": { "flow": "row — title left, Download-all right" },
+      "assert": { "flexDirection": "row" }
+    },
+    {
+      "ff": "separated-header",
+      "frame": "mobile",
+      "layout": { "flow": "column — title over full-width Download-all" },
+      "assert": { "flexDirection": "column" }
+    },
+    {
+      "ff": "download-all",
+      "component": "Button (color=primary, size=md) + DownloadIcon",
+      "copy": "Download both (.zip)",
+      "assert": { "textContent": "Download both" }
+    },
+    {
+      "ff": "track-item",
+      "frame": "desktop",
+      "component": "div (no ui-pes Card — DS gap; rounded-3 border-os-divider bg-bg-white-bg)",
+      "assert": { "borderRadius": 10 }
+    },
+    {
+      "ff": "track-badge",
+      "component": "Badge (type=badge, style=filled-tonal, color=custom, size=dense)",
+      "copy": "BACKING TRACK",
+      "nearestToken": true,
+      "note": "Per-kind text color set by token via color=custom: instrumental → text-success-dark (#096b32), vocals → text-material-bp-blue (#1e88e5 base palette), origin → grey. Figma dense badge text is Inter 10px/Bold; no ~10px token — forced to text-caption-xs (11px) + font-bold. DS gap: dense Badge sets no font-size.",
+      "assert": { "fontSize": 11, "textTransform": "uppercase", "textContent": "BACKING TRACK" }
+    },
+    {
+      "ff": "track-name",
+      "component": "span · text-body-emph · text-text-primary",
+      "copy": "Instrumental",
+      "assert": { "fontFamily": "Inter", "fontSize": 16, "fontWeight": 600, "textContent": "Instrumental" }
+    },
+    {
+      "ff": "track-format",
+      "component": "span · text-caption · text-text-disabled",
+      "copy": ".mp3",
+      "assert": { "fontSize": 13, "textContent": ".mp3" }
+    },
+    {
+      "ff": "rate-label",
+      "component": "span · text-body-2 · text-text-secondary",
+      "copy": "Rate the result:",
+      "assert": { "fontSize": 14, "textContent": "Rate the result" }
+    }
+  ]
+}
