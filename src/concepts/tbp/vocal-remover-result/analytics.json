@@ -1,0 +1,66 @@
+{
+  "version": 2,
+  "product": "tbp",
+  "concept": "vocal-remover-result",
+  "events": [
+    {
+      "id": "evt_1",
+      "page": "screen",
+      "category": "navigation",
+      "trigger": "page_view",
+      "event": "vocal_remover_result_view",
+      "data": { "funnel": "vocal_remover", "status": "ready", "ab_test": "vocal_remover_result_variant_b" },
+      "notes": "Result page (variant B) shown after the split finishes. ab_test also auto-attached by the analytics layer."
+    },
+    {
+      "id": "evt_2",
+      "page": "screen",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "vocal_remover_download_all_tap",
+      "data": { "funnel": "vocal_remover", "download_method": "zip" },
+      "element": { "selector": "[data-ff=download-all]", "tag": "button", "role": "button", "label": "Download both (.zip)" },
+      "notes": "Primary CTA — downloads both stems as a zip."
+    },
+    {
+      "id": "evt_3",
+      "page": "screen",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "vocal_remover_download_track_tap",
+      "data": { "funnel": "vocal_remover", "download_method": "single", "type": "instrumental" },
+      "element": { "selector": ".flex:nth-of-type(1) > [data-ff=download-btn]", "tag": "button", "role": "button", "label": "Download track" },
+      "notes": "Per-stem download button (instrumental / vocals / origin). `type` carries the stem kind."
+    },
+    {
+      "id": "evt_4",
+      "page": "screen",
+      "category": "media",
+      "trigger": "play",
+      "event": "vocal_remover_track_play",
+      "data": { "funnel": "vocal_remover", "type": "vocals" },
+      "element": { "selector": "[data-ff=play-btn]", "tag": "button", "role": "button", "label": "Play" },
+      "notes": "Play/pause a stem preview. `type` carries the stem kind."
+    },
+    {
+      "id": "evt_5",
+      "page": "screen",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "vocal_remover_change_file_tap",
+      "data": { "funnel": "vocal_remover" },
+      "element": { "selector": "[data-ff=change-btn]", "tag": "button", "role": "button", "label": "Change" },
+      "notes": "Replace the uploaded source file / restart the flow."
+    },
+    {
+      "id": "evt_6",
+      "page": "screen",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "vocal_remover_rate_result_tap",
+      "data": { "funnel": "vocal_remover", "type": "up" },
+      "element": { "selector": "[data-ff=rate-label] ~ button", "tag": "button", "role": "button", "label": "Rate the result good" },
+      "notes": "Thumbs up / down on the result. `type` carries up|down."
+    }
+  ]
+}
