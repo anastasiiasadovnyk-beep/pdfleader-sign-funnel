@@ -30,11 +30,6 @@ export type ContactCopy = {
 };
 
 /** File names handed to the browser when a download CTA is pressed. */
-export type DownloadCopy = {
-  signedFileName: string;
-  auditFileName: string;
-};
-
 export type ToastCopy = {
   signedTitle: string;
   auditTitle: string;
@@ -61,7 +56,6 @@ export type ThankYouScreenProps = {
   paymentDetails: PaymentDetailsCopy;
   contact: ContactCopy;
   toast: ToastCopy;
-  downloads: DownloadCopy;
   footer: FooterCopy;
   /** Scenario seed — render the page with a download toast already visible. */
   initialToast?: ToastVariant | null;

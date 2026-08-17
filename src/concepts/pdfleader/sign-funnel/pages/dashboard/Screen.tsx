@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Button, cn } from '@universe-forma/ui-pes';
 
-import { downloadPdf } from '../../lib/downloadFile';
 import { forgetSignatureType } from '../../lib/signatureChoice';
 import type { DashboardScreenProps, ToastVariant } from './types';
 import { DashHeader } from './components/DashHeader';
@@ -20,7 +19,8 @@ const TOAST_MS = 5000;
  * the two, which keeps the grey row below the green one.
  */
 export default function Screen(props: DashboardScreenProps) {
-  // Row downloads confirm themselves with the thank-you page's green toast.
+  // Row downloads confirm themselves with the thank-you page's green toast —
+  // and with a toast only: no file is produced, so no browser download UI opens.
   const [toast, setToast] = useState<ToastVariant | null>(props.initialToast ?? null);
   const timer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(timer.current), []);
@@ -81,14 +81,8 @@ export default function Screen(props: DashboardScreenProps) {
               file={file}
               menu={props.menu}
               labels={props.rowActionLabels}
-              onDownload={() => {
-                downloadPdf(props.downloads.signedFileName, ['Signed document', `${file.name} — prototype copy.`]);
-                showToast('signed');
-              }}
-              onDownloadAudit={() => {
-                downloadPdf(props.downloads.auditFileName, ['Audit trail', `${file.name} — Certificate of Completion.`]);
-                showToast('audit');
-              }}
+              onDownload={() => showToast('signed')}
+              onDownloadAudit={() => showToast('audit')}
             />
           ))}
         </section>

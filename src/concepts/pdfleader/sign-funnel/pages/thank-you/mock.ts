@@ -30,10 +30,6 @@ const mock: ThankYouScreenProps = {
       { icon: 'address', text: '26 Stavrou Street, Strovolos 2034, Nicosia, Cyprus' },
     ],
   },
-  downloads: {
-    signedFileName: 'W-9_signed.pdf',
-    auditFileName: 'W-9_signed_audit-trail.pdf',
-  },
   toast: {
     signedTitle: 'The signed document has been downloaded',
     auditTitle: 'The audit trail has been downloaded',

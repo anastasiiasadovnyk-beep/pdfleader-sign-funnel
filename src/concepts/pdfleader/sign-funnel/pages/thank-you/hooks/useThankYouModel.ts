@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { downloadPdf } from '../../../lib/downloadFile';
 import { recallSignatureType } from '../../../lib/signatureChoice';
 import type { ThankYouScreenProps, ToastVariant } from '../types';
 
@@ -8,9 +7,13 @@ const TOAST_MS = 5000;
 
 /**
  * View-model for the thank-you page: which download toast is visible, and which
- * signature type the page was reached with. Downloads do NOT auto-start on page
- * load (Figma annotation); a toast appears on arrival and after a CTA click,
- * and auto-dismisses after 5 s.
+ * signature type the page was reached with.
+ *
+ * The download CTAs deliberately produce NO file: a real download opens the
+ * browser's own save/download UI, which pulls a test participant out of the
+ * prototype. The green toast is the whole feedback. Downloads also do not
+ * auto-start on page load (Figma annotation); the toast appears on arrival and
+ * after a CTA click, and auto-dismisses after 5 s.
  */
 export function useThankYouModel(props: ThankYouScreenProps) {
   const [toast, setToast] = useState<ToastVariant | null>(props.initialToast ?? null);
@@ -39,14 +42,8 @@ export function useThankYouModel(props: ThankYouScreenProps) {
   return {
     state: { toast },
     actions: {
-      downloadFile: () => {
-        downloadPdf(props.downloads.signedFileName, ['Signed document', 'Prototype copy — W-9, signed.']);
-        show('signed');
-      },
-      downloadAudit: () => {
-        downloadPdf(props.downloads.auditFileName, ['Audit trail', 'Certificate of Completion — prototype copy.']);
-        show('audit');
-      },
+      downloadFile: () => show('signed'),
+      downloadAudit: () => show('audit'),
       dismissToast: () => {
         window.clearTimeout(timer.current);
         setToast(null);

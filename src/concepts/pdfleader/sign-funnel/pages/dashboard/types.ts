@@ -20,11 +20,6 @@ export type DocumentRow = {
 export type ToastVariant = 'signed' | 'audit';
 
 /** File names handed to the browser when a row download is pressed. */
-export type DownloadCopy = {
-  signedFileName: string;
-  auditFileName: string;
-};
-
 export type ToastCopy = {
   signedTitle: string;
   auditTitle: string;
@@ -62,7 +57,6 @@ export type DashboardScreenProps = {
   files: DocumentRow[];
   menu: RowMenuCopy;
   toast: ToastCopy;
-  downloads: DownloadCopy;
   /** Scenario seed — render the page with a toast already visible. */
   initialToast?: ToastVariant | null;
   /** Accessible names for the per-row icon actions. */
