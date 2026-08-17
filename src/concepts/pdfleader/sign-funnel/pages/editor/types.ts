@@ -141,7 +141,10 @@ export type CreateSignModalCopy = {
   /** `**bold**` segments are emphasised when rendered. */
   uploadCaption: string;
   clearLabel: string;
+  /** Primary CTA while creating a signature. */
   signLabel: string;
+  /** Primary CTA when the dialog was opened to edit the placed signature. */
+  saveLabel: string;
 };
 
 export type ExportFormatId = 'pdf' | 'docx' | 'pptx' | 'xlsx' | 'jpg' | 'png';

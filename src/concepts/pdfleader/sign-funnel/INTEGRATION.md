@@ -44,7 +44,7 @@ One flow serves both sealing types — nothing branches. `editor` → `thank-you
 | `mobileChrome` | `MobileChromeCopy` | i18n `t('editor.mobile.*')` |
 | `document` | `DocumentCanvasProps` | rendered page raster URL from the document service; `signFieldLabel` i18n `t('sign.fieldMarker')` |
 | `selectTypeModal` | `SelectTypeModalCopy` | i18n `t('sign.selectType.*')`; `previewImageUrl` static asset |
-| `createSignModal` | `CreateSignModalCopy` | i18n `t('sign.create.*')` — **the Figma frames keep DS Dialog placeholder strings ("Title"/"Subheader"/"Tertiary"/"Secondary"/"Primary"); the shipped copy is proposed and must be reviewed by content design** |
+| `createSignModal` | `CreateSignModalCopy` | i18n `t('sign.create.*')` — **the Figma frames keep DS Dialog placeholder strings ("Title"/"Subheader"/"Primary"); the shipped copy is proposed and must be reviewed by content design.** The one primary CTA carries two labels: `signLabel` while creating, `saveLabel` when the dialog was opened from the pencil to edit the placed signature |
 | `signedToolbar` | `SignedToolbarCopy` | i18n `t('sign.toolbar.*')`; `signIdValue` from the signing service response |
 | `signatureAssets` | `SignatureAssets` | **mock-only** — `Record<method, Record<inkColor, url>>`, one PNG per method × ink so the colour switcher shows real artwork. In the product the signature is user-generated and the ink is applied live (stroke colour on the canvas / text colour for the font / a recolour pass on the upload), so this whole map goes away |
 | `initialStep`, `initialSignatureType`, `initialMethod`, `initialFilled`, `initialVerified` | scenario seeds | drop on integration — state lives in the sign slice |

@@ -537,18 +537,18 @@
       "page": "editor",
       "scenario": "sigDraw",
       "component": "Button (variant=filled, color=primary, size=md; disabled until canvas filled)",
-      "copy": "Accept and Sign (design placeholder 'Primary'; mobile flow CTA is 'Accept and Sign')",
+      "copy": "Add signature (design placeholder 'Primary'); reads 'Save' when the dialog is opened to edit the placed signature",
       "assert": {
-        "textContent": "Accept and Sign"
+        "textContent": "Add signature"
       }
     },
     {
       "ff": "cs-sign",
       "page": "editor",
       "scenario": "sigDrawFilled",
-      "copy": "Accept and Sign \u2014 enabled once ink present",
+      "copy": "Add signature \u2014 enabled once ink present",
       "assert": {
-        "textContent": "Accept and Sign"
+        "textContent": "Add signature"
       }
     },
     {

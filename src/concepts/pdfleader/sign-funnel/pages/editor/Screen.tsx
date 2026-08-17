@@ -126,6 +126,7 @@ export default function Screen(props: EditorScreenProps) {
           thickness={state.thickness}
           assets={props.signatureAssets}
           canPlace={derived.canPlace}
+          editing={state.editingPlaced}
           onBack={actions.backToSelectType}
           onClose={actions.closeCreate}
           onMethodChange={actions.setMethod}

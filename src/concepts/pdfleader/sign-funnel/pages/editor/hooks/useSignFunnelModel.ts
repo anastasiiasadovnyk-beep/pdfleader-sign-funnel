@@ -74,11 +74,15 @@ export function useSignFunnelModel(props: EditorScreenProps) {
      * dialog; only the pencil (`editSignature`) reopens it for editing.
      */
     startSignFlow: () => {
+      // The sealing type is already settled once a signature is on the page, so
+      // a second one goes straight to the canvas. Deleting it returns the flow
+      // to the default, type-chooser-first path.
+      const hasSignature = step === 'signed';
       setEditingPlaced(false);
-      setDismissStep(step === 'signed' ? 'signed' : 'editing');
+      setDismissStep(hasSignature ? 'signed' : 'editing');
       setMethod('draw');
       setFilled(BLANK_INK);
-      setStep('selectType');
+      setStep(hasSignature ? 'createSign' : 'selectType');
     },
     cancelSelectType: () => {
       setStep(dismissStep);
@@ -163,6 +167,7 @@ export function useSignFunnelModel(props: EditorScreenProps) {
       pagesOpen,
       signaturePosition,
       signatureSelected,
+      editingPlaced,
       exportOpen,
       exportFormat,
     },

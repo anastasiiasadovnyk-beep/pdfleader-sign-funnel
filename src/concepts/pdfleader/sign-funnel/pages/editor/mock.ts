@@ -129,7 +129,8 @@ const mock: EditorScreenProps = {
     uploadButtonLabel: 'Upload your sign',
     uploadCaption: 'Size: **up to 5 MB.**\nSupported format: **JPG**, **PNG**, or **SVG**',
     clearLabel: 'Clear',
-    signLabel: 'Accept and Sign',
+    signLabel: 'Add signature',
+    saveLabel: 'Save',
   },
   signedToolbar: {
     colorLabel: 'Color',

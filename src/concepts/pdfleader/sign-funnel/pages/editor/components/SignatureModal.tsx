@@ -174,6 +174,8 @@ type SignatureModalProps = {
   thickness: InkThickness;
   assets: SignatureAssets;
   canPlace: boolean;
+  /** Opened from the pencil on the placed signature rather than to create one. */
+  editing: boolean;
   onBack: () => void;
   onClose: () => void;
   onMethodChange: (method: SignatureMethod) => void;
@@ -188,7 +190,7 @@ type SignatureModalProps = {
 
 /** Signature creation dialog: Draw / Type / Upload (fullscreen on mobile — no mobile reference frame, adapted from desktop). */
 export function SignatureModal(props: SignatureModalProps) {
-  const { copy, method, filled, inkColor, thickness, assets } = props;
+  const { copy, method, filled, inkColor, thickness, assets, editing } = props;
   const tabIndicatorReady = useTabIndicatorReady();
 
   return (
@@ -398,7 +400,7 @@ export function SignatureModal(props: SignatureModalProps) {
             disabled={!props.canPlace}
             onClick={props.onPlace}
           >
-            {copy.signLabel}
+            {editing ? copy.saveLabel : copy.signLabel}
           </Button>
         </div>
       </div>
