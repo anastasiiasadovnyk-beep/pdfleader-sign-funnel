@@ -1,0 +1,5 @@
+# Single-page app: every route is resolved by the client router, so any path
+# must serve index.html instead of 404ing. Matters when a test participant
+# reloads mid-flow (e.g. .../sign-funnel/thank-you).
+# Honoured by Netlify and Cloudflare Pages; harmless on hosts that ignore it.
+/*  /index.html  200
