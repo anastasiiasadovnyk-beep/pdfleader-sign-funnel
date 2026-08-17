@@ -81,17 +81,24 @@ function TypedValues({ values }: { values: DocumentFormValues }) {
   );
 }
 
-/** What a drag needs to convert pointer travel into page percentages. */
+/**
+ * What a drag needs to convert pointer travel into page percentages. The box
+ * geometry is captured at grab time and never re-measured: crossing onto
+ * another page remounts the image, which can measure zero-width for a frame,
+ * and clamping against that would let the signature hang off the edge.
+ */
 type DragState = {
   pointerId: number;
   startX: number;
   startY: number;
+  boxLeft: number;
+  boxTop: number;
+  boxWidth: number;
+  boxHeight: number;
   startLeft: number;
   startTop: number;
   pageWidth: number;
   pageHeight: number;
-  boxWidthPct: number;
-  boxHeightPct: number;
 };
 
 /** Eight selection handles around the placed signature (editor-style). */
@@ -141,8 +148,30 @@ export function DocumentCanvas({
   signaturePosition,
   onSignatureMove,
 }: Props) {
-  const pageRef = useRef<HTMLDivElement>(null);
+  /** Every page box, so a drag can be handed to whichever one it ends over. */
+  const pages = useRef(new Map<number, HTMLDivElement>());
   const drag = useRef<DragState | null>(null);
+
+  /**
+   * The page nearest a point — zero distance when the point is inside it. Used
+   * on release: let go over the gutter and the signature joins the page it is
+   * closest to, which is what makes it snap to that page's edge.
+   */
+  function nearestPage(x: number, y: number) {
+    let best: { id: number; rect: DOMRect } | null = null;
+    let bestDistance = Infinity;
+    for (const [id, element] of pages.current) {
+      const rect = element.getBoundingClientRect();
+      const dx = Math.max(rect.left - x, 0, x - rect.right);
+      const dy = Math.max(rect.top - y, 0, y - rect.bottom);
+      const distance = dx * dx + dy * dy;
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = { id, rect };
+      }
+    }
+    return best;
+  }
 
   /**
    * Drag is delta-based: measure the page and the box once on pointer-down,
@@ -151,7 +180,7 @@ export function DocumentCanvas({
    */
   function startDrag(event: ReactPointerEvent<HTMLDivElement>) {
     onSelect();
-    const page = pageRef.current;
+    const page = pages.current.get(signaturePosition.pageId);
     if (!page) return;
     const pageRect = page.getBoundingClientRect();
     const boxRect = event.currentTarget.getBoundingClientRect();
@@ -159,12 +188,14 @@ export function DocumentCanvas({
       pointerId: event.pointerId,
       startX: event.clientX,
       startY: event.clientY,
+      boxLeft: boxRect.left,
+      boxTop: boxRect.top,
+      boxWidth: boxRect.width,
+      boxHeight: boxRect.height,
       startLeft: signaturePosition.leftPct,
       startTop: signaturePosition.topPct,
       pageWidth: pageRect.width,
       pageHeight: pageRect.height,
-      boxWidthPct: (boxRect.width / pageRect.width) * 100,
-      boxHeightPct: (boxRect.height / pageRect.height) * 100,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
   }
@@ -174,19 +205,38 @@ export function DocumentCanvas({
     if (!state || state.pointerId !== event.pointerId) return;
     const dxPct = ((event.clientX - state.startX) / state.pageWidth) * 100;
     const dyPct = ((event.clientY - state.startY) / state.pageHeight) * 100;
+    // Unclamped on purpose: the signature follows the pointer past the page
+    // edges and onto its neighbours; `endDrag` decides where it lands.
     onSignatureMove({
-      leftPct: clamp(state.startLeft + dxPct, 0, 100 - state.boxWidthPct),
-      // topPct is the bottom edge, so it can travel from one box-height down to the page foot.
-      topPct: clamp(state.startTop + dyPct, state.boxHeightPct, 100),
+      pageId: signaturePosition.pageId,
+      leftPct: state.startLeft + dxPct,
+      topPct: state.startTop + dyPct,
     });
   }
 
   function endDrag(event: ReactPointerEvent<HTMLDivElement>) {
-    if (!drag.current) return;
+    const state = drag.current;
+    if (!state) return;
     drag.current = null;
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
+    // Where the box came to rest: its grab-time geometry moved by the pointer's
+    // travel, which holds even while the image is between pages.
+    const left = state.boxLeft + (event.clientX - state.startX);
+    const top = state.boxTop + (event.clientY - state.startY);
+    const target = nearestPage(left + state.boxWidth / 2, top + state.boxHeight / 2);
+    if (!target) return;
+    const { rect } = target;
+    const widthPct = (state.boxWidth / rect.width) * 100;
+    const heightPct = (state.boxHeight / rect.height) * 100;
+    onSignatureMove({
+      pageId: target.id,
+      leftPct: clamp(((left - rect.left) / rect.width) * 100, 0, 100 - widthPct),
+      // topPct is the box's bottom edge, so it travels from one box-height down
+      // to the page foot — that is what snaps it flush to the top or bottom.
+      topPct: clamp(((top + state.boxHeight - rect.top) / rect.height) * 100, heightPct, 100),
+    });
   }
 
   return (
@@ -204,7 +254,10 @@ export function DocumentCanvas({
           return (
             <div
               key={page.id}
-              ref={isSignPage ? pageRef : undefined}
+              ref={(element) => {
+                if (element) pages.current.set(page.id, element);
+                else pages.current.delete(page.id);
+              }}
               // The contract measures the first page. `@container` is what lets
               // the typed values size off the page instead of the viewport.
               data-ff={index === 0 ? 'document-page' : undefined}
@@ -245,58 +298,61 @@ export function DocumentCanvas({
                       {document.signFieldLabel}
                     </span>
                   </button>
-                  {placed && (
-                    <div
-                      data-ff="placed-signature"
-                      data-signature-ui="selection"
-                      role="button"
-                      tabIndex={0}
-                      aria-label="Placed signature — drag to move"
-                      onPointerDown={startDrag}
-                      onPointerMove={onDrag}
-                      onPointerUp={endDrag}
-                      onPointerCancel={endDrag}
-                      // Images are natively draggable, and that native drag fires
-                      // pointercancel — which would kill the gesture the moment
-                      // you grab the signature itself rather than its frame.
-                      onDragStart={(event) => event.preventDefault()}
-                      // touch-none so a drag on mobile moves the signature
-                      // instead of scrolling the page.
-                      className="absolute -translate-y-full cursor-grab touch-none select-none active:cursor-grabbing"
-                      style={{
-                        left: `${signaturePosition.leftPct}%`,
-                        top: `${signaturePosition.topPct}%`,
-                      }}
-                    >
-                      <div
-                        className={cn(
-                          'relative p-3',
-                          selected && 'border-primary-opacity-40 border',
-                        )}
-                      >
-                        <img
-                          src={signatureAssets[placedMethod][inkColor]}
-                          alt="Your signature"
-                          draggable={false}
-                          className={cn(
-                            'block h-8 w-auto',
-                            selected && 'border-error-state-main-50 border',
-                          )}
-                        />
-                        {selected && <Handles />}
-                      </div>
-                      {showSignId && (
-                        <span
-                          data-ff="sign-id"
-                          className="text-caption absolute -bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap text-text-secondary"
-                        >
-                          <Icon name="verified_user" size={16} className="text-action-active" />
-                          {signIdValue}
-                        </span>
-                      )}
-                    </div>
-                  )}
                 </>
+              )}
+              {/*
+               * The signature lives on whichever page it was dropped on, not
+               * only the signing page — so it renders here rather than inside
+               * the `isSignPage` block above.
+               */}
+              {placed && page.id === signaturePosition.pageId && (
+                <div
+                  data-ff="placed-signature"
+                  data-signature-ui="selection"
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Placed signature — drag to move"
+                  onPointerDown={startDrag}
+                  onPointerMove={onDrag}
+                  onPointerUp={endDrag}
+                  onPointerCancel={endDrag}
+                  // Images are natively draggable, and that native drag fires
+                  // pointercancel — which would kill the gesture the moment
+                  // you grab the signature itself rather than its frame.
+                  onDragStart={(event) => event.preventDefault()}
+                  // touch-none so a drag on mobile moves the signature instead
+                  // of scrolling the page. z-10 keeps it above the neighbouring
+                  // pages while it is dragged across them.
+                  className="absolute z-10 -translate-y-full cursor-grab touch-none select-none active:cursor-grabbing"
+                  style={{
+                    left: `${signaturePosition.leftPct}%`,
+                    top: `${signaturePosition.topPct}%`,
+                  }}
+                >
+                  <div
+                    className={cn('relative p-3', selected && 'border-primary-opacity-40 border')}
+                  >
+                    <img
+                      src={signatureAssets[placedMethod][inkColor]}
+                      alt="Your signature"
+                      draggable={false}
+                      className={cn(
+                        'block h-8 w-auto',
+                        selected && 'border-error-state-main-50 border',
+                      )}
+                    />
+                    {selected && <Handles />}
+                  </div>
+                  {showSignId && (
+                    <span
+                      data-ff="sign-id"
+                      className="text-caption absolute -bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap text-text-secondary"
+                    >
+                      <Icon name="verified_user" size={16} className="text-action-active" />
+                      {signIdValue}
+                    </span>
+                  )}
+                </div>
               )}
             </div>
           );

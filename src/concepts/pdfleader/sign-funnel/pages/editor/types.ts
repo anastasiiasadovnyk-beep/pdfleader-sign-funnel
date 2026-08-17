@@ -94,6 +94,8 @@ export type DocumentCanvasProps = {
  * bottom edge, which is what keeps it sitting on the signature line.
  */
 export type SignaturePosition = {
+  /** Page the signature sits on — it can be dragged onto any page. */
+  pageId: number;
   leftPct: number;
   topPct: number;
 };

@@ -14,8 +14,8 @@ import type {
 /** A brand-new signature draft: no ink on any tab. */
 const BLANK_INK: Record<SignatureMethod, boolean> = { draw: false, type: false, upload: false };
 
-/** Bottom-left of the signature's resting spot — the W-9's signature line. */
-const SIGNATURE_HOME: SignaturePosition = { leftPct: 30, topPct: 76.74 };
+/** Bottom-left of the signature's resting spot on the W-9's signature line. */
+const SIGNATURE_HOME = { leftPct: 30, topPct: 76.74 };
 
 /**
  * View-model for the sign funnel's editor page, shaped to mirror the product
@@ -43,7 +43,12 @@ export function useSignFunnelModel(props: EditorScreenProps) {
   const [placedMethod, setPlacedMethod] = useState<SignatureMethod>(
     props.initialMethod ?? 'draw',
   );
-  const [signaturePosition, setSignaturePosition] = useState<SignaturePosition>(SIGNATURE_HOME);
+  /** The resting spot is on whichever page carries the signature field. */
+  const home = (): SignaturePosition => ({
+    pageId: props.document.signFieldPage,
+    ...SIGNATURE_HOME,
+  });
+  const [signaturePosition, setSignaturePosition] = useState<SignaturePosition>(home);
   /** A placed signature starts selected; clicking off the page clears it. */
   const [signatureSelected, setSignatureSelected] = useState(true);
   /**
@@ -105,7 +110,7 @@ export function useSignFunnelModel(props: EditorScreenProps) {
         return;
       }
       setVerified(signatureType === 'digital');
-      setSignaturePosition(SIGNATURE_HOME);
+      setSignaturePosition(home());
     },
     /** Pencil in the contextual toolbar — reopen the dialog on the placed signature. */
     editSignature: () => {
