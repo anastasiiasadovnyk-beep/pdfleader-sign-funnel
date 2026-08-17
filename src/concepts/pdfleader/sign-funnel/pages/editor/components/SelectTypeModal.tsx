@@ -105,10 +105,12 @@ function SignTypeCard({
             </p>
           ))}
         </div>
-        <span className="text-body-2 mx-auto mt-auto flex items-center gap-1 pt-4 text-text-secondary">
-          {bestUsedForLabel}
-          <InfoTooltip text={copy.bestUsedForTooltip} ff={`st-tooltip-${kind}`} />
-        </span>
+        <InfoTooltip
+          text={copy.bestUsedForTooltip}
+          ff={`st-tooltip-${kind}`}
+          label={bestUsedForLabel}
+          className="text-body-2 mx-auto mt-auto pt-4 text-text-secondary"
+        />
       </div>
     </div>
   );

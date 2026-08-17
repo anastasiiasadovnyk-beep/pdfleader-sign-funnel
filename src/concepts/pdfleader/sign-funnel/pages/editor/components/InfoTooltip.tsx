@@ -7,21 +7,31 @@ import { Icon } from './Icon';
 /**
  * Info icon that reveals a tooltip. Composed: ui-pes ships no Tooltip (DS gap,
  * flagged in DS-GAPS.md), but it does define `--color-bg-tooltip`, so this uses
- * that surface. Opens on hover and on focus, and toggles on click so it is
- * reachable by keyboard and on touch.
+ * that surface. The whole block — label and icon — is the hover target; the
+ * icon also opens it on focus and toggles on click, so it stays reachable by
+ * keyboard and on touch.
  */
 export function InfoTooltip({
   text,
   ff,
+  label,
   className,
 }: {
   text: string;
   ff?: string;
+  /** Rendered before the icon; hovering it opens the tooltip too. */
+  label?: string;
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
   return (
-    <span className={cn('relative inline-flex', className)}>
+    // Hover lives on the wrapper, so the label and the icon are one target.
+    <span
+      className={cn('relative inline-flex items-center gap-1', label && 'cursor-help', className)}
+      onPointerEnter={() => setOpen(true)}
+      onPointerLeave={() => setOpen(false)}
+    >
+      {label}
       <IconButton
         variant="text"
         color="action"
@@ -29,8 +39,6 @@ export function InfoTooltip({
         aria-label={text}
         aria-expanded={open}
         onClick={() => setOpen((wasOpen) => !wasOpen)}
-        onPointerEnter={() => setOpen(true)}
-        onPointerLeave={() => setOpen(false)}
         onFocus={() => setOpen(true)}
         onBlur={() => setOpen(false)}
       >
