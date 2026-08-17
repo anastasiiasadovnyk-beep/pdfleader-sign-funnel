@@ -10,3 +10,15 @@
 body {
   margin: 0;
 }
+
+/*
+ * ui-pes gap patch: theme.css applies `font-family: var(--font-primary)` to
+ * .text-button-lg / -md / -sm but omits .text-button-ms, so every `size="ms"`
+ * Button fell back to the default sans instead of the brand face. Size, weight
+ * and line-height are already correct (theme.css aliases the ms type tokens to
+ * the md ones) — only the family was missing.
+ * Drop this once ui-pes adds .text-button-ms to that selector list.
+ */
+.text-button-ms {
+  font-family: var(--font-primary);
+}

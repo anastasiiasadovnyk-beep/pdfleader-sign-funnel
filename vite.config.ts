@@ -7,6 +7,6 @@ import analyticsWriter from '@universe-forma/analytics-tagger/vite';
 export default defineConfig({
   plugins: [react(), tailwindcss(), analyticsWriter()],
   resolve: { alias: { '@': path.resolve(__dirname, 'src') } },
-  server: { open: true },
+  server: { open: true, port: Number(process.env.PORT) || 5173 },
   build: { outDir: 'build' },
 });

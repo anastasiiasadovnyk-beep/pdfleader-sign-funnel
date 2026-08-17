@@ -1,0 +1,1055 @@
+{
+  "source": "figma://5ETpNeUNy0Ja7SXlKfxUGh?node-id=15376-61642",
+  "note": "The fidelity contract for the multipage sign funnel. Scenarios are { name, page } objects (page = flow page slug); regions carry a `page` field so each is asserted only on its page's renders. Design font is Outfit for editor/modal text \u2014 pdfleader's brand token is Montserrat, so type regions assert the brand-resolved values with nearestToken where the design value has no exact token (details in dsGap fields).",
+  "frames": {
+    "desktop": {
+      "w": 1440,
+      "h": 832,
+      "node": "15376-61846"
+    },
+    "mobile": {
+      "w": 390,
+      "h": 844,
+      "node": "15376-63008"
+    }
+  },
+  "scenarios": [
+    {
+      "name": "default",
+      "page": "editor"
+    },
+    {
+      "name": "selectType",
+      "page": "editor"
+    },
+    {
+      "name": "selectTypeDigital",
+      "page": "editor"
+    },
+    {
+      "name": "sigDraw",
+      "page": "editor"
+    },
+    {
+      "name": "sigDrawFilled",
+      "page": "editor"
+    },
+    {
+      "name": "sigType",
+      "page": "editor"
+    },
+    {
+      "name": "sigTypeFilled",
+      "page": "editor"
+    },
+    {
+      "name": "sigUpload",
+      "page": "editor"
+    },
+    {
+      "name": "sigUploadFilled",
+      "page": "editor"
+    },
+    {
+      "name": "signedUnverified",
+      "page": "editor"
+    },
+    {
+      "name": "signedVerified",
+      "page": "editor"
+    },
+    {
+      "name": "default",
+      "page": "thank-you"
+    },
+    {
+      "name": "digital",
+      "page": "thank-you"
+    },
+    {
+      "name": "signedDownloaded",
+      "page": "thank-you"
+    },
+    {
+      "name": "digitalDownloaded",
+      "page": "thank-you"
+    },
+    {
+      "name": "auditDownloaded",
+      "page": "thank-you"
+    },
+    {
+      "name": "default",
+      "page": "dashboard"
+    },
+    {
+      "name": "simple",
+      "page": "dashboard"
+    }
+  ],
+  "regions": [
+    {
+      "ff": "editor-header",
+      "page": "editor",
+      "frame": "desktop",
+      "component": "div (two-row white header; Toolbar is a DS gap)",
+      "layout": {
+        "flow": "column"
+      },
+      "assert": {
+        "height": 136
+      },
+      "tol": {
+        "height": 4
+      }
+    },
+    {
+      "ff": "zoom-value",
+      "page": "editor",
+      "frame": "desktop",
+      "copy": "100%",
+      "component": "span text-body-2 text-text-secondary",
+      "assert": {
+        "fontSize": 14,
+        "textContent": "100%"
+      }
+    },
+    {
+      "ff": "done-button",
+      "page": "editor",
+      "frame": "desktop",
+      "component": "Button (variant=filled, color=primary, size=md)",
+      "copy": "Done",
+      "nearestToken": true,
+      "dsGap": "design: Outfit Medium 16/500, radius 12 \u2014 ui-pes md button is 16/600, radius-btn-md 16",
+      "assert": {
+        "fontSize": 16,
+        "fontWeight": 600,
+        "borderRadius": 16,
+        "textContent": "Done"
+      }
+    },
+    {
+      "ff": "tool-sign",
+      "page": "editor",
+      "frame": "desktop",
+      "component": "button tool tile (composed; active = bg-primary-opacity-8)",
+      "copy": "Sign",
+      "layout": {
+        "flow": "column"
+      },
+      "assert": {
+        "flexDirection": "column",
+        "textContent": "Sign"
+      }
+    },
+    {
+      "ff": "manage-pages",
+      "page": "editor",
+      "frame": "desktop",
+      "component": "Button (variant=outlined, color=action, size=ms)",
+      "copy": "Manage pages",
+      "assert": {
+        "textContent": "Manage pages"
+      }
+    },
+    {
+      "ff": "page-chip-current",
+      "page": "editor",
+      "frame": "desktop",
+      "component": "span chip bg-primary",
+      "copy": "1",
+      "nearestToken": true,
+      "dsGap": "design: Montserrat Bold 12/16 \u2014 nearest token text-caption-emph is 13/700",
+      "assert": {
+        "fontSize": 13,
+        "fontWeight": 700,
+        "textContent": "1"
+      }
+    },
+    {
+      "ff": "document-page",
+      "page": "editor",
+      "frame": "desktop",
+      "component": "div page canvas (raster from Figma render)",
+      "assert": {
+        "width": 640
+      }
+    },
+    {
+      "ff": "document-page",
+      "page": "editor",
+      "frame": "mobile",
+      "component": "div page canvas, fluid within p-5 gutter",
+      "assert": {
+        "width": 350
+      }
+    },
+    {
+      "ff": "sign-field-marker",
+      "page": "editor",
+      "component": "button overlay bg-[#4437da] (marker color is part of the doc design, no token)",
+      "copy": "sign",
+      "assert": {
+        "textContent": "sign"
+      }
+    },
+    {
+      "ff": "m-top-bar",
+      "page": "editor",
+      "frame": "mobile",
+      "component": "div mobile top bar (Menu/Undo/Redo/Done)",
+      "layout": {
+        "flow": "row"
+      },
+      "assert": {
+        "flexDirection": "row",
+        "textContent": "Done"
+      }
+    },
+    {
+      "ff": "m-bottom-nav",
+      "page": "editor",
+      "frame": "mobile",
+      "component": "nav mobile tools (Select/Text/Sign/More)",
+      "layout": {
+        "flow": "row"
+      },
+      "assert": {
+        "flexDirection": "row",
+        "textContent": "Sign"
+      }
+    },
+    {
+      "ff": "st-dialog",
+      "page": "editor",
+      "scenario": "selectType",
+      "frame": "desktop",
+      "component": "div dialog (Dialog is a DS gap) over bg-common-black/30 backdrop",
+      "assert": {
+        "width": 796,
+        "borderRadius": 20
+      }
+    },
+    {
+      "ff": "st-dialog",
+      "page": "editor",
+      "scenario": "selectType",
+      "frame": "mobile",
+      "component": "fullscreen dialog at 390px",
+      "assert": {
+        "width": 390,
+        "borderRadius": 0
+      }
+    },
+    {
+      "ff": "st-title",
+      "page": "editor",
+      "scenario": "selectType",
+      "frame": "desktop",
+      "copy": "Sign the document",
+      "nearestToken": true,
+      "dsGap": "design: Outfit SemiBold 28/600 \u2014 brand token text-desktop-title-4 is Montserrat 28/700",
+      "assert": {
+        "fontFamily": "Montserrat",
+        "fontSize": 28,
+        "fontWeight": 700,
+        "textContent": "Sign the document"
+      }
+    },
+    {
+      "ff": "st-title",
+      "page": "editor",
+      "scenario": "selectType",
+      "frame": "mobile",
+      "nearestToken": true,
+      "dsGap": "design: Outfit SemiBold 22/600 \u2014 text-mobile-title-4 is 22/800",
+      "assert": {
+        "fontSize": 22,
+        "textContent": "Sign the document"
+      }
+    },
+    {
+      "ff": "st-subtitle",
+      "page": "editor",
+      "scenario": "selectType",
+      "copy": "Choose sealing type",
+      "component": "p text-body-2 text-text-secondary",
+      "assert": {
+        "fontSize": 14,
+        "textContent": "Choose sealing type"
+      }
+    },
+    {
+      "ff": "st-cards",
+      "page": "editor",
+      "scenario": "selectType",
+      "frame": "desktop",
+      "layout": {
+        "flow": "row",
+        "gap": 16
+      },
+      "assert": {
+        "flexDirection": "row",
+        "gap": 16
+      }
+    },
+    {
+      "ff": "st-cards",
+      "page": "editor",
+      "scenario": "selectType",
+      "frame": "mobile",
+      "layout": {
+        "flow": "stacked"
+      },
+      "assert": {
+        "flexDirection": "column"
+      }
+    },
+    {
+      "ff": "st-card-simple",
+      "page": "editor",
+      "scenario": "selectType",
+      "component": "div card rounded-7 border-4 (selected: border-primary + corner check)",
+      "assert": {
+        "borderRadius": 32
+      }
+    },
+    {
+      "ff": "st-card-simple-title",
+      "page": "editor",
+      "scenario": "selectType",
+      "frame": "desktop",
+      "copy": "Simple Signature",
+      "nearestToken": true,
+      "dsGap": "design: Outfit SemiBold 24/30/600 \u2014 text-mobile-title-3 is 24/30/800",
+      "assert": {
+        "fontSize": 24,
+        "fontWeight": 800,
+        "textContent": "Simple Signature"
+      }
+    },
+    {
+      "ff": "st-card-simple-title",
+      "page": "editor",
+      "scenario": "selectType",
+      "frame": "mobile",
+      "nearestToken": true,
+      "dsGap": "design: Outfit SemiBold 20/24/600 \u2014 text-desktop-title-6 is 20/24/500",
+      "assert": {
+        "fontSize": 20,
+        "textContent": "Simple Signature"
+      }
+    },
+    {
+      "ff": "st-badge-unverified",
+      "page": "editor",
+      "scenario": "selectType",
+      "component": "composed pill (Badge type=badge has no 10px size) bg-error-20 text-error-dark",
+      "copy": "UNVERIFIED",
+      "dsGap": "design: rgba(244,67,54,.2)/#aa2e25 (material red) \u2014 brand error tokens are #f23030-keyed; 10px badge size has no type token",
+      "assert": {
+        "fontSize": 10,
+        "textTransform": "uppercase",
+        "textContent": "Unverified"
+      }
+    },
+    {
+      "ff": "st-badge-verified",
+      "page": "editor",
+      "scenario": "selectType",
+      "component": "composed pill bg-success-20 text-success-dark",
+      "copy": "VERIFIED",
+      "dsGap": "design: rgba(76,175,80,.2)/#357a38 (material green) \u2014 brand success tokens are #06a77e/#0e9948-keyed",
+      "assert": {
+        "fontSize": 10,
+        "textTransform": "uppercase",
+        "textContent": "Verified"
+      }
+    },
+    {
+      "ff": "st-cancel",
+      "page": "editor",
+      "scenario": "selectType",
+      "component": "Button (variant=outlined, color=action, size=md)",
+      "copy": "Cancel",
+      "assert": {
+        "textContent": "Cancel"
+      }
+    },
+    {
+      "ff": "st-continue",
+      "page": "editor",
+      "scenario": "selectType",
+      "component": "Button (variant=filled, color=primary, size=md, rightIcon=chevron_right)",
+      "copy": "Continue",
+      "assert": {
+        "textContent": "Continue"
+      }
+    },
+    {
+      "ff": "st-card-digital",
+      "page": "editor",
+      "scenario": "selectTypeDigital",
+      "component": "div card rounded-7 border-4 border-primary (selected state)",
+      "assert": {
+        "borderRadius": 32
+      }
+    },
+    {
+      "ff": "st-card-digital-title",
+      "page": "editor",
+      "scenario": "selectTypeDigital",
+      "frame": "desktop",
+      "copy": "Digital Signature",
+      "assert": {
+        "fontSize": 24,
+        "textContent": "Digital Signature"
+      }
+    },
+    {
+      "ff": "cs-dialog",
+      "page": "editor",
+      "scenario": "sigDraw",
+      "frame": "desktop",
+      "component": "div dialog (Dialog is a DS gap)",
+      "assert": {
+        "width": 796,
+        "borderRadius": 20
+      }
+    },
+    {
+      "ff": "cs-dialog",
+      "page": "editor",
+      "scenario": "sigDraw",
+      "frame": "mobile",
+      "component": "fullscreen dialog at 390px (no mobile reference frame \u2014 adapted)",
+      "assert": {
+        "width": 390
+      }
+    },
+    {
+      "ff": "cs-title",
+      "page": "editor",
+      "scenario": "sigDraw",
+      "frame": "desktop",
+      "copy": "Create your signature (design keeps DS placeholder 'Title')",
+      "nearestToken": true,
+      "dsGap": "design: Outfit SemiBold 28/600 placeholder copy \u2014 brand text-desktop-title-4 28/700, proposed real copy",
+      "assert": {
+        "fontFamily": "Montserrat",
+        "fontSize": 28,
+        "textContent": "Create your signature"
+      }
+    },
+    {
+      "ff": "cs-tabs",
+      "page": "editor",
+      "scenario": "sigDraw",
+      "component": "TabsRoot/TabsList (color=grey, size=md) \u2014 radius-tabs-list-md 16",
+      "assert": {
+        "borderRadius": 16
+      }
+    },
+    {
+      "ff": "cs-tab-draw",
+      "page": "editor",
+      "scenario": "sigDraw",
+      "copy": "Draw",
+      "component": "TabsTrigger value=draw (selected: white pill)",
+      "assert": {
+        "textContent": "Draw"
+      }
+    },
+    {
+      "ff": "cs-tab-type",
+      "page": "editor",
+      "scenario": "sigDraw",
+      "copy": "Type",
+      "assert": {
+        "textContent": "Type"
+      }
+    },
+    {
+      "ff": "cs-tab-upload",
+      "page": "editor",
+      "scenario": "sigDraw",
+      "copy": "Upload",
+      "assert": {
+        "textContent": "Upload"
+      }
+    },
+    {
+      "ff": "cs-canvas",
+      "page": "editor",
+      "scenario": "sigDraw",
+      "component": "div canvas card rounded-5 border-os-divider",
+      "dsGap": "design border rgba(0,0,0,.14) \u2014 nearest token os-divider (12%)",
+      "assert": {
+        "borderRadius": 16,
+        "height": 356
+      },
+      "tol": {
+        "height": 6
+      }
+    },
+    {
+      "ff": "cs-color-label",
+      "page": "editor",
+      "scenario": "sigDraw",
+      "copy": "Color",
+      "nearestToken": true,
+      "dsGap": "design: Outfit Light 13/300 \u2014 text-caption is 13/400",
+      "assert": {
+        "fontSize": 13,
+        "textContent": "Color"
+      }
+    },
+    {
+      "ff": "cs-thickness-label",
+      "page": "editor",
+      "scenario": "sigDraw",
+      "copy": "Thickness",
+      "assert": {
+        "fontSize": 13,
+        "textContent": "Thickness"
+      }
+    },
+    {
+      "ff": "cs-hint",
+      "page": "editor",
+      "scenario": "sigDraw",
+      "copy": "Draw above the line",
+      "component": "p text-caption text-text-secondary over border-primary baseline",
+      "assert": {
+        "fontSize": 13,
+        "textContent": "Draw above the line"
+      }
+    },
+    {
+      "ff": "cs-clear",
+      "page": "editor",
+      "scenario": "sigDraw",
+      "component": "Button (variant=text, color=primary, size=ms, leftIcon=delete)",
+      "copy": "Clear",
+      "assert": {
+        "textContent": "Clear"
+      }
+    },
+    {
+      "ff": "cs-cancel",
+      "page": "editor",
+      "scenario": "sigDraw",
+      "copy": "Cancel (design placeholder 'Tertiary')",
+      "assert": {
+        "textContent": "Cancel"
+      }
+    },
+    {
+      "ff": "cs-save",
+      "page": "editor",
+      "scenario": "sigDraw",
+      "component": "Button (variant=filled-tonal, color=primary, size=md)",
+      "copy": "Save signature (design placeholder 'Secondary')",
+      "assert": {
+        "textContent": "Save signature"
+      }
+    },
+    {
+      "ff": "cs-sign",
+      "page": "editor",
+      "scenario": "sigDraw",
+      "component": "Button (variant=filled, color=primary, size=md; disabled until canvas filled)",
+      "copy": "Accept and Sign (design placeholder 'Primary'; mobile flow CTA is 'Accept and Sign')",
+      "assert": {
+        "textContent": "Accept and Sign"
+      }
+    },
+    {
+      "ff": "cs-sign",
+      "page": "editor",
+      "scenario": "sigDrawFilled",
+      "copy": "Accept and Sign \u2014 enabled once ink present",
+      "assert": {
+        "textContent": "Accept and Sign"
+      }
+    },
+    {
+      "ff": "cs-hint",
+      "page": "editor",
+      "scenario": "sigType",
+      "copy": "Type above the line",
+      "assert": {
+        "fontSize": 13,
+        "textContent": "Type above the line"
+      }
+    },
+    {
+      "ff": "cs-font-select",
+      "page": "editor",
+      "scenario": "sigType",
+      "component": "composed value select (DS gap \u2014 BaseDropdown is action-menu-shaped)",
+      "assert": {
+        "width": 200,
+        "borderRadius": 10
+      }
+    },
+    {
+      "ff": "cs-tab-type",
+      "page": "editor",
+      "scenario": "sigTypeFilled",
+      "assert": {
+        "textContent": "Type"
+      }
+    },
+    {
+      "ff": "cs-dropzone",
+      "page": "editor",
+      "scenario": "sigUpload",
+      "component": "composed dropzone (DS gap): border-dashed border-primary rounded-4",
+      "assert": {
+        "borderRadius": 12,
+        "height": 356
+      },
+      "tol": {
+        "height": 6
+      }
+    },
+    {
+      "ff": "cs-upload-headline",
+      "page": "editor",
+      "scenario": "sigUpload",
+      "copy": "Drag & drop a sign file here",
+      "nearestToken": true,
+      "dsGap": "design: Outfit Medium 16/500 \u2014 text-body-emph is 16/600",
+      "assert": {
+        "fontSize": 16,
+        "fontWeight": 600,
+        "textContent": "Drag & drop a sign file here"
+      }
+    },
+    {
+      "ff": "cs-upload-button",
+      "page": "editor",
+      "scenario": "sigUpload",
+      "component": "Button (variant=filled-tonal, color=primary, size=md, leftIcon=upload)",
+      "copy": "Upload your sign",
+      "assert": {
+        "textContent": "Upload your sign"
+      }
+    },
+    {
+      "ff": "cs-upload-caption",
+      "page": "editor",
+      "scenario": "sigUpload",
+      "copy": "Size: up to 5 MB. Supported format: JPG, PNG, or SVG (bold segments)",
+      "assert": {
+        "fontSize": 13,
+        "textContent": "up to 5 MB"
+      }
+    },
+    {
+      "ff": "cs-canvas",
+      "page": "editor",
+      "scenario": "sigUploadFilled",
+      "assert": {
+        "borderRadius": 16
+      }
+    },
+    {
+      "ff": "ctx-toolbar",
+      "page": "editor",
+      "scenario": "signedUnverified",
+      "component": "div contextual toolbar (Toolbar is a DS gap): IconButton / swatches / thickness / Switch / delete",
+      "assert": {
+        "height": 52
+      }
+    },
+    {
+      "ff": "ctx-verified-label",
+      "page": "editor",
+      "scenario": "signedUnverified",
+      "copy": "Verified",
+      "component": "span text-body next to Switch (color=primary, size=md, icon=minus/check)",
+      "assert": {
+        "fontSize": 16,
+        "textContent": "Verified"
+      }
+    },
+    {
+      "ff": "ctx-color-label",
+      "page": "editor",
+      "scenario": "signedUnverified",
+      "frame": "desktop",
+      "copy": "Color",
+      "assert": {
+        "fontSize": 13,
+        "textContent": "Color"
+      }
+    },
+    {
+      "ff": "placed-signature",
+      "page": "editor",
+      "scenario": "signedUnverified",
+      "component": "div overlay: selection frame border-primary-opacity-40 + 8 handles + red error-state-main-50 inner frame",
+      "dsGap": "design red frame rgba(244,67,54,.5) \u2014 brand token error-state-main-50 is #f23030 @50%",
+      "assert": {
+        "height": 58
+      },
+      "tol": {
+        "height": 8
+      }
+    },
+    {
+      "ff": "ctx-toolbar",
+      "page": "editor",
+      "scenario": "signedVerified",
+      "assert": {
+        "height": 52
+      }
+    },
+    {
+      "ff": "sign-id",
+      "page": "editor",
+      "scenario": "signedVerified",
+      "copy": "Sign ID: B529...4567",
+      "nearestToken": true,
+      "dsGap": "design: Montserrat Medium 11/16 \u2014 nearest token text-caption 13/400",
+      "assert": {
+        "fontSize": 13,
+        "textContent": "Sign ID: B529...4567"
+      }
+    },
+    {
+      "ff": "ty-heading",
+      "page": "thank-you",
+      "frame": "desktop",
+      "copy": "Got your payment!",
+      "nearestToken": true,
+      "dsGap": "design: Montserrat Black 56/68/900 \u2014 largest loaded token is text-desktop-title-1 48/56/800 (Montserrat 900 not loaded)",
+      "assert": {
+        "fontFamily": "Montserrat",
+        "fontSize": 48,
+        "fontWeight": 800,
+        "textContent": "Got your payment!"
+      }
+    },
+    {
+      "ff": "ty-heading",
+      "page": "thank-you",
+      "frame": "mobile",
+      "nearestToken": true,
+      "dsGap": "design: Montserrat Black 24/32/900 \u2014 text-mobile-title-3 is 24/30/800",
+      "assert": {
+        "fontSize": 24,
+        "textContent": "Got your payment!"
+      }
+    },
+    {
+      "ff": "ty-subheading",
+      "page": "thank-you",
+      "frame": "desktop",
+      "copy": "Thank you for choosing PDFLeader! Below is your order summary.",
+      "nearestToken": true,
+      "dsGap": "design: Montserrat SemiBold 28/42/600 \u2014 text-desktop-title-4 is 28/34/700",
+      "assert": {
+        "fontSize": 28,
+        "fontWeight": 700,
+        "textContent": "Thank you for choosing PDFLeader!"
+      }
+    },
+    {
+      "ff": "ty-cta-row",
+      "page": "thank-you",
+      "frame": "desktop",
+      "layout": {
+        "flow": "row",
+        "gap": 12
+      },
+      "assert": {
+        "flexDirection": "row",
+        "gap": 12
+      }
+    },
+    {
+      "ff": "ty-cta-row",
+      "page": "thank-you",
+      "frame": "mobile",
+      "layout": {
+        "flow": "stacked full-width"
+      },
+      "assert": {
+        "flexDirection": "column"
+      }
+    },
+    {
+      "ff": "ty-download-file",
+      "page": "thank-you",
+      "frame": "desktop",
+      "component": "Button (variant=filled, color=primary, size=lg, leftIcon=download) \u2014 exact match to Button/large theme",
+      "copy": "Download signed file",
+      "assert": {
+        "fontSize": 24,
+        "fontWeight": 700,
+        "borderRadius": 24,
+        "height": 72,
+        "textContent": "Download signed file"
+      }
+    },
+    {
+      "ff": "ty-download-file",
+      "page": "thank-you",
+      "frame": "mobile",
+      "component": "same Button, compact full-width mobile treatment per the 390px frames",
+      "assert": {
+        "fontSize": 16,
+        "height": 56,
+        "borderRadius": 12,
+        "textContent": "Download signed file"
+      }
+    },
+    {
+      "ff": "ty-download-audit",
+      "page": "thank-you",
+      "scenario": "digital",
+      "frame": "desktop",
+      "component": "Button (variant=filled-tonal, color=primary, size=lg, leftIcon=download)",
+      "copy": "Download audit trail",
+      "assert": {
+        "borderRadius": 24,
+        "height": 72,
+        "textContent": "Download audit trail"
+      }
+    },
+    {
+      "ff": "ty-download-audit",
+      "page": "thank-you",
+      "scenario": "digital",
+      "frame": "mobile",
+      "assert": {
+        "height": 56,
+        "textContent": "Download audit trail"
+      }
+    },
+    {
+      "ff": "ty-stepper",
+      "page": "thank-you",
+      "frame": "desktop",
+      "component": "composed stepper (DS gap): 32px badges, check icons, connectors",
+      "copy": "Choose a plan \u00b7 Add payment details \u00b7 3 Download",
+      "layout": {
+        "flow": "row"
+      },
+      "assert": {
+        "flexDirection": "row",
+        "textContent": "Download"
+      }
+    },
+    {
+      "ff": "ty-payment-card",
+      "page": "thank-you",
+      "frame": "desktop",
+      "component": "composed card (DS gap): border-dashed border-primary",
+      "nearestToken": true,
+      "dsGap": "design radius 28 (Corner radiuses/radius-8) \u2014 nearest token rounded-7 is 32",
+      "assert": {
+        "width": 568,
+        "borderRadius": 32
+      }
+    },
+    {
+      "ff": "ty-payment-card",
+      "page": "thank-you",
+      "frame": "mobile",
+      "assert": {
+        "width": 358
+      }
+    },
+    {
+      "ff": "ty-payment-title",
+      "page": "thank-you",
+      "copy": "Payment details",
+      "nearestToken": true,
+      "dsGap": "design: Montserrat SemiBold 28/42/600 \u2014 text-desktop-title-4 is 28/34/700",
+      "assert": {
+        "fontSize": 28,
+        "textContent": "Payment details"
+      }
+    },
+    {
+      "ff": "ty-plan-value",
+      "page": "thank-you",
+      "copy": "7-Day Access",
+      "component": "dd text-subtitle-emph (18/600 \u2014 exact)",
+      "assert": {
+        "fontSize": 18,
+        "fontWeight": 600,
+        "textContent": "7-Day Access"
+      }
+    },
+    {
+      "ff": "ty-dashboard-cta",
+      "page": "thank-you",
+      "frame": "desktop",
+      "component": "Button (variant=outlined, color=primary, size=lg, rightIcon=arrow_forward) \u2014 2px border per token",
+      "copy": "Go to My Documents",
+      "assert": {
+        "borderRadius": 24,
+        "textContent": "Go to My Documents"
+      }
+    },
+    {
+      "ff": "ty-dashboard-cta",
+      "page": "thank-you",
+      "frame": "mobile",
+      "assert": {
+        "borderRadius": 12,
+        "textContent": "Go to My Documents"
+      }
+    },
+    {
+      "ff": "ty-contact-heading",
+      "page": "thank-you",
+      "copy": "For any questions, please contact us:",
+      "nearestToken": true,
+      "dsGap": "design: Montserrat SemiBold 24/32/600 \u2014 text-mobile-title-3 is 24/30/800",
+      "assert": {
+        "fontSize": 24,
+        "textContent": "For any questions, please contact us:"
+      }
+    },
+    {
+      "ff": "ty-toast",
+      "page": "thank-you",
+      "scenario": "signedDownloaded",
+      "frame": "desktop",
+      "component": "composed toast (DS gap \u2014 ui-pes Toast is imperative-only): bg-success-24 backdrop-blur rounded-6",
+      "assert": {
+        "width": 600,
+        "borderRadius": 20
+      }
+    },
+    {
+      "ff": "ty-toast",
+      "page": "thank-you",
+      "scenario": "signedDownloaded",
+      "frame": "mobile",
+      "assert": {
+        "width": 358,
+        "borderRadius": 20
+      }
+    },
+    {
+      "ff": "ty-toast-title",
+      "page": "thank-you",
+      "scenario": "signedDownloaded",
+      "copy": "The signed document has been downloaded",
+      "component": "p text-alert-title (18/20/600 \u2014 exact)",
+      "assert": {
+        "fontSize": 18,
+        "fontWeight": 600,
+        "textContent": "The signed document has been downloaded"
+      }
+    },
+    {
+      "ff": "ty-toast-title",
+      "page": "thank-you",
+      "scenario": "auditDownloaded",
+      "copy": "The audit trail has been downloaded",
+      "assert": {
+        "textContent": "The audit trail has been downloaded"
+      }
+    },
+    {
+      "ff": "ty-toast",
+      "page": "thank-you",
+      "scenario": "digitalDownloaded",
+      "frame": "desktop",
+      "assert": {
+        "borderRadius": 20
+      }
+    },
+    {
+      "ff": "dash-header",
+      "page": "dashboard",
+      "component": "header: logo + nav + account link",
+      "copy": "Tools \u00b7 Forms \u00b7 Contact Us \u00b7 My account",
+      "assert": {
+        "textContent": "My account"
+      }
+    },
+    {
+      "ff": "dash-heading",
+      "page": "dashboard",
+      "frame": "desktop",
+      "component": "h1 (Card/Table are DS gaps \u2014 composed from tokens)",
+      "copy": "My Documents",
+      "assert": {
+        "textContent": "My Documents"
+      }
+    },
+    {
+      "ff": "dash-upload",
+      "page": "dashboard",
+      "component": "Button (variant=filled, color=primary, size=md, leftIcon=upload)",
+      "copy": "Upload File",
+      "assert": {
+        "textContent": "Upload File"
+      }
+    },
+    {
+      "ff": "dash-table",
+      "page": "dashboard",
+      "component": "composed table (no DS Table): File / Last Edit / Size / Actions",
+      "layout": {
+        "flow": "column"
+      },
+      "assert": {
+        "flexDirection": "column",
+        "textContent": "Invoice #1234567890"
+      }
+    },
+    {
+      "ff": "dash-file-row",
+      "page": "dashboard",
+      "component": "grid row: file glyph + name, last edit, size, row actions",
+      "copy": "Invoice #1234567890",
+      "assert": {
+        "textContent": "Invoice #1234567890"
+      }
+    },
+    {
+      "ff": "file-signature-digital",
+      "page": "dashboard",
+      "component": "signed indicator, digital \u2014 green badge with the signature glyph",
+      "dsGap": "design draws a scalloped seal; ui-pes ships no seal shape, so this is a round badge in the seal's green",
+      "assert": {
+        "textContent": "signature"
+      }
+    },
+    {
+      "ff": "file-signature-simple",
+      "page": "dashboard",
+      "component": "signed indicator, simple \u2014 grey badge with the signature glyph",
+      "assert": {
+        "textContent": "signature"
+      }
+    },
+    {
+      "ff": "dash-row-more-digital",
+      "page": "dashboard",
+      "component": "IconButton opening the digital row menu (adds 'Download audit trail')",
+      "assert": {
+        "textContent": "more_horiz"
+      }
+    },
+    {
+      "ff": "dash-row-more-simple",
+      "page": "dashboard",
+      "component": "IconButton opening the simple row menu (Duplicate / Delete only)",
+      "assert": {
+        "textContent": "more_horiz"
+      }
+    }
+  ]
+}

@@ -22,17 +22,20 @@ function lazyFor(key: string, load: Loader): ComponentType<any> {
 // A mock module exports `default` (the base scenario) plus optional named scenarios
 // (`export const empty = …`). ?scenario=<name> picks one; unknown names fall back to default.
 function usePageMock(key: string, load: MockLoader, scenario: string) {
-  const [mock, setMock] = useState<unknown>(null);
+  // Stamped with the key+scenario it belongs to: on a page change the new Screen
+  // would otherwise render once with the previous page's mock (it is cleared in
+  // an effect, i.e. after that render) and crash on props it never had.
+  const [loaded, setLoaded] = useState<{ id: string; mock: unknown } | null>(null);
+  const id = `${key}|${scenario}`;
   useEffect(() => {
     let alive = true;
-    setMock(null);
     load()
-      .then((m) => alive && setMock((scenario !== 'default' && m[scenario]) || m.default))
+      .then((m) => alive && setLoaded({ id, mock: (scenario !== 'default' && m[scenario]) || m.default }))
       .catch((e) => console.error('mock load failed', e));
     return () => { alive = false; };
     // key + scenario identify what to render; load is stable for a given key
   }, [key, scenario]);
-  return mock;
+  return loaded && loaded.id === id ? loaded.mock : null;
 }
 
 // bare drops the sandbox chrome (FlowBar, analytics overlay) so an isolated /preview render
@@ -73,11 +76,13 @@ function MultiPage({ entry, pageParam, navigate, bare, scenario }: { entry: Conc
   const targets = nextTargets(flow, current);
   const back = prevSlug(flow, current);
   const onNext = () => { if (targets[0]) navigate(targets[0]); };
+  // Lets a page send the user back to the beginning of its flow.
+  const onRestart = () => navigate(flow.start);
   const onBack = () => { if (back) navigate(back); };
   return (
     <BrandProvider brand={entry.brand}>
       <Suspense fallback={<p className="p-8">Loading…</p>}>
-        {mock !== null && <Screen key={key} {...(mock as object)} onNext={onNext} onBack={onBack} />}
+        {mock !== null && <Screen key={key} {...(mock as object)} onNext={onNext} onBack={onBack} onRestart={onRestart} />}
       </Suspense>
       {!bare && <FlowBar flow={flow} current={current} onJump={navigate} />}
       {!bare && <AnalyticsTagger product={entry.product} concept={entry.slug} page={current} />}

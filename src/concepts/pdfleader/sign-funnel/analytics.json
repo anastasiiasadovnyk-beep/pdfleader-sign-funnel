@@ -1,0 +1,483 @@
+{
+  "version": 2,
+  "product": "pdfleader",
+  "concept": "sign-funnel",
+  "events": [
+    {
+      "id": "evt_1",
+      "page": "editor",
+      "category": "navigation",
+      "trigger": "page_view",
+      "event": "sign_editor_view",
+      "data": {
+        "tool": "sign",
+        "funnel": "sign"
+      },
+      "notes": "Editor opened with the document loaded."
+    },
+    {
+      "id": "evt_2",
+      "page": "editor",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "sign_tool_tap",
+      "data": {
+        "place": "toolbar"
+      },
+      "element": {
+        "selector": "[data-ff=\"tool-sign\"]",
+        "tag": "button",
+        "role": null,
+        "label": "Sign"
+      },
+      "notes": "Sign tool tile in the editor toolbar starts the flow."
+    },
+    {
+      "id": "evt_3",
+      "page": "editor",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "sign_field_marker_tap",
+      "data": {
+        "place": "document"
+      },
+      "element": {
+        "selector": "[data-ff=\"sign-field-marker\"]",
+        "tag": "button",
+        "role": null,
+        "label": "{document.signFieldLabel}"
+      },
+      "notes": "Purple 'sign' field marker on the W-9 Sign Here row \u2014 alternate entry point."
+    },
+    {
+      "id": "evt_4",
+      "page": "editor",
+      "category": "visibility",
+      "trigger": "modal_open",
+      "event": "sealing_type_modal_view",
+      "data": {},
+      "notes": "'Sign the document \u2014 choose sealing type' dialog shown."
+    },
+    {
+      "id": "evt_5",
+      "page": "editor",
+      "category": "form",
+      "trigger": "select_change",
+      "event": "sealing_type_change",
+      "data": {
+        "type": "simple|digital"
+      },
+      "element": {
+        "selector": "[data-ff=\"st-card-simple\"]",
+        "tag": "div",
+        "role": "radio",
+        "label": "{selectTypeModal.simple.title}"
+      },
+      "notes": "Card selection inside the sealing-type dialog (fires for either card with data.type)."
+    },
+    {
+      "id": "evt_6",
+      "page": "editor",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "sealing_type_continue_tap",
+      "data": {
+        "type": "simple|digital"
+      },
+      "element": {
+        "selector": "[data-ff=\"st-continue\"]",
+        "tag": "button",
+        "role": null,
+        "label": "{selectTypeModal.continueLabel}"
+      },
+      "notes": ""
+    },
+    {
+      "id": "evt_7",
+      "page": "editor",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "sealing_type_cancel_tap",
+      "data": {},
+      "element": {
+        "selector": "[data-ff=\"st-cancel\"]",
+        "tag": "button",
+        "role": null,
+        "label": "{selectTypeModal.cancelLabel}"
+      },
+      "notes": ""
+    },
+    {
+      "id": "evt_8",
+      "page": "editor",
+      "category": "visibility",
+      "trigger": "modal_open",
+      "event": "sign_create_modal_view",
+      "data": {
+        "method": "draw"
+      },
+      "notes": "Signature creation dialog shown (opens on the Draw tab)."
+    },
+    {
+      "id": "evt_9",
+      "page": "editor",
+      "category": "form",
+      "trigger": "select_change",
+      "event": "sign_method_change",
+      "data": {
+        "method": "draw|type|upload"
+      },
+      "element": {
+        "selector": "[data-ff=\"cs-tabs\"]",
+        "tag": "div",
+        "role": "tablist",
+        "label": "Draw | Type | Upload"
+      },
+      "notes": "Creation-method tab switch."
+    },
+    {
+      "id": "evt_10",
+      "page": "editor",
+      "category": "form",
+      "trigger": "select_change",
+      "event": "sign_ink_color_change",
+      "data": {
+        "type": "black|blue|red"
+      },
+      "element": {
+        "selector": "[data-ff=\"cs-color-label\"]",
+        "tag": "span",
+        "role": null,
+        "label": "{createSignModal.colorLabel}"
+      },
+      "notes": "Ink color swatch (creation modal and contextual toolbar)."
+    },
+    {
+      "id": "evt_11",
+      "page": "editor",
+      "category": "form",
+      "trigger": "select_change",
+      "event": "sign_thickness_change",
+      "data": {
+        "type": "thin|regular|bold"
+      },
+      "element": {
+        "selector": "[data-ff=\"cs-thickness-label\"]",
+        "tag": "span",
+        "role": null,
+        "label": "{createSignModal.thicknessLabel}"
+      },
+      "notes": ""
+    },
+    {
+      "id": "evt_12",
+      "page": "editor",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "sign_canvas_tap",
+      "data": {
+        "method": "draw|type"
+      },
+      "element": {
+        "selector": "[data-ff=\"cs-canvas\"]",
+        "tag": "div",
+        "role": "button",
+        "label": "signature canvas"
+      },
+      "notes": "First stroke / typing fills the canvas (prototype: single interaction)."
+    },
+    {
+      "id": "evt_13",
+      "page": "editor",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "sign_upload_tap",
+      "data": {
+        "method": "drag_and_drop"
+      },
+      "element": {
+        "selector": "[data-ff=\"cs-dropzone\"]",
+        "tag": "button",
+        "role": null,
+        "label": "{createSignModal.uploadHeadline}"
+      },
+      "notes": "Dropzone / 'Upload your sign' button."
+    },
+    {
+      "id": "evt_14",
+      "page": "editor",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "sign_clear_tap",
+      "data": {},
+      "element": {
+        "selector": "[data-ff=\"cs-clear\"]",
+        "tag": "button",
+        "role": null,
+        "label": "{createSignModal.clearLabel}"
+      },
+      "notes": ""
+    },
+    {
+      "id": "evt_15",
+      "page": "editor",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "sign_save_tap",
+      "data": {
+        "method": "draw|type|upload"
+      },
+      "element": {
+        "selector": "[data-ff=\"cs-save\"]",
+        "tag": "button",
+        "role": null,
+        "label": "{createSignModal.saveLabel}"
+      },
+      "notes": "Save signature (also places it in the prototype)."
+    },
+    {
+      "id": "evt_16",
+      "page": "editor",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "accept_and_sign_tap",
+      "data": {
+        "method": "draw|type|upload",
+        "type": "simple|digital"
+      },
+      "element": {
+        "selector": "[data-ff=\"cs-sign\"]",
+        "tag": "button",
+        "role": null,
+        "label": "{createSignModal.signLabel}"
+      },
+      "notes": "Primary CTA \u2014 places the signature on the document."
+    },
+    {
+      "id": "evt_17",
+      "page": "editor",
+      "category": "form",
+      "trigger": "toggle",
+      "event": "sign_verified_toggle_change",
+      "data": {
+        "status": "on|off"
+      },
+      "element": {
+        "selector": "[data-ff=\"ctx-verified-label\"]",
+        "tag": "span",
+        "role": null,
+        "label": "{signedToolbar.verifiedLabel}"
+      },
+      "notes": "Verified switch in the contextual toolbar (digital seal on/off)."
+    },
+    {
+      "id": "evt_18",
+      "page": "editor",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "sign_delete_tap",
+      "data": {},
+      "element": {
+        "selector": "[data-ff=\"ctx-toolbar\"] button[aria-label=\"Delete signature\"]",
+        "tag": "button",
+        "role": null,
+        "label": "Delete signature"
+      },
+      "notes": "Removes the placed signature."
+    },
+    {
+      "id": "evt_19",
+      "page": "editor",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "editor_done_tap",
+      "data": {
+        "funnel": "sign"
+      },
+      "element": {
+        "selector": "[data-ff=\"done-button\"]",
+        "tag": "button",
+        "role": null,
+        "label": "{chrome.doneLabel}"
+      },
+      "notes": "Continues to payment (unchanged) \u2192 thank-you."
+    },
+    {
+      "id": "evt_20",
+      "page": "editor",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "manage_pages_tap",
+      "data": {},
+      "element": {
+        "selector": "[data-ff=\"manage-pages\"]",
+        "tag": "button",
+        "role": null,
+        "label": "{chrome.managePagesLabel}"
+      },
+      "notes": "Desktop sidebar button / mobile Menu drawer."
+    },
+    {
+      "id": "evt_21",
+      "page": "thank-you",
+      "category": "navigation",
+      "trigger": "page_view",
+      "event": "sign_thank_you_view",
+      "data": {
+        "funnel": "sign",
+        "type": "simple|digital"
+      },
+      "notes": "Post-payment download page."
+    },
+    {
+      "id": "evt_22",
+      "page": "thank-you",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "download_signed_file_tap",
+      "data": {
+        "download_method": "click",
+        "file_format": "pdf"
+      },
+      "element": {
+        "selector": "[data-ff=\"ty-download-file\"]",
+        "tag": "button",
+        "role": null,
+        "label": "{downloadFileLabel}"
+      },
+      "notes": "Download does not auto-start on page load (design annotation)."
+    },
+    {
+      "id": "evt_23",
+      "page": "thank-you",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "download_audit_trail_tap",
+      "data": {
+        "download_method": "click",
+        "file_format": "pdf",
+        "type": "digital"
+      },
+      "element": {
+        "selector": "[data-ff=\"ty-download-audit\"]",
+        "tag": "button",
+        "role": null,
+        "label": "{downloadAuditLabel}"
+      },
+      "notes": "Digital signature orders only."
+    },
+    {
+      "id": "evt_24",
+      "page": "thank-you",
+      "category": "visibility",
+      "trigger": "impression",
+      "event": "download_toast_view",
+      "data": {
+        "status": "success",
+        "type": "signed|audit"
+      },
+      "element": {
+        "selector": "[data-ff=\"ty-toast\"]",
+        "tag": "div",
+        "role": "status",
+        "label": "download toast"
+      },
+      "notes": "5-second success toast after a download CTA."
+    },
+    {
+      "id": "evt_25",
+      "page": "thank-you",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "download_toast_close_tap",
+      "data": {},
+      "element": {
+        "selector": "[data-ff=\"ty-toast\"] button[aria-label=\"Dismiss\"]",
+        "tag": "button",
+        "role": null,
+        "label": "Dismiss"
+      },
+      "notes": ""
+    },
+    {
+      "id": "evt_26",
+      "page": "thank-you",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "go_to_my_documents_tap",
+      "data": {
+        "place": "payment_details_card"
+      },
+      "element": {
+        "selector": "[data-ff=\"ty-dashboard-cta\"]",
+        "tag": "button",
+        "role": null,
+        "label": "{paymentDetails.dashboardCtaLabel}"
+      },
+      "notes": ""
+    },
+    {
+      "id": "evt_27",
+      "page": "dashboard",
+      "category": "navigation",
+      "trigger": "page_view",
+      "event": "sign_dashboard_view",
+      "data": {
+        "funnel": "sign",
+        "place": "my_documents"
+      },
+      "notes": "My Documents opened from the thank-you page; one dashboard for both signature types."
+    },
+    {
+      "id": "evt_28",
+      "page": "thank-you",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "sign_dashboard_open",
+      "data": {
+        "place": "payment_card"
+      },
+      "element": {
+        "selector": "[data-ff=\"ty-dashboard-cta\"]",
+        "tag": "button",
+        "role": null,
+        "label": "{paymentDetails.dashboardCtaLabel}"
+      },
+      "notes": "'Go to My Documents' continues from thank-you to the dashboard."
+    },
+    {
+      "id": "evt_29",
+      "page": "dashboard",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "sign_file_actions_open",
+      "data": {
+        "place": "file_row"
+      },
+      "element": {
+        "selector": "[data-ff^=\"dash-row-more\"]",
+        "tag": "button",
+        "role": null,
+        "label": "More actions"
+      },
+      "notes": "Row overflow menu; its items depend on the file's signature kind (digital adds the audit trail)."
+    },
+    {
+      "id": "evt_30",
+      "page": "dashboard",
+      "category": "interaction",
+      "trigger": "click",
+      "event": "sign_audit_trail_download",
+      "data": {
+        "place": "file_row_menu"
+      },
+      "element": {
+        "selector": "[data-ff=\"dash-menu-audit\"]",
+        "tag": "div",
+        "role": "menuitem",
+        "label": "{menu.auditLabel}"
+      },
+      "notes": "Digital-signature files only \u2014 simple signatures have no audit trail."
+    }
+  ]
+}
