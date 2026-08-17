@@ -533,25 +533,6 @@
       }
     },
     {
-      "ff": "cs-cancel",
-      "page": "editor",
-      "scenario": "sigDraw",
-      "copy": "Cancel (design placeholder 'Tertiary')",
-      "assert": {
-        "textContent": "Cancel"
-      }
-    },
-    {
-      "ff": "cs-save",
-      "page": "editor",
-      "scenario": "sigDraw",
-      "component": "Button (variant=filled-tonal, color=primary, size=md)",
-      "copy": "Save signature (design placeholder 'Secondary')",
-      "assert": {
-        "textContent": "Save signature"
-      }
-    },
-    {
       "ff": "cs-sign",
       "page": "editor",
       "scenario": "sigDraw",

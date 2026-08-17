@@ -219,23 +219,6 @@
       "notes": ""
     },
     {
-      "id": "evt_15",
-      "page": "editor",
-      "category": "interaction",
-      "trigger": "click",
-      "event": "sign_save_tap",
-      "data": {
-        "method": "draw|type|upload"
-      },
-      "element": {
-        "selector": "[data-ff=\"cs-save\"]",
-        "tag": "button",
-        "role": null,
-        "label": "{createSignModal.saveLabel}"
-      },
-      "notes": "Save signature (also places it in the prototype)."
-    },
-    {
       "id": "evt_16",
       "page": "editor",
       "category": "interaction",

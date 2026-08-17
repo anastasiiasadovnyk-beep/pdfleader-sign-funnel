@@ -87,6 +87,7 @@ export default function Screen(props: EditorScreenProps) {
         <DocumentCanvas
           document={props.document}
           signatureAssets={props.signatureAssets}
+          inkColor={state.inkColor}
           placed={derived.signaturePlaced}
           placedMethod={derived.placedMethod}
           showSignId={derived.showSignId}
@@ -133,7 +134,6 @@ export default function Screen(props: EditorScreenProps) {
           onType={actions.typeName}
           onUpload={actions.upload}
           onClear={actions.clear}
-          onSave={actions.placeSignature}
           onPlace={actions.placeSignature}
         />
       )}

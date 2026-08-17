@@ -13,9 +13,15 @@ import thumbP4 from '../../assets/thumb-p4.png';
 import thumbP5 from '../../assets/thumb-p5.png';
 import thumbP6 from '../../assets/thumb-p6.png';
 import sigJohnSmith from '../../assets/sig-john-smith.png';
-import sigDrawn from '../../assets/sig-drawn.png';
-import sigTyped from '../../assets/sig-typed.png';
-import sigUploaded from '../../assets/sig-uploaded.png';
+import sigDrawBlack from '../../assets/sig-draw-black.png';
+import sigDrawBlue from '../../assets/sig-draw-blue.png';
+import sigDrawRed from '../../assets/sig-draw-red.png';
+import sigTypeBlack from '../../assets/sig-type-black.png';
+import sigTypeBlue from '../../assets/sig-type-blue.png';
+import sigTypeRed from '../../assets/sig-type-red.png';
+import sigUploadBlack from '../../assets/sig-upload-black.png';
+import sigUploadBlue from '../../assets/sig-upload-blue.png';
+import sigUploadRed from '../../assets/sig-upload-red.png';
 
 const mock: EditorScreenProps = {
   chrome: {
@@ -123,8 +129,6 @@ const mock: EditorScreenProps = {
     uploadButtonLabel: 'Upload your sign',
     uploadCaption: 'Size: **up to 5 MB.**\nSupported format: **JPG**, **PNG**, or **SVG**',
     clearLabel: 'Clear',
-    cancelLabel: 'Cancel',
-    saveLabel: 'Save signature',
     signLabel: 'Accept and Sign',
   },
   signedToolbar: {
@@ -155,9 +159,9 @@ const mock: EditorScreenProps = {
     closeLabel: 'Close',
   },
   signatureAssets: {
-    drawn: sigDrawn,
-    typed: sigTyped,
-    uploaded: sigUploaded,
+    draw: { black: sigDrawBlack, blue: sigDrawBlue, red: sigDrawRed },
+    type: { black: sigTypeBlack, blue: sigTypeBlue, red: sigTypeRed },
+    upload: { black: sigUploadBlack, blue: sigUploadBlue, red: sigUploadRed },
   },
   onNext: () => {},
 };

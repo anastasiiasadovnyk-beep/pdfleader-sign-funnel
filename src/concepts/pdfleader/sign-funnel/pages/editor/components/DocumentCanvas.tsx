@@ -5,6 +5,7 @@ import { cn } from '@universe-forma/ui-pes';
 import type {
   DocumentCanvasProps,
   DocumentFormValues,
+  InkColor,
   SignatureAssets,
   SignatureMethod,
   SignaturePosition,
@@ -14,6 +15,7 @@ import { Icon } from './Icon';
 type Props = {
   document: DocumentCanvasProps;
   signatureAssets: SignatureAssets;
+  inkColor: InkColor;
   placed: boolean;
   placedMethod: SignatureMethod;
   showSignId: boolean;
@@ -92,12 +94,6 @@ type DragState = {
   boxHeightPct: number;
 };
 
-const METHOD_ASSET: Record<SignatureMethod, keyof SignatureAssets> = {
-  draw: 'drawn',
-  type: 'typed',
-  upload: 'uploaded',
-};
-
 /** Eight selection handles around the placed signature (editor-style). */
 function Handles() {
   const spots = [
@@ -134,6 +130,7 @@ function Handles() {
 export function DocumentCanvas({
   document,
   signatureAssets,
+  inkColor,
   placed,
   placedMethod,
   showSignId,
@@ -278,7 +275,7 @@ export function DocumentCanvas({
                         )}
                       >
                         <img
-                          src={signatureAssets[METHOD_ASSET[placedMethod]]}
+                          src={signatureAssets[placedMethod][inkColor]}
                           alt="Your signature"
                           draggable={false}
                           className={cn(

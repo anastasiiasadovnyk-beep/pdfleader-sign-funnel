@@ -139,8 +139,6 @@ export type CreateSignModalCopy = {
   /** `**bold**` segments are emphasised when rendered. */
   uploadCaption: string;
   clearLabel: string;
-  cancelLabel: string;
-  saveLabel: string;
   signLabel: string;
 };
 
@@ -179,11 +177,12 @@ export type SignedToolbarCopy = {
 };
 
 /** Signature renders per creation method (prototype assets; real app renders user ink). */
-export type SignatureAssets = {
-  drawn: string;
-  typed: string;
-  uploaded: string;
-};
+/**
+ * Signature artwork per method and per ink. The real product renders the ink
+ * live (canvas strokes / a font / the user's upload); the prototype ships one
+ * asset per combination so the colour switcher shows real artwork.
+ */
+export type SignatureAssets = Record<SignatureMethod, Record<InkColor, string>>;
 
 export type EditorScreenProps = {
   chrome: EditorChromeProps;

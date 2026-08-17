@@ -46,7 +46,7 @@ One flow serves both sealing types — nothing branches. `editor` → `thank-you
 | `selectTypeModal` | `SelectTypeModalCopy` | i18n `t('sign.selectType.*')`; `previewImageUrl` static asset |
 | `createSignModal` | `CreateSignModalCopy` | i18n `t('sign.create.*')` — **the Figma frames keep DS Dialog placeholder strings ("Title"/"Subheader"/"Tertiary"/"Secondary"/"Primary"); the shipped copy is proposed and must be reviewed by content design** |
 | `signedToolbar` | `SignedToolbarCopy` | i18n `t('sign.toolbar.*')`; `signIdValue` from the signing service response |
-| `signatureAssets` | `SignatureAssets` | **mock-only** — in the product the drawn/typed/uploaded signature is user-generated (canvas strokes / font-rendered text / uploaded image), not static PNGs |
+| `signatureAssets` | `SignatureAssets` | **mock-only** — `Record<method, Record<inkColor, url>>`, one PNG per method × ink so the colour switcher shows real artwork. In the product the signature is user-generated and the ink is applied live (stroke colour on the canvas / text colour for the font / a recolour pass on the upload), so this whole map goes away |
 | `initialStep`, `initialSignatureType`, `initialMethod`, `initialFilled`, `initialVerified` | scenario seeds | drop on integration — state lives in the sign slice |
 | `onNext` | `() => void` | route to payment funnel (`PAGE_LINKS`) |
 

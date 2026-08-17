@@ -19,7 +19,8 @@ import type {
 } from '../types';
 import { Icon } from './Icon';
 
-const INK_SWATCH: Record<InkColor, string> = {
+/** One source of ink per colour, so the swatch and the signature always agree. */
+const INK_COLOR: Record<InkColor, string> = {
   black: 'bg-secondary-filled-800',
   blue: 'bg-primary',
   red: 'bg-material-red-700',
@@ -42,7 +43,7 @@ export function ColorSwatches({ label, value, onChange, ff }: SwatchGroupProps) 
         {label}
       </span>
       <div className="flex gap-1" role="radiogroup" aria-label={label}>
-        {(Object.keys(INK_SWATCH) as InkColor[]).map((color) => (
+        {(Object.keys(INK_COLOR) as InkColor[]).map((color) => (
           <button
             key={color}
             type="button"
@@ -55,7 +56,7 @@ export function ColorSwatches({ label, value, onChange, ff }: SwatchGroupProps) 
               value === color && 'bg-primary-opacity-8',
             )}
           >
-            <span className={cn('h-4.5 w-4.5 rounded-full', INK_SWATCH[color])} />
+            <span className={cn('h-4.5 w-4.5 rounded-full', INK_COLOR[color])} />
           </button>
         ))}
       </div>
@@ -182,7 +183,6 @@ type SignatureModalProps = {
   onType: (value: string) => void;
   onUpload: () => void;
   onClear: () => void;
-  onSave: () => void;
   onPlace: () => void;
 };
 
@@ -323,7 +323,7 @@ export function SignatureModal(props: SignatureModalProps) {
                     >
                       <Icon name="font_download" size={18} className="text-action-active" />
                       <img
-                        src={assets.typed}
+                        src={assets.type.black}
                         alt={copy.fontName}
                         className="h-4 w-auto flex-1 object-contain object-left"
                       />
@@ -335,7 +335,11 @@ export function SignatureModal(props: SignatureModalProps) {
 
               {method === 'upload' ? (
                 <div className="border-primary my-4 flex flex-1 items-center justify-center rounded-4 border">
-                  <img src={assets.uploaded} alt="Uploaded signature" className="max-h-[170px] w-auto" />
+                  <img
+                    src={assets.upload[inkColor]}
+                    alt="Uploaded signature"
+                    className="max-h-[170px] w-auto"
+                  />
                 </div>
               ) : (
                 <div
@@ -351,7 +355,7 @@ export function SignatureModal(props: SignatureModalProps) {
                 >
                   {filled && (
                     <img
-                      src={method === 'draw' ? assets.drawn : assets.typed}
+                      src={assets[method][inkColor]}
                       alt="Signature"
                       className={cn(
                         'mx-auto w-auto',
@@ -381,44 +385,21 @@ export function SignatureModal(props: SignatureModalProps) {
         <div
           className={cn(
             'flex px-6 pb-6 pt-4',
-            'max-md:border-os-divider max-md:flex-col-reverse max-md:gap-3 max-md:border-t max-md:shadow-[0_-4px_12px_rgba(0,0,0,0.04)]',
-            'md:items-center md:justify-between',
+            'max-md:border-os-divider max-md:border-t max-md:shadow-[0_-4px_12px_rgba(0,0,0,0.04)]',
+            'md:items-center md:justify-end',
           )}
         >
           <Button
-            data-ff="cs-cancel"
+            data-ff="cs-sign"
             size="md"
-            variant="outlined"
-            color="action"
+            variant="filled"
+            color="primary"
             className="max-md:w-full"
-            onClick={props.onClose}
+            disabled={!props.canPlace}
+            onClick={props.onPlace}
           >
-            {copy.cancelLabel}
+            {copy.signLabel}
           </Button>
-          <div className="flex gap-3 max-md:flex-col-reverse md:items-center">
-            <Button
-              data-ff="cs-save"
-              size="md"
-              variant="filled-tonal"
-              color="primary"
-              className="max-md:w-full"
-              disabled={!props.canPlace}
-              onClick={props.onSave}
-            >
-              {copy.saveLabel}
-            </Button>
-            <Button
-              data-ff="cs-sign"
-              size="md"
-              variant="filled"
-              color="primary"
-              className="max-md:w-full"
-              disabled={!props.canPlace}
-              onClick={props.onPlace}
-            >
-              {copy.signLabel}
-            </Button>
-          </div>
         </div>
       </div>
     </div>
