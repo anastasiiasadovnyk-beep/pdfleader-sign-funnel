@@ -7,7 +7,7 @@ import { Icon } from './Icon';
 type Props = {
   file: DocumentRow;
   menu: RowMenuCopy;
-  labels: { edit: string; delete: string; download: string; more: string };
+  labels: { edit: string; download: string; more: string };
   onDownload: () => void;
   onDownloadAudit: () => void;
 };
@@ -18,16 +18,15 @@ type Props = {
  * per-grid and the two would drift apart.
  */
 export const ROW_GRID =
-  'grid grid-cols-[minmax(0,1fr)_150px_110px_260px] items-center gap-4 max-md:grid-cols-[minmax(0,1fr)_auto]';
+  'grid grid-cols-[minmax(0,1fr)_150px_110px_224px] items-center gap-4 max-md:grid-cols-[minmax(0,1fr)_auto]';
 
 const ITEM_CLASS =
   'text-body-2 text-text-primary flex cursor-pointer select-none items-center gap-2 rounded-2 px-2 py-1.5 outline-none hover:bg-action-8';
 
 /**
- * One document row, laid out as the product's My Documents page: edit, delete
- * and a Download pill. The overflow menu is kept for the actions those icons
- * don't cover, and its contents depend on how the file was signed — only a
- * digital signature has an audit trail to fetch.
+ * One document row: edit and a Download pill, with everything else behind the
+ * overflow menu (Duplicate and Delete, plus "Download audit trail" — only a
+ * digital signature has an audit trail to fetch).
  */
 export function FileRow({ file, menu, labels, onDownload, onDownloadAudit }: Props) {
   const showAudit = file.signature === 'digital';
@@ -45,9 +44,6 @@ export function FileRow({ file, menu, labels, onDownload, onDownloadAudit }: Pro
       <span className="flex items-center justify-end gap-1">
         <IconButton variant="text" color="action" size="sm" aria-label={labels.edit}>
           <Icon name="edit_square" size={20} className="text-action-active" />
-        </IconButton>
-        <IconButton variant="text" color="action" size="sm" aria-label={labels.delete}>
-          <Icon name="delete" size={20} className="text-action-active" />
         </IconButton>
         <Button
           data-ff="dash-row-download"
@@ -91,6 +87,11 @@ export function FileRow({ file, menu, labels, onDownload, onDownloadAudit }: Pro
           <BaseDropdownItem className={ITEM_CLASS}>
             <Icon name="content_copy" size={18} className="text-action-active" />
             {menu.duplicateLabel}
+          </BaseDropdownItem>
+          <span className="bg-os-divider my-1 block h-px" aria-hidden />
+          <BaseDropdownItem data-ff="dash-menu-delete" className={ITEM_CLASS}>
+            <Icon name="delete" size={18} className="text-action-active" />
+            {menu.deleteLabel}
           </BaseDropdownItem>
         </BaseDropdown>
       </span>

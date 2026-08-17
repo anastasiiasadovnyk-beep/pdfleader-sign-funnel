@@ -66,7 +66,7 @@ export type DashboardScreenProps = {
   /** Scenario seed — render the page with a toast already visible. */
   initialToast?: ToastVariant | null;
   /** Accessible names for the per-row icon actions. */
-  rowActionLabels: { edit: string; delete: string; download: string; more: string };
+  rowActionLabels: { edit: string; download: string; more: string };
   /** Injected by the sandbox route (and by the product router on integration). */
   onNext?: () => void;
   onBack?: () => void;

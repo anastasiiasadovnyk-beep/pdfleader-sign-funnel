@@ -53,7 +53,7 @@ const mock: DashboardScreenProps = {
     auditTitle: 'The audit trail has been downloaded',
     body: 'You can find your signed document in the Dashboard',
   },
-  rowActionLabels: { edit: 'Edit', delete: 'Delete', download: 'Download', more: 'More actions' },
+  rowActionLabels: { edit: 'Edit', download: 'Download', more: 'More actions' },
 };
 
 export default mock;
