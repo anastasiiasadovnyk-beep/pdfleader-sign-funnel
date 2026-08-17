@@ -76,6 +76,7 @@ export default function Screen(props: EditorScreenProps) {
           onInkColorChange={actions.setInkColor}
           onThicknessChange={actions.setThickness}
           onVerifiedChange={actions.toggleVerified}
+          onEdit={actions.editSignature}
           onDelete={actions.deleteSignature}
         />
       )}

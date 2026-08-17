@@ -43,6 +43,12 @@ export function useSignFunnelModel(props: EditorScreenProps) {
   const [signaturePosition, setSignaturePosition] = useState<SignaturePosition>(SIGNATURE_HOME);
   /** A placed signature starts selected; clicking off the page clears it. */
   const [signatureSelected, setSignatureSelected] = useState(true);
+  /**
+   * Set while the create dialog is open to EDIT the placed signature rather
+   * than make a new one, so backing out returns to the signature instead of
+   * discarding it.
+   */
+  const [editingPlaced, setEditingPlaced] = useState(false);
   /** Done opens the export panel; its checkout CTA leaves for the thank-you page. */
   const [exportOpen, setExportOpen] = useState(props.initialExportOpen ?? false);
   const [exportFormat, setExportFormat] = useState<ExportFormatId>('pdf');
@@ -50,11 +56,17 @@ export function useSignFunnelModel(props: EditorScreenProps) {
   const actions = {
     /** Sign tool tile / purple field marker. */
     startSignFlow: () => setStep('selectType'),
-    cancelSelectType: () => setStep('editing'),
+    cancelSelectType: () => {
+      setStep(editingPlaced ? 'signed' : 'editing');
+      setEditingPlaced(false);
+    },
     chooseType: (type: SignatureType) => setSignatureType(type),
     continueToCreate: () => setStep('createSign'),
     backToSelectType: () => setStep('selectType'),
-    closeCreate: () => setStep('editing'),
+    closeCreate: () => {
+      setStep(editingPlaced ? 'signed' : 'editing');
+      setEditingPlaced(false);
+    },
     setMethod: (m: SignatureMethod) => setMethod(m),
     setInkColor,
     setThickness,
@@ -65,10 +77,22 @@ export function useSignFunnelModel(props: EditorScreenProps) {
     clear: () => setFilled((f) => ({ ...f, [method]: false })),
     placeSignature: () => {
       setPlacedMethod(method);
-      setVerified(signatureType === 'digital');
-      setSignaturePosition(SIGNATURE_HOME);
       setSignatureSelected(true);
       setStep('signed');
+      if (editingPlaced) {
+        // Only the artwork changed: keep where the user dragged it and the
+        // Verified choice they made.
+        setEditingPlaced(false);
+        return;
+      }
+      setVerified(signatureType === 'digital');
+      setSignaturePosition(SIGNATURE_HOME);
+    },
+    /** Pencil in the contextual toolbar — reopen the dialog on the placed signature. */
+    editSignature: () => {
+      setEditingPlaced(true);
+      setMethod(placedMethod);
+      setStep('createSign');
     },
     selectSignature: () => setSignatureSelected(true),
     deselectSignature: () => setSignatureSelected(false),
@@ -91,8 +115,11 @@ export function useSignFunnelModel(props: EditorScreenProps) {
     signaturePlaced: step === 'signed',
     /** Selection chrome and the contextual toolbar travel together. */
     signatureActive: step === 'signed' && signatureSelected,
-    /** Sign ID caption is a Digital Signature artefact. */
-    showSignId: step === 'signed' && verified,
+    /**
+     * Sign ID caption is a Digital Signature artefact, and reads as part of the
+     * selection chrome — it clears when the signature is deselected.
+     */
+    showSignId: step === 'signed' && verified && signatureSelected,
     placedMethod,
   };
 

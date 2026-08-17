@@ -13,6 +13,7 @@ type Props = {
   onInkColorChange: (color: InkColor) => void;
   onThicknessChange: (thickness: InkThickness) => void;
   onVerifiedChange: (checked: boolean) => void;
+  onEdit: () => void;
   onDelete: () => void;
 };
 
@@ -32,6 +33,7 @@ export function SignContextToolbar({
   onInkColorChange,
   onThicknessChange,
   onVerifiedChange,
+  onEdit,
   onDelete,
 }: Props) {
   return (
@@ -40,7 +42,13 @@ export function SignContextToolbar({
       data-signature-ui="toolbar"
       className="border-os-divider bg-bg-white-bg flex h-13 items-center justify-center gap-4 border-b px-4"
     >
-      <IconButton variant="text" color="action" size="sm" aria-label="Edit signature">
+      <IconButton
+        variant="text"
+        color="action"
+        size="sm"
+        aria-label="Edit signature"
+        onClick={onEdit}
+      >
         <Icon name="edit" size={20} />
       </IconButton>
       <Divider />
