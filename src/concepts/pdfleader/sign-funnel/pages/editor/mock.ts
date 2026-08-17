@@ -139,9 +139,7 @@ const mock: EditorScreenProps = {
   exportPanel: {
     title: 'Export your file',
     fileNameLabel: 'File name',
-    // Requested verbatim; the document in the prototype is a W-9, so this may
-    // be meant as "W-9_signed" — one line to change if so.
-    fileName: 'B-9_signed',
+    fileName: 'W-9_signed',
     formatLabel: 'Format',
     formats: [
       { id: 'pdf', chip: 'PDF', name: 'PDF', extension: '.pdf' },

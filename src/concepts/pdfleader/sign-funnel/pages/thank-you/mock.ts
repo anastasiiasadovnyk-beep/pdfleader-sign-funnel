@@ -31,8 +31,8 @@ const mock: ThankYouScreenProps = {
     ],
   },
   downloads: {
-    signedFileName: 'B-9_signed.pdf',
-    auditFileName: 'B-9_signed_audit-trail.pdf',
+    signedFileName: 'W-9_signed.pdf',
+    auditFileName: 'W-9_signed_audit-trail.pdf',
   },
   toast: {
     signedTitle: 'The signed document has been downloaded',
