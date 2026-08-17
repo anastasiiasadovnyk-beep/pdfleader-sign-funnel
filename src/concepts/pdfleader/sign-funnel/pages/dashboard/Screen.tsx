@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { Button } from '@universe-forma/ui-pes';
+import { Button, cn } from '@universe-forma/ui-pes';
 
 import { downloadPdf } from '../../lib/downloadFile';
 import { forgetSignatureType } from '../../lib/signatureChoice';
 import type { DashboardScreenProps, ToastVariant } from './types';
 import { DashHeader } from './components/DashHeader';
 import { DownloadToast } from './components/DownloadToast';
-import { FileRow } from './components/FileRow';
+import { FileRow, ROW_GRID } from './components/FileRow';
 import { Icon } from './components/Icon';
 
 /** Same 5 s as the thank-you page's toast. */
@@ -63,7 +63,7 @@ export default function Screen(props: DashboardScreenProps) {
           </Button>
         </div>
         <section data-ff="dash-table" className="flex w-full flex-col">
-          <div className="grid grid-cols-[minmax(0,1fr)_140px_100px_128px] items-center gap-4 pb-2 max-md:grid-cols-[minmax(0,1fr)_auto]">
+          <div className={cn(ROW_GRID, 'pb-2')}>
             <span className="text-caption text-text-secondary">{props.columns.file}</span>
             <span className="text-caption text-text-secondary max-md:hidden">
               {props.columns.lastEdit}

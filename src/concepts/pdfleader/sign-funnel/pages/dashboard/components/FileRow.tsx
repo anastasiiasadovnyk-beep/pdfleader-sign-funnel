@@ -12,6 +12,14 @@ type Props = {
   onDownloadAudit: () => void;
 };
 
+/**
+ * Column template shared by the header and every row. Header and rows are
+ * separate grids, so the tracks must be fixed widths — an `auto` track resolves
+ * per-grid and the two would drift apart.
+ */
+export const ROW_GRID =
+  'grid grid-cols-[minmax(0,1fr)_150px_110px_260px] items-center gap-4 max-md:grid-cols-[minmax(0,1fr)_auto]';
+
 const ITEM_CLASS =
   'text-body-2 text-text-primary flex cursor-pointer select-none items-center gap-2 rounded-2 px-2 py-1.5 outline-none hover:bg-action-8';
 
@@ -26,7 +34,7 @@ export function FileRow({ file, menu, labels, onDownload, onDownloadAudit }: Pro
   return (
     <div
       data-ff="dash-file-row"
-      className="border-os-divider grid grid-cols-[minmax(0,1fr)_150px_100px_auto] items-center gap-4 border-b py-3 max-md:grid-cols-[minmax(0,1fr)_auto]"
+      className={cn(ROW_GRID, 'border-os-divider border-b py-3')}
     >
       <span className="flex min-w-0 items-center gap-3">
         <FileGlyph kind={file.kind} signature={file.signature} />
