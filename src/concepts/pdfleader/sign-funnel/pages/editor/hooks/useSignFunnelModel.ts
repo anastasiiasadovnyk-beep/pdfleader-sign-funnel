@@ -11,6 +11,9 @@ import type {
   SignatureType,
 } from '../types';
 
+/** A brand-new signature draft: no ink on any tab. */
+const BLANK_INK: Record<SignatureMethod, boolean> = { draw: false, type: false, upload: false };
+
 /** Bottom-left of the signature's resting spot — the W-9's signature line. */
 const SIGNATURE_HOME: SignaturePosition = { leftPct: 30, topPct: 76.74 };
 
@@ -49,22 +52,38 @@ export function useSignFunnelModel(props: EditorScreenProps) {
    * discarding it.
    */
   const [editingPlaced, setEditingPlaced] = useState(false);
+  /**
+   * Where dismissing the signature dialog lands. Backing out of a NEW signature
+   * started while one is already placed must not discard that one either, so
+   * this remembers the step the dialog was opened from.
+   */
+  const [dismissStep, setDismissStep] = useState<SignStep>('editing');
   /** Done opens the export panel; its checkout CTA leaves for the thank-you page. */
   const [exportOpen, setExportOpen] = useState(props.initialExportOpen ?? false);
   const [exportFormat, setExportFormat] = useState<ExportFormatId>('pdf');
 
   const actions = {
-    /** Sign tool tile / purple field marker. */
-    startSignFlow: () => setStep('selectType'),
+    /**
+     * Sign tool tile / purple field marker — always starts a NEW signature.
+     * Any previously placed artwork is left alone rather than pulled into the
+     * dialog; only the pencil (`editSignature`) reopens it for editing.
+     */
+    startSignFlow: () => {
+      setEditingPlaced(false);
+      setDismissStep(step === 'signed' ? 'signed' : 'editing');
+      setMethod('draw');
+      setFilled(BLANK_INK);
+      setStep('selectType');
+    },
     cancelSelectType: () => {
-      setStep(editingPlaced ? 'signed' : 'editing');
+      setStep(dismissStep);
       setEditingPlaced(false);
     },
     chooseType: (type: SignatureType) => setSignatureType(type),
     continueToCreate: () => setStep('createSign'),
     backToSelectType: () => setStep('selectType'),
     closeCreate: () => {
-      setStep(editingPlaced ? 'signed' : 'editing');
+      setStep(dismissStep);
       setEditingPlaced(false);
     },
     setMethod: (m: SignatureMethod) => setMethod(m),
@@ -91,7 +110,11 @@ export function useSignFunnelModel(props: EditorScreenProps) {
     /** Pencil in the contextual toolbar — reopen the dialog on the placed signature. */
     editSignature: () => {
       setEditingPlaced(true);
+      setDismissStep('signed');
       setMethod(placedMethod);
+      // The placed signature IS the draft being edited, whatever the last
+      // new-signature attempt left behind.
+      setFilled((f) => ({ ...f, [placedMethod]: true }));
       setStep('createSign');
     },
     selectSignature: () => setSignatureSelected(true),
