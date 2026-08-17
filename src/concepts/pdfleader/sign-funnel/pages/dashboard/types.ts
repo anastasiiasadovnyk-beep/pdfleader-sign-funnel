@@ -9,9 +9,8 @@ export type DocumentRow = {
   id: string;
   name: string;
   kind: FileKind;
-  /** Absolute date, with the relative form under it. */
+  /** Long form, as the reference shows it: "August 11, 2026". */
   lastEditDate: string;
-  lastEditRelative: string;
   size: string;
   /** Only signed documents carry an indicator; unsigned rows leave this unset. */
   signature?: SignatureKind;
@@ -67,7 +66,7 @@ export type DashboardScreenProps = {
   /** Scenario seed — render the page with a toast already visible. */
   initialToast?: ToastVariant | null;
   /** Accessible names for the per-row icon actions. */
-  rowActionLabels: { edit: string; download: string; more: string };
+  rowActionLabels: { edit: string; delete: string; download: string; more: string };
   /** Injected by the sandbox route (and by the product router on integration). */
   onNext?: () => void;
   onBack?: () => void;

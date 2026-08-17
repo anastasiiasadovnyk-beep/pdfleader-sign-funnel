@@ -19,56 +19,24 @@ const mock: DashboardScreenProps = {
     size: 'Size',
     actions: 'Actions',
   },
+  // Two signed copies of the same form. The digital one is the newer of the
+  // two, so the green indicator always sits above the grey one.
   files: [
     {
       id: 'f1',
-      name: 'Invoice #1234567890',
+      name: 'W-9_signed',
       kind: 'pdf',
-      lastEditDate: '05.06.2026',
-      lastEditRelative: '1 hour ago',
-      size: '122 KB',
+      lastEditDate: 'August 11, 2026',
+      size: '122.7 KB',
       signature: 'digital',
     },
     {
       id: 'f2',
-      name: 'Invoice #1234567890',
-      kind: 'xlsx',
-      lastEditDate: '05.06.2026',
-      lastEditRelative: '1 hour ago',
-      size: '122 KB',
-    },
-    {
-      id: 'f3',
-      name: 'Invoice #1234567890',
-      kind: 'docx',
-      lastEditDate: '05.06.2026',
-      lastEditRelative: '1 hour ago',
-      size: '122 KB',
-    },
-    {
-      id: 'f4',
-      name: 'Invoice #1234567890',
+      name: 'W-9_signed',
       kind: 'pdf',
-      lastEditDate: '05.06.2026',
-      lastEditRelative: '1 hour ago',
-      size: '122 KB',
+      lastEditDate: 'June 03, 2026',
+      size: '109.9 KB',
       signature: 'simple',
-    },
-    {
-      id: 'f5',
-      name: 'Invoice #1234567890',
-      kind: 'jpg',
-      lastEditDate: '05.06.2026',
-      lastEditRelative: '1 hour ago',
-      size: '122 KB',
-    },
-    {
-      id: 'f6',
-      name: 'Invoice #1234567890',
-      kind: 'png',
-      lastEditDate: '05.06.2026',
-      lastEditRelative: '1 hour ago',
-      size: '122 KB',
     },
   ],
   menu: {
@@ -85,15 +53,7 @@ const mock: DashboardScreenProps = {
     auditTitle: 'The audit trail has been downloaded',
     body: 'You can find your signed document in the Dashboard',
   },
-  rowActionLabels: { edit: 'Edit', download: 'Download', more: 'More actions' },
+  rowActionLabels: { edit: 'Edit', delete: 'Delete', download: 'Download', more: 'More actions' },
 };
 
 export default mock;
-
-/** Same dashboard reached after a simple signature — the top row flips kind. */
-export const simple: DashboardScreenProps = {
-  ...mock,
-  files: mock.files.map((file, i) =>
-    i === 0 ? { ...file, signature: 'simple' } : i === 3 ? { ...file, signature: 'digital' } : file,
-  ),
-};

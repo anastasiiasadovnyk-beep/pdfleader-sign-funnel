@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from '@universe-forma/ui-pes';
 
 import { downloadPdf } from '../../lib/downloadFile';
-import { forgetSignatureType, recallSignatureType } from '../../lib/signatureChoice';
+import { forgetSignatureType } from '../../lib/signatureChoice';
 import type { DashboardScreenProps, ToastVariant } from './types';
 import { DashHeader } from './components/DashHeader';
 import { DownloadToast } from './components/DownloadToast';
@@ -14,16 +14,12 @@ import { Icon } from './components/Icon';
 const TOAST_MS = 5000;
 
 /**
- * "My Documents" — one dashboard for both signature types. Signed rows carry an
- * indicator (green = digital, grey = simple) and their overflow menu differs:
- * only a digital signature offers "Download audit trail".
- *
- * The document the user just signed is the top row, so its indicator follows
- * the choice made in the editor; the other signed row takes the opposite kind
- * so both indicators and both menus stay visible on the page.
+ * "My Documents" — one dashboard for both signature types. Both signed copies
+ * are listed so each indicator and each row menu is visible at once: green =
+ * digital (has an audit trail), grey = simple. The digital copy is the newer of
+ * the two, which keeps the grey row below the green one.
  */
 export default function Screen(props: DashboardScreenProps) {
-  const [signedWith] = useState(recallSignatureType);
   // Row downloads confirm themselves with the thank-you page's green toast.
   const [toast, setToast] = useState<ToastVariant | null>(props.initialToast ?? null);
   const timer = useRef<number | undefined>(undefined);
@@ -37,15 +33,6 @@ export default function Screen(props: DashboardScreenProps) {
     window.clearTimeout(timer.current);
     setToast(null);
   };
-  const files = signedWith
-    ? props.files.map((file, index) => {
-        if (index === 0) return { ...file, signature: signedWith };
-        if (file.signature) {
-          return { ...file, signature: signedWith === 'digital' ? 'simple' : 'digital' } as const;
-        }
-        return file;
-      })
-    : props.files;
 
   return (
     <div className="bg-bg-white-bg relative flex min-h-screen flex-col">
@@ -88,7 +75,7 @@ export default function Screen(props: DashboardScreenProps) {
               {props.columns.actions}
             </span>
           </div>
-          {files.map((file) => (
+          {props.files.map((file) => (
             <FileRow
               key={file.id}
               file={file}

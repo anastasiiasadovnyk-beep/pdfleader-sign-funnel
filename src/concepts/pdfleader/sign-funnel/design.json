@@ -81,10 +81,6 @@
     {
       "name": "default",
       "page": "dashboard"
-    },
-    {
-      "name": "simple",
-      "page": "dashboard"
     }
   ],
   "regions": [
@@ -1006,16 +1002,17 @@
       },
       "assert": {
         "flexDirection": "column",
-        "textContent": "Invoice #1234567890"
-      }
+        "textContent": "W-9_signed"
+      },
+      "copy": "W-9_signed"
     },
     {
       "ff": "dash-file-row",
       "page": "dashboard",
-      "component": "grid row: file glyph + name, last edit, size, row actions",
-      "copy": "Invoice #1234567890",
+      "component": "grid row: file glyph + name, last edit, size, row actions (edit / delete / Download pill / overflow menu)",
+      "copy": "W-9_signed",
       "assert": {
-        "textContent": "Invoice #1234567890"
+        "textContent": "W-9_signed"
       }
     },
     {
