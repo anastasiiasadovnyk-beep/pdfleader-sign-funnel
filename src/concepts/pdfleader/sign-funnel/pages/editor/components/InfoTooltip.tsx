@@ -1,15 +1,16 @@
 import { useState } from 'react';
 
-import { IconButton, cn } from '@universe-forma/ui-pes';
+import { cn } from '@universe-forma/ui-pes';
 
 import { Icon } from './Icon';
 
 /**
  * Info icon that reveals a tooltip. Composed: ui-pes ships no Tooltip (DS gap,
  * flagged in DS-GAPS.md), but it does define `--color-bg-tooltip`, so this uses
- * that surface. The whole block — label and icon — is the hover target; the
- * icon also opens it on focus and toggles on click, so it stays reachable by
- * keyboard and on touch.
+ * that surface. The whole block — label and icon — is the hover target and
+ * shows no hover state or pointer cursor, since it reads as text rather than a
+ * control. The icon still opens the tooltip on focus and toggles it on click,
+ * so it stays reachable by keyboard and on touch.
  */
 export function InfoTooltip({
   text,
@@ -27,23 +28,28 @@ export function InfoTooltip({
   return (
     // Hover lives on the wrapper, so the label and the icon are one target.
     <span
-      className={cn('relative inline-flex items-center gap-1', label && 'cursor-help', className)}
+      className={cn('relative inline-flex cursor-default items-center gap-1', className)}
       onPointerEnter={() => setOpen(true)}
       onPointerLeave={() => setOpen(false)}
     >
       {label}
-      <IconButton
-        variant="text"
-        color="action"
-        size="xs"
+      {/*
+       * Deliberately not the DS IconButton: the block reads as part of the
+       * sentence, so it carries no hover state and keeps the arrow cursor. It
+       * stays a button purely so the tooltip is reachable by keyboard and on
+       * touch — hover is handled by the wrapper above.
+       */}
+      <button
+        type="button"
         aria-label={text}
         aria-expanded={open}
         onClick={() => setOpen((wasOpen) => !wasOpen)}
         onFocus={() => setOpen(true)}
         onBlur={() => setOpen(false)}
+        className="flex cursor-default items-center outline-none disabled:cursor-default"
       >
         <Icon name="info" size={18} className="text-action-active" />
-      </IconButton>
+      </button>
       {open && (
         <span
           data-ff={ff}
