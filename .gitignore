@@ -5,3 +5,5 @@ build
 .DS_Store
 *.tsbuildinfo
 .fidelity
+.vercel
+.env*
