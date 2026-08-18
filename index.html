@@ -2,6 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!--
+      Lytcis session recorder for the InsightBase UX-research platform. Loads on
+      every route: this is a single-page app, so the SPA rewrite serves this one
+      document for all paths. Deliberately unconditional — no consent gate, no
+      environment check, no wait for interaction — because the platform needs it
+      present on a normal page load. It is inert for ordinary visitors and
+      records only when opened from a Lytcis test session (lytcis_session /
+      lytcis_test URL parameters).
+    -->
+    <script async src="https://insightbase.cc/lytcis-recorder.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vibe Concepts</title>
   </head>
