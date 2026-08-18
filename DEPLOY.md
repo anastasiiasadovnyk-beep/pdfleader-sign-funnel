@@ -18,18 +18,38 @@ container.
 
 1. Create a GitHub **classic** personal access token with only the
    `read:packages` scope: <https://github.com/settings/tokens/new?scopes=read:packages>
-   (fine-grained tokens do not cover the GitHub Packages npm registry).
-2. In the Vercel project: **Settings → Environment Variables**, add:
-   - Key: `NPM_RC`
-   - Value (two lines, paste the token in place of `<TOKEN>`):
+   (fine-grained tokens do not cover the GitHub Packages npm registry). The
+   token already in the dev machine's `~/.npmrc` works too.
+2. Add `NPM_RC` to the project with **three** lines — paste the token in place
+   of `<TOKEN>`:
 
-     ```
-     @universe-forma:registry=https://npm.pkg.github.com
-     //npm.pkg.github.com/:_authToken=<TOKEN>
-     ```
+   ```
+   registry=https://registry.npmjs.org
+   @universe-forma:registry=https://npm.pkg.github.com/
+   //npm.pkg.github.com/:_authToken=<TOKEN>
+   ```
 
-   - Environments: Production, Preview, Development.
+   The first line is **required, not optional**: "Vercel Runtimes are installed
+   from the canonical npm registry so `registry.npmjs.org` must be one of the
+   lines in your `.npmrc` file"
+   (<https://vercel.com/kb/guide/using-private-dependencies-with-vercel>).
+   Omit it and the build can fail resolving ordinary public packages.
+
+   Either add it in the dashboard — **team switcher → project → Settings in the
+   sidebar → Environment Variables**, applied to Production, Preview and
+   Development — or skip the dashboard entirely and pipe a file in, which avoids
+   pasting a multi-line secret into a web form:
+
+   ```bash
+   vercel link
+   vercel env add NPM_RC production < /path/to/npmrc-for-vercel
+   ```
+
+   Repeat for `preview` and `development`. `vercel env update NPM_RC production
+   < file` replaces the value later. Production and preview variables are stored
+   as *sensitive* by default, so they cannot be read back afterwards.
 3. Redeploy (Deployments → ⋯ on the failed build → Redeploy, or push a commit).
+   Environment variable changes never apply to existing deployments.
 
 Everything else is auto-detected: npm from `package-lock.json`, the
 `packages/analytics-tagger` workspace installs from the repo itself, and
