@@ -1,6 +1,6 @@
 {
   "source": "figma://5ETpNeUNy0Ja7SXlKfxUGh?node-id=15376-61642",
-  "note": "The fidelity contract for the multipage sign funnel. Scenarios are { name, page } objects (page = flow page slug); regions carry a `page` field so each is asserted only on its page's renders. Design font is Outfit for editor/modal text \u2014 pdfleader's brand token is Montserrat, so type regions assert the brand-resolved values with nearestToken where the design value has no exact token (details in dsGap fields).",
+  "note": "The fidelity contract for the multipage sign funnel. Scenarios are { name, page } objects (page = flow page slug); regions carry a `page` field so each is asserted only on its page's renders. Design font is Outfit for editor/modal text — pdfleader's brand token is Montserrat, so type regions assert the brand-resolved values with nearestToken where the design value has no exact token (details in dsGap fields).",
   "frames": {
     "desktop": {
       "w": 1440,
@@ -117,7 +117,7 @@
       "component": "Button (variant=filled, color=primary, size=md)",
       "copy": "Done",
       "nearestToken": true,
-      "dsGap": "design: Outfit Medium 16/500, radius 12 \u2014 ui-pes md button is 16/600, radius-btn-md 16",
+      "dsGap": "design: Outfit Medium 16/500, radius 12 — ui-pes md button is 16/600, radius-btn-md 16",
       "assert": {
         "fontSize": 16,
         "fontWeight": 600,
@@ -156,7 +156,7 @@
       "component": "span chip bg-primary",
       "copy": "1",
       "nearestToken": true,
-      "dsGap": "design: Montserrat Bold 12/16 \u2014 nearest token text-caption-emph is 13/700",
+      "dsGap": "design: Montserrat Bold 12/16 — nearest token text-caption-emph is 13/700",
       "assert": {
         "fontSize": 13,
         "fontWeight": 700,
@@ -245,7 +245,7 @@
       "frame": "desktop",
       "copy": "Sign the document",
       "nearestToken": true,
-      "dsGap": "design: Outfit SemiBold 28/600 \u2014 brand token text-desktop-title-4 is Montserrat 28/700",
+      "dsGap": "design: Outfit SemiBold 28/600 — brand token text-desktop-title-4 is Montserrat 28/700",
       "assert": {
         "fontFamily": "Montserrat",
         "fontSize": 28,
@@ -259,7 +259,7 @@
       "scenario": "selectType",
       "frame": "mobile",
       "nearestToken": true,
-      "dsGap": "design: Outfit SemiBold 22/600 \u2014 text-mobile-title-4 is 22/800",
+      "dsGap": "design: Outfit SemiBold 22/600 — text-mobile-title-4 is 22/800",
       "assert": {
         "fontSize": 22,
         "textContent": "Sign the document"
@@ -318,7 +318,7 @@
       "frame": "desktop",
       "copy": "Simple Signature",
       "nearestToken": true,
-      "dsGap": "design: Outfit SemiBold 24/30/600 \u2014 text-mobile-title-3 is 24/30/800",
+      "dsGap": "design: Outfit SemiBold 24/30/600 — text-mobile-title-3 is 24/30/800",
       "assert": {
         "fontSize": 24,
         "fontWeight": 800,
@@ -331,7 +331,7 @@
       "scenario": "selectType",
       "frame": "mobile",
       "nearestToken": true,
-      "dsGap": "design: Outfit SemiBold 20/24/600 \u2014 text-desktop-title-6 is 20/24/500",
+      "dsGap": "design: Outfit SemiBold 20/24/600 — text-desktop-title-6 is 20/24/500",
       "assert": {
         "fontSize": 20,
         "textContent": "Simple Signature"
@@ -343,7 +343,7 @@
       "scenario": "selectType",
       "component": "composed pill (Badge type=badge has no 10px size) bg-error-20 text-error-dark",
       "copy": "UNVERIFIED",
-      "dsGap": "design: rgba(244,67,54,.2)/#aa2e25 (material red) \u2014 brand error tokens are #f23030-keyed; 10px badge size has no type token",
+      "dsGap": "design: rgba(244,67,54,.2)/#aa2e25 (material red) — brand error tokens are #f23030-keyed; 10px badge size has no type token",
       "assert": {
         "fontSize": 10,
         "textTransform": "uppercase",
@@ -356,7 +356,7 @@
       "scenario": "selectType",
       "component": "composed pill bg-success-20 text-success-dark",
       "copy": "VERIFIED",
-      "dsGap": "design: rgba(76,175,80,.2)/#357a38 (material green) \u2014 brand success tokens are #06a77e/#0e9948-keyed",
+      "dsGap": "design: rgba(76,175,80,.2)/#357a38 (material green) — brand success tokens are #06a77e/#0e9948-keyed",
       "assert": {
         "fontSize": 10,
         "textTransform": "uppercase",
@@ -419,7 +419,7 @@
       "page": "editor",
       "scenario": "sigDraw",
       "frame": "mobile",
-      "component": "fullscreen dialog at 390px (no mobile reference frame \u2014 adapted)",
+      "component": "fullscreen dialog at 390px (no mobile reference frame — adapted)",
       "assert": {
         "width": 390
       }
@@ -431,7 +431,7 @@
       "frame": "desktop",
       "copy": "Create your signature (design keeps DS placeholder 'Title')",
       "nearestToken": true,
-      "dsGap": "design: Outfit SemiBold 28/600 placeholder copy \u2014 brand text-desktop-title-4 28/700, proposed real copy",
+      "dsGap": "design: Outfit SemiBold 28/600 placeholder copy — brand text-desktop-title-4 28/700, proposed real copy",
       "assert": {
         "fontFamily": "Montserrat",
         "fontSize": 28,
@@ -442,7 +442,7 @@
       "ff": "cs-tabs",
       "page": "editor",
       "scenario": "sigDraw",
-      "component": "TabsRoot/TabsList (color=grey, size=md) \u2014 radius-tabs-list-md 16",
+      "component": "TabsRoot/TabsList (color=grey, size=md) — radius-tabs-list-md 16",
       "assert": {
         "borderRadius": 16
       }
@@ -480,7 +480,7 @@
       "page": "editor",
       "scenario": "sigDraw",
       "component": "div canvas card rounded-5 border-os-divider",
-      "dsGap": "design border rgba(0,0,0,.14) \u2014 nearest token os-divider (12%)",
+      "dsGap": "design border rgba(0,0,0,.14) — nearest token os-divider (12%)",
       "assert": {
         "borderRadius": 16,
         "height": 356
@@ -495,7 +495,7 @@
       "scenario": "sigDraw",
       "copy": "Color",
       "nearestToken": true,
-      "dsGap": "design: Outfit Light 13/300 \u2014 text-caption is 13/400",
+      "dsGap": "design: Outfit Light 13/300 — text-caption is 13/400",
       "assert": {
         "fontSize": 13,
         "textContent": "Color"
@@ -546,7 +546,7 @@
       "ff": "cs-sign",
       "page": "editor",
       "scenario": "sigDrawFilled",
-      "copy": "Add signature \u2014 enabled once ink present",
+      "copy": "Add signature — enabled once ink present",
       "assert": {
         "textContent": "Add signature"
       }
@@ -565,7 +565,7 @@
       "ff": "cs-font-select",
       "page": "editor",
       "scenario": "sigType",
-      "component": "composed value select (DS gap \u2014 BaseDropdown is action-menu-shaped)",
+      "component": "composed value select (DS gap — BaseDropdown is action-menu-shaped)",
       "assert": {
         "width": 200,
         "borderRadius": 10
@@ -598,7 +598,7 @@
       "scenario": "sigUpload",
       "copy": "Drag & drop a sign file here",
       "nearestToken": true,
-      "dsGap": "design: Outfit Medium 16/500 \u2014 text-body-emph is 16/600",
+      "dsGap": "design: Outfit Medium 16/500 — text-body-emph is 16/600",
       "assert": {
         "fontSize": 16,
         "fontWeight": 600,
@@ -669,7 +669,7 @@
       "page": "editor",
       "scenario": "signedUnverified",
       "component": "div overlay: selection frame border-primary-opacity-40 + 8 handles + red error-state-main-50 inner frame",
-      "dsGap": "design red frame rgba(244,67,54,.5) \u2014 brand token error-state-main-50 is #f23030 @50%",
+      "dsGap": "design red frame rgba(244,67,54,.5) — brand token error-state-main-50 is #f23030 @50%",
       "assert": {
         "height": 58
       },
@@ -691,7 +691,7 @@
       "scenario": "signedVerified",
       "copy": "Sign ID: B529...4567",
       "nearestToken": true,
-      "dsGap": "design: Montserrat Medium 11/16 \u2014 nearest token text-caption 13/400",
+      "dsGap": "design: Montserrat Medium 11/16 — nearest token text-caption 13/400",
       "assert": {
         "fontSize": 13,
         "textContent": "Sign ID: B529...4567"
@@ -703,7 +703,7 @@
       "frame": "desktop",
       "copy": "Got your payment!",
       "nearestToken": true,
-      "dsGap": "design: Montserrat Black 56/68/900 \u2014 largest loaded token is text-desktop-title-1 48/56/800 (Montserrat 900 not loaded)",
+      "dsGap": "design: Montserrat Black 56/68/900 — largest loaded token is text-desktop-title-1 48/56/800 (Montserrat 900 not loaded)",
       "assert": {
         "fontFamily": "Montserrat",
         "fontSize": 48,
@@ -716,7 +716,7 @@
       "page": "thank-you",
       "frame": "mobile",
       "nearestToken": true,
-      "dsGap": "design: Montserrat Black 24/32/900 \u2014 text-mobile-title-3 is 24/30/800",
+      "dsGap": "design: Montserrat Black 24/32/900 — text-mobile-title-3 is 24/30/800",
       "assert": {
         "fontSize": 24,
         "textContent": "Got your payment!"
@@ -728,7 +728,7 @@
       "frame": "desktop",
       "copy": "Thank you for choosing PDFLeader! Below is your order summary.",
       "nearestToken": true,
-      "dsGap": "design: Montserrat SemiBold 28/42/600 \u2014 text-desktop-title-4 is 28/34/700",
+      "dsGap": "design: Montserrat SemiBold 28/42/600 — text-desktop-title-4 is 28/34/700",
       "assert": {
         "fontSize": 28,
         "fontWeight": 700,
@@ -763,7 +763,7 @@
       "ff": "ty-download-file",
       "page": "thank-you",
       "frame": "desktop",
-      "component": "Button (variant=filled, color=primary, size=lg, leftIcon=download) \u2014 exact match to Button/large theme",
+      "component": "Button (variant=filled, color=primary, size=lg, leftIcon=download) — exact match to Button/large theme",
       "copy": "Download signed file",
       "assert": {
         "fontSize": 24,
@@ -813,7 +813,7 @@
       "page": "thank-you",
       "frame": "desktop",
       "component": "composed stepper (DS gap): 32px badges, check icons, connectors",
-      "copy": "Choose a plan \u00b7 Add payment details \u00b7 3 Download",
+      "copy": "Choose a plan · Add payment details · 3 Download",
       "layout": {
         "flow": "row"
       },
@@ -828,7 +828,7 @@
       "frame": "desktop",
       "component": "composed card (DS gap): border-dashed border-primary",
       "nearestToken": true,
-      "dsGap": "design radius 28 (Corner radiuses/radius-8) \u2014 nearest token rounded-7 is 32",
+      "dsGap": "design radius 28 (Corner radiuses/radius-8) — nearest token rounded-7 is 32",
       "assert": {
         "width": 568,
         "borderRadius": 32
@@ -847,7 +847,7 @@
       "page": "thank-you",
       "copy": "Payment details",
       "nearestToken": true,
-      "dsGap": "design: Montserrat SemiBold 28/42/600 \u2014 text-desktop-title-4 is 28/34/700",
+      "dsGap": "design: Montserrat SemiBold 28/42/600 — text-desktop-title-4 is 28/34/700",
       "assert": {
         "fontSize": 28,
         "textContent": "Payment details"
@@ -857,7 +857,7 @@
       "ff": "ty-plan-value",
       "page": "thank-you",
       "copy": "7-Day Access",
-      "component": "dd text-subtitle-emph (18/600 \u2014 exact)",
+      "component": "dd text-subtitle-emph (18/600 — exact)",
       "assert": {
         "fontSize": 18,
         "fontWeight": 600,
@@ -868,7 +868,7 @@
       "ff": "ty-dashboard-cta",
       "page": "thank-you",
       "frame": "desktop",
-      "component": "Button (variant=outlined, color=primary, size=lg, rightIcon=arrow_forward) \u2014 2px border per token",
+      "component": "Button (variant=outlined, color=primary, size=lg, rightIcon=arrow_forward) — 2px border per token",
       "copy": "Go to My Documents",
       "assert": {
         "borderRadius": 24,
@@ -889,7 +889,7 @@
       "page": "thank-you",
       "copy": "For any questions, please contact us:",
       "nearestToken": true,
-      "dsGap": "design: Montserrat SemiBold 24/32/600 \u2014 text-mobile-title-3 is 24/30/800",
+      "dsGap": "design: Montserrat SemiBold 24/32/600 — text-mobile-title-3 is 24/30/800",
       "assert": {
         "fontSize": 24,
         "textContent": "For any questions, please contact us:"
@@ -900,7 +900,7 @@
       "page": "thank-you",
       "scenario": "signedDownloaded",
       "frame": "desktop",
-      "component": "composed toast (DS gap \u2014 ui-pes Toast is imperative-only): bg-success-24 backdrop-blur rounded-6",
+      "component": "composed toast (DS gap — ui-pes Toast is imperative-only): bg-success-24 backdrop-blur rounded-6",
       "assert": {
         "width": 600,
         "borderRadius": 20
@@ -921,7 +921,7 @@
       "page": "thank-you",
       "scenario": "signedDownloaded",
       "copy": "The signed document has been downloaded",
-      "component": "p text-alert-title (18/20/600 \u2014 exact)",
+      "component": "p text-alert-title (18/20/600 — exact)",
       "assert": {
         "fontSize": 18,
         "fontWeight": 600,
@@ -950,7 +950,7 @@
       "ff": "dash-header",
       "page": "dashboard",
       "component": "header: logo + nav + account link",
-      "copy": "Tools \u00b7 Forms \u00b7 Contact Us \u00b7 My account",
+      "copy": "Tools · Forms · Contact Us · My account",
       "assert": {
         "textContent": "My account"
       }
@@ -959,7 +959,7 @@
       "ff": "dash-heading",
       "page": "dashboard",
       "frame": "desktop",
-      "component": "h1 (Card/Table are DS gaps \u2014 composed from tokens)",
+      "component": "h1 (Card/Table are DS gaps — composed from tokens)",
       "copy": "My Documents",
       "assert": {
         "textContent": "My Documents"
@@ -983,23 +983,32 @@
       },
       "assert": {
         "flexDirection": "column",
-        "textContent": "W-9_signed"
+        "textContent": "W-9"
       },
-      "copy": "W-9_signed"
+      "copy": "Six files, newest first: W-9 (digital), dataset2026, Invoice #1864, W-4 (simple), Invoice #1234567890, image49"
     },
     {
       "ff": "dash-file-row",
       "page": "dashboard",
-      "component": "grid row: file glyph + name, last edit, size, row actions (edit / delete / Download pill / overflow menu)",
-      "copy": "W-9_signed",
+      "component": "grid row: file glyph + name, last edit over its relative time, size, row actions (edit / Download pill / overflow menu). No rule between rows, per the reference.",
+      "copy": "W-9 — the freshly signed form, first row",
       "assert": {
-        "textContent": "W-9_signed"
+        "textContent": "W-9"
+      }
+    },
+    {
+      "ff": "dash-row-last-edit",
+      "page": "dashboard",
+      "component": "stacked cell: date over relative time, per the reference",
+      "copy": "19.08.2026 / 10 min ago",
+      "assert": {
+        "textContent": "19.08.2026"
       }
     },
     {
       "ff": "file-signature-digital",
       "page": "dashboard",
-      "component": "signed indicator, digital \u2014 green badge with the signature glyph",
+      "component": "signed indicator, digital — green badge with the signature glyph",
       "dsGap": "design draws a scalloped seal; ui-pes ships no seal shape, so this is a round badge in the seal's green",
       "assert": {
         "textContent": "signature"
@@ -1008,7 +1017,7 @@
     {
       "ff": "file-signature-simple",
       "page": "dashboard",
-      "component": "signed indicator, simple \u2014 grey badge with the signature glyph",
+      "component": "signed indicator, simple — grey badge with the signature glyph",
       "assert": {
         "textContent": "signature"
       }

@@ -7,7 +7,7 @@ export function DashHeader({ nav, onHome }: { nav: DashboardNavCopy; onHome?: ()
   return (
     <header
       data-ff="dash-header"
-      className="border-os-divider flex w-full items-center justify-between border-b px-28 py-5 max-md:px-4"
+      className="flex w-full items-center justify-between px-28 py-6 max-md:px-4 max-md:py-4"
     >
       <button
         type="button"
@@ -16,7 +16,7 @@ export function DashHeader({ nav, onHome }: { nav: DashboardNavCopy; onHome?: ()
         onClick={onHome}
         className="cursor-pointer disabled:cursor-not-allowed"
       >
-        <Logo className="w-[150px]" />
+        <Logo className="w-[210px] max-md:w-[150px]" />
       </button>
       <nav className="flex items-center gap-8 max-md:hidden">
         {nav.items.map((item, index) => (

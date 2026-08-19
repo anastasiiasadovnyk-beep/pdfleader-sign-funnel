@@ -37,7 +37,7 @@ function SignatureBadge({ kind }: { kind: SignatureKind }) {
 export function FileGlyph({ kind, signature }: { kind: FileKind; signature?: SignatureKind }) {
   const chip = TYPE_CHIP[kind];
   return (
-    <span className="relative block h-9 w-7 shrink-0">
+    <span className="relative block h-10 w-8 shrink-0">
       <span className="border-os-divider bg-bg-white-bg absolute inset-0 rounded-1 border" />
       {/* Folded corner, drawn as a lighter square with two edges. */}
       <span className="border-os-divider bg-bg-light-grey absolute right-0 top-0 h-2.5 w-2.5 border-b border-l" />

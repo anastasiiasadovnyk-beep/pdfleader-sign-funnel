@@ -16,31 +16,43 @@ type Props = {
  * Column template shared by the header and every row. Header and rows are
  * separate grids, so the tracks must be fixed widths — an `auto` track resolves
  * per-grid and the two would drift apart.
+ *
+ * Tracks are sized so "Last Edit" starts where the reference puts it (~47% of
+ * the table). "Size" lands a little left of the reference because the Actions
+ * track has to hold the Download pill kept from this prototype, which is wider
+ * than the reference's three bare icons.
  */
 export const ROW_GRID =
-  'grid grid-cols-[minmax(0,1fr)_150px_110px_224px] items-center gap-4 max-md:grid-cols-[minmax(0,1fr)_auto]';
+  'grid grid-cols-[minmax(0,1fr)_240px_136px_224px] items-center gap-4 max-md:grid-cols-[minmax(0,1fr)_auto]';
 
 const ITEM_CLASS =
   'text-body-2 text-text-primary flex cursor-pointer select-none items-center gap-2 rounded-2 px-2 py-1.5 outline-none hover:bg-action-8';
 
 /**
- * One document row: edit and a Download pill, with everything else behind the
- * overflow menu (Duplicate and Delete, plus "Download audit trail" — only a
- * digital signature has an audit trail to fetch).
+ * One document row, laid out like the product's My Documents page: file glyph
+ * and name, the last edit stacked over its relative time, the size, then the
+ * actions. The reference draws all three actions as bare icons; the Download
+ * pill is kept from this prototype's own version on request, so the action
+ * cluster is wider here than in the reference.
  */
 export function FileRow({ file, menu, labels, onDownload, onDownloadAudit }: Props) {
   const showAudit = file.signature === 'digital';
   return (
     <div
       data-ff="dash-file-row"
-      className={cn(ROW_GRID, 'border-os-divider border-b py-3')}
+      // The reference separates rows by white space alone — no rules between them.
+      className={cn(ROW_GRID, 'py-4')}
     >
-      <span className="flex min-w-0 items-center gap-3">
+      <span className="flex min-w-0 items-center gap-4">
         <FileGlyph kind={file.kind} signature={file.signature} />
-        <span className="text-body-2 truncate text-text-primary">{file.name}</span>
+        <span className="text-subtitle truncate text-text-primary">{file.name}</span>
       </span>
-      <span className="text-body-2 text-text-primary max-md:hidden">{file.lastEditDate}</span>
-      <span className="text-body-2 text-text-secondary max-md:hidden">{file.size}</span>
+      {/* Last Edit stacks the date over how long ago it was. */}
+      <span data-ff="dash-row-last-edit" className="flex flex-col max-md:hidden">
+        <span className="text-body text-text-primary">{file.lastEditDate}</span>
+        <span className="text-body-2 text-text-secondary">{file.lastEditRelative}</span>
+      </span>
+      <span className="text-body text-text-primary max-md:hidden">{file.size}</span>
       <span className="flex items-center justify-end gap-1">
         <IconButton variant="text" color="action" size="sm" aria-label={labels.edit}>
           <Icon name="edit_square" size={20} className="text-action-active" />
@@ -63,9 +75,16 @@ export function FileRow({ file, menu, labels, onDownload, onDownloadAudit }: Pro
             'shadow-[0_8px_24px_rgba(0,0,0,0.12)]',
           )}
           trigger={
+            /*
+             * Outlined, because the reference draws this action inside a thin
+             * circle: ui-pes pairs outlined+action with border-action-stroke,
+             * a low-alpha black, on a 2rem box whose radius is half its size —
+             * exactly that hairline circle. The opaque outline token flagged in
+             * DS-GAPS.md belongs to Button, not IconButton.
+             */
             <IconButton
               data-ff={`dash-row-more-${file.signature ?? 'unsigned'}`}
-              variant="text"
+              variant="outlined"
               color="action"
               size="sm"
               aria-label={labels.more}

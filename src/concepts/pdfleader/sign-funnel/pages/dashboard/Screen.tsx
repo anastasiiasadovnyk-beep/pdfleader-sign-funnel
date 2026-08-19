@@ -13,10 +13,11 @@ import { Icon } from './components/Icon';
 const TOAST_MS = 5000;
 
 /**
- * "My Documents" — one dashboard for both signature types. Both signed copies
- * are listed so each indicator and each row menu is visible at once: green =
- * digital (has an audit trail), grey = simple. The digital copy is the newer of
- * the two, which keeps the grey row below the green one.
+ * "My Documents" — one dashboard for both signature types, laid out like the
+ * product reference: marketing header, title with the Upload File CTA, then the
+ * File / Last Edit / Size / Actions table. Two of the six files are signed with
+ * different kinds, so both indicators (green = digital and has an audit trail,
+ * grey = simple) and both row menus are visible at once.
  */
 export default function Screen(props: DashboardScreenProps) {
   // Row downloads confirm themselves with the thank-you page's green toast —
@@ -64,14 +65,14 @@ export default function Screen(props: DashboardScreenProps) {
         </div>
         <section data-ff="dash-table" className="flex w-full flex-col">
           <div className={cn(ROW_GRID, 'pb-2')}>
-            <span className="text-caption text-text-secondary">{props.columns.file}</span>
-            <span className="text-caption text-text-secondary max-md:hidden">
+            <span className="text-body text-text-secondary">{props.columns.file}</span>
+            <span className="text-body text-text-secondary max-md:hidden">
               {props.columns.lastEdit}
             </span>
-            <span className="text-caption text-text-secondary max-md:hidden">
+            <span className="text-body text-text-secondary max-md:hidden">
               {props.columns.size}
             </span>
-            <span className="text-caption text-right text-text-secondary">
+            <span className="text-body text-right text-text-secondary">
               {props.columns.actions}
             </span>
           </div>

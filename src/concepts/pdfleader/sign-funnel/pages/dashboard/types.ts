@@ -9,8 +9,11 @@ export type DocumentRow = {
   id: string;
   name: string;
   kind: FileKind;
-  /** Long form, as the reference shows it: "August 11, 2026". */
+  /** Day-first, as the reference shows it: "19.08.2026". */
   lastEditDate: string;
+  /** Second line under the date, e.g. "10 min ago". Fixed copy in the mock —
+   *  in-product this is computed from the file's timestamp. */
+  lastEditRelative: string;
   size: string;
   /** Only signed documents carry an indicator; unsigned rows leave this unset. */
   signature?: SignatureKind;

@@ -1,10 +1,10 @@
 import type { DashboardScreenProps } from './types';
 
 /**
- * Six documents as in the reference: the freshly signed one on top, a second
- * signed one further down, and four unsigned files. The two signed rows carry
- * different signature kinds so both indicators and both row menus are visible
- * on one dashboard.
+ * Six documents as in the product reference: the freshly signed W-9 on top, a
+ * second signed form further down, and four ordinary uploads. The two signed
+ * rows carry different signature kinds so both indicators and both row menus
+ * are visible on one dashboard.
  */
 const mock: DashboardScreenProps = {
   nav: {
@@ -19,24 +19,59 @@ const mock: DashboardScreenProps = {
     size: 'Size',
     actions: 'Actions',
   },
-  // Two signed copies of the same form. The digital one is the newer of the
-  // two, so the green indicator always sits above the grey one.
+  // The six files from the product reference, newest first. Two are signed and
+  // carry different signature kinds, so both indicators and both row menus are
+  // visible at once; the other four are ordinary uploads with no indicator.
   files: [
     {
       id: 'f1',
-      name: 'W-9_signed',
+      name: 'W-9',
       kind: 'pdf',
-      lastEditDate: 'August 11, 2026',
-      size: '122.7 KB',
+      lastEditDate: '19.08.2026',
+      lastEditRelative: '10 min ago',
+      size: '122 KB',
       signature: 'digital',
     },
     {
       id: 'f2',
-      name: 'W-9_signed',
+      name: 'dataset2026',
+      kind: 'xlsx',
+      lastEditDate: '18.08.2026',
+      lastEditRelative: '1 day ago',
+      size: '122 KB',
+    },
+    {
+      id: 'f3',
+      name: 'Invoice #1864',
+      kind: 'docx',
+      lastEditDate: '10.07.2026',
+      lastEditRelative: '40 days ago',
+      size: '122 KB',
+    },
+    {
+      id: 'f4',
+      name: 'W-4',
       kind: 'pdf',
-      lastEditDate: 'June 03, 2026',
-      size: '109.9 KB',
+      lastEditDate: '05.07.2026',
+      lastEditRelative: '45 days ago',
+      size: '122 KB',
       signature: 'simple',
+    },
+    {
+      id: 'f5',
+      name: 'Invoice #1234567890',
+      kind: 'jpg',
+      lastEditDate: '01.06.2026',
+      lastEditRelative: '79 days ago',
+      size: '122 KB',
+    },
+    {
+      id: 'f6',
+      name: 'image49',
+      kind: 'png',
+      lastEditDate: '20.05.2026',
+      lastEditRelative: '91 days ago',
+      size: '122 KB',
     },
   ],
   menu: {
