@@ -22,7 +22,10 @@ export type DocumentRow = {
 /** Which download the toast is confirming. */
 export type ToastVariant = 'signed' | 'audit';
 
-/** File names handed to the browser when a row download is pressed. */
+/**
+ * Copy for the confirmation toast a row download raises. No file is produced —
+ * the toast is the whole confirmation (see INTEGRATION.md).
+ */
 export type ToastCopy = {
   signedTitle: string;
   auditTitle: string;

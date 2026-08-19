@@ -999,11 +999,12 @@
     {
       "ff": "dash-row-last-edit",
       "page": "dashboard",
-      "component": "stacked cell: date over relative time, per the reference",
+      "component": "stacked cell: date over relative time (desktop only — hidden at mobile width)",
       "copy": "19.08.2026 / 10 min ago",
       "assert": {
-        "textContent": "19.08.2026"
-      }
+        "textContent": "10 min ago"
+      },
+      "frame": "desktop"
     },
     {
       "ff": "file-signature-digital",

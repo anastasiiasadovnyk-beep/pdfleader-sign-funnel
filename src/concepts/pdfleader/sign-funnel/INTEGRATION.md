@@ -16,7 +16,7 @@ One flow serves both sealing types — nothing branches. `editor` → `thank-you
 - Arriving on thank-you announces the signed document with the green toast for 5 s (`TOAST_MS`), then it auto-dismisses; a scenario-pinned toast is left untimed so previews hold still. The design only shows this toast after a download click — showing it on arrival is the requested behaviour, not a design detail.
 - **Dashboard indicators**: green = digital (sealed, has an audit trail), grey = simple. Its row menu is the split that matters — only digital offers "Download audit trail". Unsigned files get no indicator and the short menu.
 
-- **Row downloads confirm themselves.** The dashboard's row "Download" and the digital-only "Download audit trail" both raise the same green toast as the thank-you page (5 s, same copy, `dash-toast*` regions).
+- **Row downloads confirm themselves.** The dashboard's row "Download" and the digital-only "Download audit trail" both raise the same green toast as the thank-you page (5 s, same copy). Only the thank-you page's toast is pinned by the contract (`ty-toast*`); the dashboard's is unasserted, since its single scenario renders without a toast.
 - **Tooltips**: both "Best used for" cards in the select-type dialog and the "Verified" toggle in the signed toolbar (which only exists once a signature is placed). On the cards the whole block — label plus icon — is one hover target (`InfoTooltip` takes the label); the icon still opens it on focus and toggles on click, so keyboard and touch work. The Verified one is icon-hover only, since that block also holds the switch. `InfoTooltip` is composed — ui-pes ships no Tooltip — on the `--color-bg-tooltip` surface. **The tooltip copy is placeholder**: it is not present in the referenced Figma frame (`15528:54900` has the icons but no tooltip content), so the three strings in `mock.ts` are marked `PLACEHOLDER` and are a one-line change each.
 
 - **A document carries MANY signatures, each its own object.** State is a list (`PlacedSignature[]`) plus a `selectedId`; ink, thickness, method and page position all live per signature, so the contextual toolbar edits only the selected one and the trash removes only that one. The Sign tool and the purple field marker always append a new signature — each lands offset from the last (`CASCADE_PCT`, wrapping) so it cannot hide exactly behind its predecessor. Only the pencil edits an existing one.
@@ -25,17 +25,18 @@ One flow serves both sealing types — nothing branches. `editor` → `thank-you
 - **Signatures move between pages.** A drag is unclamped so the signature can cross page edges; on release the page nearest the box centre adopts it, clamped fully inside — which is what snaps it flush to an edge when let go over a gutter. Box geometry is captured at grab time, never re-measured, because crossing pages remounts the image and a zero-width measurement would let it hang off the edge.
 
 - **Done opens the export panel, it does not leave the editor.** `ExportPanel` is a right-hand DS `BaseDrawer` (`direction="right"`): editable file name, six format cards (PDF preselected), "Proceed to checkout" and "Print". Checkout is what hands the sealing choice on and continues to thank-you → dashboard. Scenario `exportOpen` renders it for review.
-- **Downloads notify, they do not download.** The thank-you CTAs and the dashboard's row download / audit-trail item produce **no file at all** — deliberately. A genuine download makes the browser open its own save dialog / download bubble, which drops a usability-test participant out of the prototype and into browser chrome. The green toast is the entire confirmation. **On integration these actions call the signing service's download; the file names the prototype's copy implies are `W-9_signed.pdf` and `W-9_signed_audit-trail.pdf`.** (An earlier revision did hand over a real generated PDF via `lib/downloadFile.ts`; that module is deleted — restore it from git history if the real download ever needs a client-side stand-in.)
+- **Downloads notify, they do not download.** The thank-you CTAs and the dashboard's row download / audit-trail item produce **no file at all** — deliberately. A genuine download makes the browser open its own save dialog / download bubble, which drops a usability-test participant out of the prototype and into browser chrome. The green toast is the entire confirmation. **On integration these actions call the signing service's download; the file names the prototype implies are `W-9_signed.pdf` and `W-9_signed_audit-trail.pdf` — these now come from the editor's export panel, since the dashboard's rows are named as the reference lists them (`W-9`, not `W-9_signed`).** (An earlier revision did hand over a real generated PDF via `lib/downloadFile.ts`; that module is deleted — restore it from git history if the real download ever needs a client-side stand-in.)
 - **Restart.** The PDFLeader logo on thank-you and on the dashboard clears the sealing choice and returns to the start of the flow, so the editor reopens unsigned — a clean slate between usability-test runs. `onRestart` comes from the sandbox route (`MultiPage` navigates to `flow.start`).
 
 ## Flow
 
-`flow.ts`: `editor` → `thank-you`. The sandbox injects `onNext`/`onBack`; in pdfleader-fe the editor's **Done** must route to the payment funnel and the payment success must route to the thank-you page — wire those in the router layer, not inside the pages.
+`flow.ts`: `editor` → `thank-you` → `dashboard`. The sandbox injects `onNext`/`onBack`/`onRestart`; in pdfleader-fe the editor's **Done** must route to the payment funnel and the payment success must route to the thank-you page — wire those in the router layer, not inside the pages.
 
 | Page | Design frames covered |
 |---|---|
 | `editor` | Sign / Editor · Select type (Simple/Digital) · Draw/Type/Upload (Default/Filled) · Un/Verified toolbar · mobile equivalents |
 | `thank-you` | Thank You Page (Simple/Digital · Downloaded · Audit trail) · mobile equivalents |
+| `dashboard` | My Documents (six files, signed indicators, row menus) · mobile equivalent |
 
 ## Props / data contract
 
@@ -67,6 +68,21 @@ One flow serves both sealing types — nothing branches. `editor` → `thank-you
 | `footer` | `FooterCopy` | shared marketing footer config |
 | `initialToast` | scenario seed | drop on integration |
 
+### `pages/dashboard/types.ts` → `DashboardScreenProps`
+
+| Prop | Type | Real source |
+|---|---|---|
+| `nav` | `DashboardNavCopy` | marketing-header config; `items` i18n, `accountLabel` i18n |
+| `heading`, `uploadLabel` | `string` | i18n `t('myDocuments.*')` |
+| `columns` | `DashboardColumnsCopy` | i18n `t('myDocuments.columns.*')` |
+| `files` | `DocumentRow[]` | documents list from the files service. `lastEditDate` is day-first per the reference and `lastEditRelative` is derived from the file's timestamp — **format both in-product; the mock ships fixed strings**. `kind` maps the extension onto the five chip colours; `signature` is set only for signed documents and drives both the indicator and the row menu |
+| `menu` | `RowMenuCopy` | i18n `t('myDocuments.menu.*')` |
+| `toast` | `ToastCopy` | i18n; confirmation copy only — no file is produced |
+| `rowActionLabels` | `{ edit, download, more }` | i18n; accessible names for the row icon actions |
+| `initialToast` | scenario seed | drop on integration |
+| `onRestart` | `() => void` | sandbox-only (logo → clean editor); drop on integration |
+| `onNext`, `onBack` | `() => void` | declared by the sandbox page contract but unused here — the dashboard is the last page in the flow |
+
 ## States
 
 ### editor (scenario = mock export)
@@ -84,15 +100,20 @@ Interactions inside the page (view-model `hooks/useSignFunnelModel.ts`): Sign to
 - `default` (Simple, 1 CTA) / `digital` (2 CTAs).
 - `signedDownloaded` / `digitalDownloaded` / `auditDownloaded` — 5-second success toast (auto-dismiss + close button). Downloads do **not** auto-start on page load (Figma annotation).
 
+### dashboard
+- `default` — the only scenario: six files, no toast. Row "Download" and the digital-only "Download audit trail" raise the toast at runtime, so no scenario pins it.
+- The two signed rows are what make the page worth one scenario: `W-9` carries the digital indicator and the audit-trail menu item, `W-4` the simple indicator and the shorter menu, and the four unsigned rows show the no-indicator state. Regions cover the header, heading, upload CTA, table, first row, the stacked last-edit cell (desktop only — it is hidden at mobile width), both signature indicators and both signed row menus.
+
 ## Integration steps (pdfleader-fe, FSD)
 
 1. **Editor page** → `pages-layer/document-sign/` with `ui/DocumentSignPage.tsx` (from `pages/editor/Screen.tsx`), `ui/` sub-components from `pages/editor/components/*` (Screen stays the composition root), `model/` from `hooks/useSignFunnelModel.ts` — replace `state` with the sign slice (`entities/sign/model/state/`), `actions` with dispatched actions, `derived` with selectors. `lib/` from `pages/editor/lib/`. Export via `index.ts` **named** export.
 2. **Thank-you page** → `pages-layer/sign-thank-you/` same mapping (`useThankYouModel` → order slice + local toast state).
-3. **Routing**: add both to `PAGE_LINKS` (`src/shared/constants/pageLinks.ts`); Done → payment funnel; payment success → thank-you.
-4. **Data**: delete both `mock.ts` files; wire props per the tables above. Signature assets become the real canvas/type/upload artefacts from the signing service.
-5. **i18n**: move all copy props to `i18next` keys (`sign.*`, `thankYou.*`); keep the `**bold**` markers of `uploadCaption` or split it into keyed segments.
-6. **Styling**: token utility classes carry over; pdfleader mobile threshold is 760px in-product vs the sandbox's `md` (1024) — re-check the `max-md:` splits against the product breakpoint.
-7. **Analytics**: map `analytics.json` events onto the product tracker (see the file; names follow the `_tap`/`_view`/`_change` convention).
+3. **Dashboard page** → `pages-layer/my-documents/` from `pages/dashboard/Screen.tsx` and `components/*`; its only state is the local download-toast timer, so there is no slice to add. `FileGlyph`/`FileRow` are candidates for `shared/ui` if My Documents already exists in-product.
+4. **Routing**: add all three to `PAGE_LINKS` (`src/shared/constants/pageLinks.ts`); Done → payment funnel; payment success → thank-you; "My documents" → dashboard.
+5. **Data**: delete all three `mock.ts` files; wire props per the tables above. Signature assets become the real canvas/type/upload artefacts from the signing service.
+6. **i18n**: move all copy props to `i18next` keys (`sign.*`, `thankYou.*`); keep the `**bold**` markers of `uploadCaption` or split it into keyed segments.
+7. **Styling**: token utility classes carry over; pdfleader mobile threshold is 760px in-product vs the sandbox's `md` (1024) — re-check the `max-md:` splits against the product breakpoint.
+8. **Analytics**: map `analytics.json` events onto the product tracker (see the file; names follow the `_tap`/`_view`/`_change` convention).
 
 ## DS gaps hit (also see DS-GAPS.md)
 

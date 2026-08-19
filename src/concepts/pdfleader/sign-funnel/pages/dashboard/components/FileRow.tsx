@@ -76,11 +76,17 @@ export function FileRow({ file, menu, labels, onDownload, onDownloadAudit }: Pro
           )}
           trigger={
             /*
-             * Outlined, because the reference draws this action inside a thin
-             * circle: ui-pes pairs outlined+action with border-action-stroke,
-             * a low-alpha black, on a 2rem box whose radius is half its size —
-             * exactly that hairline circle. The opaque outline token flagged in
-             * DS-GAPS.md belongs to Button, not IconButton.
+             * Outlined, because the reference rings this action. ui-pes pairs
+             * outlined+action with border-action-stroke (low-alpha black), which
+             * is the DS's own way to get the ring — the opaque outline token
+             * flagged in DS-GAPS.md belongs to Button, not IconButton, so no
+             * hand-rolled border is needed.
+             *
+             * Not exactly the reference's shape: the 2px outline grows the box
+             * to 36px while --radius-icon-btn-sm stays 16px, so each side keeps
+             * a ~4px straight run — a squircle rather than a true circle — and
+             * the border is heavier than the reference's hairline. Logged in
+             * DS-GAPS.md; a circular icon-button token would close it.
              */
             <IconButton
               data-ff={`dash-row-more-${file.signature ?? 'unsigned'}`}

@@ -16,8 +16,8 @@ const TYPE_CHIP: Record<FileKind, { label: string; className: string }> = {
  * Signed-document indicator. Green for a digital signature (sealed, has an
  * audit trail), grey for a simple one — the same split the row menu uses.
  * The reference draws the digital badge as a scalloped seal; ui-pes has no
- * seal shape, so this is a round badge in the seal's green (flagged in
- * INTEGRATION.md).
+ * seal shape, so this is a round badge in the seal's green (logged in
+ * DS-GAPS.md).
  */
 function SignatureBadge({ kind }: { kind: SignatureKind }) {
   return (
