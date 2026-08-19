@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import type {
   EditorScreenProps,
   ExportFormatId,
   InkColor,
   InkThickness,
+  PlacedSignature,
   SignStep,
   SignatureMethod,
   SignaturePosition,
@@ -14,16 +15,27 @@ import type {
 /** A brand-new signature draft: no ink on any tab. */
 const BLANK_INK: Record<SignatureMethod, boolean> = { draw: false, type: false, upload: false };
 
-/** Bottom-left of the signature's resting spot on the W-9's signature line. */
+/** Bottom-left of a signature's resting spot on the W-9's signature line. */
 const SIGNATURE_HOME = { leftPct: 30, topPct: 76.74 };
+
+/**
+ * Each further signature lands offset from the one before it, so adding a
+ * second does not drop it exactly behind the first — which would read as
+ * "nothing happened". Wraps so the cascade cannot walk off the page.
+ */
+const CASCADE_PCT = 5;
+const CASCADE_WRAP = 4;
 
 /**
  * View-model for the sign funnel's editor page, shaped to mirror the product
  * store: `state` becomes slice state, `actions` map 1:1 to dispatches and
  * `derived` to selectors on integration (see INTEGRATION.md).
+ *
+ * The document carries a LIST of signatures, each selected, moved, edited and
+ * deleted on its own. `step` says only which dialog is open — never whether
+ * anything is signed — so dismissing a dialog cannot discard placed work.
  */
 export function useSignFunnelModel(props: EditorScreenProps) {
-  const [step, setStep] = useState<SignStep>(props.initialStep ?? 'editing');
   const [signatureType, setSignatureType] = useState<SignatureType>(
     props.initialSignatureType ?? 'simple',
   );
@@ -33,69 +45,80 @@ export function useSignFunnelModel(props: EditorScreenProps) {
     type: props.initialMethod === 'type' ? Boolean(props.initialFilled) : false,
     upload: props.initialMethod === 'upload' ? Boolean(props.initialFilled) : false,
   });
+  /** Draft ink for the create/edit dialog; each placed signature carries its own. */
   const [inkColor, setInkColor] = useState<InkColor>('black');
   const [thickness, setThickness] = useState<InkThickness>('thin');
   const [verified, setVerified] = useState<boolean>(
-    props.initialVerified ?? (props.initialSignatureType === 'digital'),
+    props.initialVerified ?? props.initialSignatureType === 'digital',
   );
   const [pagesOpen, setPagesOpen] = useState(false);
-  /** The method the placed signature was created with. */
-  const [placedMethod, setPlacedMethod] = useState<SignatureMethod>(
-    props.initialMethod ?? 'draw',
-  );
-  /** The resting spot is on whichever page carries the signature field. */
-  const home = (): SignaturePosition => ({
+
+  /** Resting spot for the nth signature, on whichever page carries the field. */
+  const homeFor = (index: number): SignaturePosition => ({
     pageId: props.document.signFieldPage,
-    ...SIGNATURE_HOME,
+    leftPct: SIGNATURE_HOME.leftPct + (index % CASCADE_WRAP) * CASCADE_PCT,
+    topPct: SIGNATURE_HOME.topPct - (index % CASCADE_WRAP) * CASCADE_PCT,
   });
-  const [signaturePosition, setSignaturePosition] = useState<SignaturePosition>(home);
-  /** A placed signature starts selected; clicking off the page clears it. */
-  const [signatureSelected, setSignatureSelected] = useState(true);
-  /**
-   * Set while the create dialog is open to EDIT the placed signature rather
-   * than make a new one, so backing out returns to the signature instead of
-   * discarding it.
-   */
-  const [editingPlaced, setEditingPlaced] = useState(false);
-  /**
-   * Where dismissing the signature dialog lands. Backing out of a NEW signature
-   * started while one is already placed must not discard that one either, so
-   * this remembers the step the dialog was opened from.
-   */
-  const [dismissStep, setDismissStep] = useState<SignStep>('editing');
+
+  // `initialStep: 'signed'` is a scenario seed meaning "one signature already
+  // placed and selected"; from then on `step` only tracks the dialogs.
+  const seeded = props.initialStep === 'signed';
+  const [signatures, setSignatures] = useState<PlacedSignature[]>(() =>
+    seeded
+      ? [
+          {
+            id: 'sig-1',
+            method: props.initialMethod ?? 'draw',
+            inkColor: 'black',
+            thickness: 'thin',
+            ...homeFor(0),
+          },
+        ]
+      : [],
+  );
+  const nextId = useRef(2);
+  const [selectedId, setSelectedId] = useState<string | null>(seeded ? 'sig-1' : null);
+  /** Which signature the dialog is editing; null means it is creating a new one. */
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [step, setStep] = useState<SignStep>(
+    seeded ? 'editing' : (props.initialStep ?? 'editing'),
+  );
   /** Done opens the export panel; its checkout CTA leaves for the thank-you page. */
   const [exportOpen, setExportOpen] = useState(props.initialExportOpen ?? false);
   const [exportFormat, setExportFormat] = useState<ExportFormatId>('pdf');
 
+  const selected = signatures.find((signature) => signature.id === selectedId) ?? null;
+  const patchSelected = (patch: Partial<PlacedSignature>) =>
+    setSignatures((list) =>
+      list.map((signature) => (signature.id === selectedId ? { ...signature, ...patch } : signature)),
+    );
+
   const actions = {
     /**
-     * Sign tool tile / purple field marker — always starts a NEW signature.
-     * Any previously placed artwork is left alone rather than pulled into the
-     * dialog; only the pencil (`editSignature`) reopens it for editing.
+     * Sign tool tile / purple field marker — always starts a NEW signature, so
+     * clicking either again adds another instead of reopening one.
      */
     startSignFlow: () => {
-      // The sealing type is already settled once a signature is on the page, so
-      // a second one goes straight to the canvas. Deleting it returns the flow
-      // to the default, type-chooser-first path.
-      const hasSignature = step === 'signed';
-      setEditingPlaced(false);
-      setDismissStep(hasSignature ? 'signed' : 'editing');
+      setEditingId(null);
       setMethod('draw');
       setFilled(BLANK_INK);
-      setStep(hasSignature ? 'createSign' : 'selectType');
+      // The sealing type is settled once something is signed, so further
+      // signatures skip the chooser. Deleting them all restores the full flow.
+      setStep(signatures.length > 0 ? 'createSign' : 'selectType');
     },
     cancelSelectType: () => {
-      setStep(dismissStep);
-      setEditingPlaced(false);
+      setStep('editing');
+      setEditingId(null);
     },
     chooseType: (type: SignatureType) => setSignatureType(type),
     continueToCreate: () => setStep('createSign'),
     backToSelectType: () => setStep('selectType'),
     closeCreate: () => {
-      setStep(dismissStep);
-      setEditingPlaced(false);
+      setStep('editing');
+      setEditingId(null);
     },
     setMethod: (m: SignatureMethod) => setMethod(m),
+    /** Draft ink and thickness, used by the create/edit dialog. */
     setInkColor,
     setThickness,
     /** Any pointer interaction with the draw canvas leaves ink. */
@@ -104,34 +127,56 @@ export function useSignFunnelModel(props: EditorScreenProps) {
     upload: () => setFilled((f) => ({ ...f, upload: true })),
     clear: () => setFilled((f) => ({ ...f, [method]: false })),
     placeSignature: () => {
-      setPlacedMethod(method);
-      setSignatureSelected(true);
-      setStep('signed');
-      if (editingPlaced) {
-        // Only the artwork changed: keep where the user dragged it and the
-        // Verified choice they made.
-        setEditingPlaced(false);
+      setStep('editing');
+      if (editingId) {
+        // Editing an existing one: only the artwork changes, so it keeps the
+        // spot the user dragged it to.
+        setSignatures((list) =>
+          list.map((signature) =>
+            signature.id === editingId ? { ...signature, method, inkColor, thickness } : signature,
+          ),
+        );
+        setSelectedId(editingId);
+        setEditingId(null);
         return;
       }
-      setVerified(signatureType === 'digital');
-      setSignaturePosition(home());
+      const id = `sig-${nextId.current++}`;
+      setSignatures((list) => [
+        ...list,
+        { id, method, inkColor, thickness, ...homeFor(list.length) },
+      ]);
+      setSelectedId(id);
+      // The first signature settles the document's sealing state.
+      if (signatures.length === 0) setVerified(signatureType === 'digital');
     },
-    /** Pencil in the contextual toolbar — reopen the dialog on the placed signature. */
+    /** Pencil in the contextual toolbar — reopen the dialog on the selected one. */
     editSignature: () => {
-      setEditingPlaced(true);
-      setDismissStep('signed');
-      setMethod(placedMethod);
-      // The placed signature IS the draft being edited, whatever the last
+      if (!selected) return;
+      setEditingId(selected.id);
+      setMethod(selected.method);
+      setInkColor(selected.inkColor);
+      setThickness(selected.thickness);
+      // That signature IS the draft being edited, whatever a previous
       // new-signature attempt left behind.
-      setFilled((f) => ({ ...f, [placedMethod]: true }));
+      setFilled((f) => ({ ...f, [selected.method]: true }));
       setStep('createSign');
     },
-    selectSignature: () => setSignatureSelected(true),
-    deselectSignature: () => setSignatureSelected(false),
-    /** Drag of the placed signature; the canvas clamps it to the page. */
-    moveSignature: (position: SignaturePosition) => setSignaturePosition(position),
+    selectSignature: (id: string) => setSelectedId(id),
+    deselectSignature: () => setSelectedId(null),
+    /** Drag of one signature; the canvas clamps it into a page on release. */
+    moveSignature: (id: string, position: SignaturePosition) =>
+      setSignatures((list) =>
+        list.map((signature) => (signature.id === id ? { ...signature, ...position } : signature)),
+      ),
+    /** The toolbar's pickers act on the selected signature, not the document. */
+    setSelectedInkColor: (color: InkColor) => patchSelected({ inkColor: color }),
+    setSelectedThickness: (value: InkThickness) => patchSelected({ thickness: value }),
     toggleVerified: (checked: boolean) => setVerified(checked),
-    deleteSignature: () => setStep('editing'),
+    /** Trash in the toolbar — removes the selected signature only. */
+    deleteSignature: () => {
+      setSignatures((list) => list.filter((signature) => signature.id !== selectedId));
+      setSelectedId(null);
+    },
     openExport: () => setExportOpen(true),
     closeExport: () => setExportOpen(false),
     setExportFormat: (format: ExportFormatId) => setExportFormat(format),
@@ -144,15 +189,20 @@ export function useSignFunnelModel(props: EditorScreenProps) {
     signToolActive: step === 'selectType' || step === 'createSign',
     canPlace: filled[method],
     canUndoInk: filled[method],
-    signaturePlaced: step === 'signed',
-    /** Selection chrome and the contextual toolbar travel together. */
-    signatureActive: step === 'signed' && signatureSelected,
+    signaturePlaced: signatures.length > 0,
+    /**
+     * Selection chrome and the contextual toolbar travel together — and both
+     * belong to the editor, not to a dialog. Gating on the step keeps the
+     * toolbar from sitting behind an open dialog, and stops clicks inside that
+     * dialog from reaching the click-off-to-deselect listener.
+     */
+    signatureActive: selected !== null && step === 'editing',
+    selectedSignature: selected,
     /**
      * Sign ID caption is a Digital Signature artefact, and reads as part of the
-     * selection chrome — it clears when the signature is deselected.
+     * selection chrome — it shows under the selected signature only.
      */
-    showSignId: step === 'signed' && verified && signatureSelected,
-    placedMethod,
+    showSignId: verified && selected !== null,
   };
 
   return {
@@ -165,9 +215,9 @@ export function useSignFunnelModel(props: EditorScreenProps) {
       thickness,
       verified,
       pagesOpen,
-      signaturePosition,
-      signatureSelected,
-      editingPlaced,
+      signatures,
+      selectedId,
+      editingId,
       exportOpen,
       exportFormat,
     },

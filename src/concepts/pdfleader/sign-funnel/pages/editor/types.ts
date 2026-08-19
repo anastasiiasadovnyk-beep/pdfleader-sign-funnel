@@ -100,6 +100,18 @@ export type SignaturePosition = {
   topPct: number;
 };
 
+/**
+ * One signature on the document. The document can carry several, each selected,
+ * dragged, edited and deleted on its own — so ink and thickness belong to the
+ * individual signature rather than to the page.
+ */
+export type PlacedSignature = SignaturePosition & {
+  id: string;
+  method: SignatureMethod;
+  inkColor: InkColor;
+  thickness: InkThickness;
+};
+
 export type SignTypeCardCopy = {
   title: string;
   /** Paragraphs, stacked with a small gap. */

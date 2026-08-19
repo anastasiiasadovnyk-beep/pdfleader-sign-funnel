@@ -5,9 +5,8 @@ import { cn } from '@universe-forma/ui-pes';
 import type {
   DocumentCanvasProps,
   DocumentFormValues,
-  InkColor,
+  PlacedSignature,
   SignatureAssets,
-  SignatureMethod,
   SignaturePosition,
 } from '../types';
 import { Icon } from './Icon';
@@ -15,17 +14,15 @@ import { Icon } from './Icon';
 type Props = {
   document: DocumentCanvasProps;
   signatureAssets: SignatureAssets;
-  inkColor: InkColor;
-  placed: boolean;
-  placedMethod: SignatureMethod;
+  /** Every signature on the document; each is rendered on the page it sits on. */
+  signatures: PlacedSignature[];
+  /** Selection chrome (frame, handles, red outline) only shows on this one. */
+  selectedId: string | null;
   showSignId: boolean;
   signIdValue: string;
   onSignField: () => void;
-  /** Selection chrome (frame, handles, red outline) only shows while selected. */
-  selected: boolean;
-  onSelect: () => void;
-  signaturePosition: SignaturePosition;
-  onSignatureMove: (position: SignaturePosition) => void;
+  onSelectSignature: (id: string) => void;
+  onSignatureMove: (id: string, position: SignaturePosition) => void;
 };
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
@@ -88,6 +85,9 @@ function TypedValues({ values }: { values: DocumentFormValues }) {
  * and clamping against that would let the signature hang off the edge.
  */
 type DragState = {
+  /** Which signature this gesture is moving. */
+  id: string;
+  pageId: number;
   pointerId: number;
   startX: number;
   startY: number;
@@ -137,15 +137,12 @@ function Handles() {
 export function DocumentCanvas({
   document,
   signatureAssets,
-  inkColor,
-  placed,
-  placedMethod,
+  signatures,
+  selectedId,
   showSignId,
   signIdValue,
   onSignField,
-  selected,
-  onSelect,
-  signaturePosition,
+  onSelectSignature,
   onSignatureMove,
 }: Props) {
   /** Every page box, so a drag can be handed to whichever one it ends over. */
@@ -178,13 +175,15 @@ export function DocumentCanvas({
    * then translate pointer travel into page percentages. Pointer capture keeps
    * the moves coming even when the cursor outruns the box.
    */
-  function startDrag(event: ReactPointerEvent<HTMLDivElement>) {
-    onSelect();
-    const page = pages.current.get(signaturePosition.pageId);
+  function startDrag(event: ReactPointerEvent<HTMLDivElement>, signature: PlacedSignature) {
+    onSelectSignature(signature.id);
+    const page = pages.current.get(signature.pageId);
     if (!page) return;
     const pageRect = page.getBoundingClientRect();
     const boxRect = event.currentTarget.getBoundingClientRect();
     drag.current = {
+      id: signature.id,
+      pageId: signature.pageId,
       pointerId: event.pointerId,
       startX: event.clientX,
       startY: event.clientY,
@@ -192,8 +191,8 @@ export function DocumentCanvas({
       boxTop: boxRect.top,
       boxWidth: boxRect.width,
       boxHeight: boxRect.height,
-      startLeft: signaturePosition.leftPct,
-      startTop: signaturePosition.topPct,
+      startLeft: signature.leftPct,
+      startTop: signature.topPct,
       pageWidth: pageRect.width,
       pageHeight: pageRect.height,
     };
@@ -207,8 +206,8 @@ export function DocumentCanvas({
     const dyPct = ((event.clientY - state.startY) / state.pageHeight) * 100;
     // Unclamped on purpose: the signature follows the pointer past the page
     // edges and onto its neighbours; `endDrag` decides where it lands.
-    onSignatureMove({
-      pageId: signaturePosition.pageId,
+    onSignatureMove(state.id, {
+      pageId: state.pageId,
       leftPct: state.startLeft + dxPct,
       topPct: state.startTop + dyPct,
     });
@@ -230,7 +229,7 @@ export function DocumentCanvas({
     const { rect } = target;
     const widthPct = (state.boxWidth / rect.width) * 100;
     const heightPct = (state.boxHeight / rect.height) * 100;
-    onSignatureMove({
+    onSignatureMove(state.id, {
       pageId: target.id,
       leftPct: clamp(((left - rect.left) / rect.width) * 100, 0, 100 - widthPct),
       // topPct is the box's bottom edge, so it travels from one box-height down
@@ -287,7 +286,6 @@ export function DocumentCanvas({
                     data-ff="sign-field-marker"
                     aria-label="Sign here"
                     onClick={onSignField}
-                    disabled={placed}
                     className={cn(
                       'group absolute left-[19.8%] top-[72.83%] flex h-[4.02%] w-[43.26%] items-stretch',
                       // The flow's entry point, so the whole field reads as clickable.
@@ -301,59 +299,71 @@ export function DocumentCanvas({
                 </>
               )}
               {/*
-               * The signature lives on whichever page it was dropped on, not
-               * only the signing page — so it renders here rather than inside
-               * the `isSignPage` block above.
+               * Every signature that sits on this page. Each is its own target:
+               * click to select, drag to move, and the toolbar acts on whichever
+               * one is selected.
                */}
-              {placed && page.id === signaturePosition.pageId && (
-                <div
-                  data-ff="placed-signature"
-                  data-signature-ui="selection"
-                  role="button"
-                  tabIndex={0}
-                  aria-label="Placed signature — drag to move"
-                  onPointerDown={startDrag}
-                  onPointerMove={onDrag}
-                  onPointerUp={endDrag}
-                  onPointerCancel={endDrag}
-                  // Images are natively draggable, and that native drag fires
-                  // pointercancel — which would kill the gesture the moment
-                  // you grab the signature itself rather than its frame.
-                  onDragStart={(event) => event.preventDefault()}
-                  // touch-none so a drag on mobile moves the signature instead
-                  // of scrolling the page. z-10 keeps it above the neighbouring
-                  // pages while it is dragged across them.
-                  className="absolute z-10 -translate-y-full cursor-grab touch-none select-none active:cursor-grabbing"
-                  style={{
-                    left: `${signaturePosition.leftPct}%`,
-                    top: `${signaturePosition.topPct}%`,
-                  }}
-                >
-                  <div
-                    className={cn('relative p-3', selected && 'border-primary-opacity-40 border')}
-                  >
-                    <img
-                      src={signatureAssets[placedMethod][inkColor]}
-                      alt="Your signature"
-                      draggable={false}
+              {signatures
+                .filter((signature) => signature.pageId === page.id)
+                .map((signature) => {
+                  const isSelected = signature.id === selectedId;
+                  return (
+                    <div
+                      key={signature.id}
+                      data-ff="placed-signature"
+                      data-signature-ui="selection"
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Placed signature — drag to move"
+                      onPointerDown={(event) => startDrag(event, signature)}
+                      onPointerMove={onDrag}
+                      onPointerUp={endDrag}
+                      onPointerCancel={endDrag}
+                      // Images are natively draggable, and that native drag fires
+                      // pointercancel — which would kill the gesture the moment
+                      // you grab the signature itself rather than its frame.
+                      onDragStart={(event) => event.preventDefault()}
                       className={cn(
-                        'block h-8 w-auto',
-                        selected && 'border-error-state-main-50 border',
+                        'absolute -translate-y-full cursor-grab touch-none select-none',
+                        'active:cursor-grabbing',
+                        // Above the neighbouring pages while being dragged across
+                        // them; the selected one also sits above its siblings.
+                        isSelected ? 'z-20' : 'z-10',
                       )}
-                    />
-                    {selected && <Handles />}
-                  </div>
-                  {showSignId && (
-                    <span
-                      data-ff="sign-id"
-                      className="text-caption absolute -bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap text-text-secondary"
+                      style={{
+                        left: `${signature.leftPct}%`,
+                        top: `${signature.topPct}%`,
+                      }}
                     >
-                      <Icon name="verified_user" size={16} className="text-action-active" />
-                      {signIdValue}
-                    </span>
-                  )}
-                </div>
-              )}
+                      <div
+                        className={cn(
+                          'relative p-3',
+                          isSelected && 'border-primary-opacity-40 border',
+                        )}
+                      >
+                        <img
+                          src={signatureAssets[signature.method][signature.inkColor]}
+                          alt="Your signature"
+                          draggable={false}
+                          className={cn(
+                            'block h-8 w-auto',
+                            isSelected && 'border-error-state-main-50 border',
+                          )}
+                        />
+                        {isSelected && <Handles />}
+                      </div>
+                      {isSelected && showSignId && (
+                        <span
+                          data-ff="sign-id"
+                          className="text-caption absolute -bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap text-text-secondary"
+                        >
+                          <Icon name="verified_user" size={16} className="text-action-active" />
+                          {signIdValue}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
             </div>
           );
         })}

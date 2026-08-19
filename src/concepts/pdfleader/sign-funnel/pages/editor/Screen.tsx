@@ -23,8 +23,7 @@ export default function Screen(props: EditorScreenProps) {
 
   // The signed-document badge only exists once a signature is on the page:
   // green seal when it's verified, purple pending chip while it isn't.
-  const pageBadge =
-    state.step === 'signed' ? (state.verified ? 'seal' : 'pending') : null;
+  const pageBadge = derived.signaturePlaced ? (state.verified ? 'seal' : 'pending') : null;
 
   /**
    * A pointer-down anywhere that is neither the placed signature nor its
@@ -70,11 +69,11 @@ export default function Screen(props: EditorScreenProps) {
       {derived.signatureActive && (
         <SignContextToolbar
           copy={props.signedToolbar}
-          inkColor={state.inkColor}
-          thickness={state.thickness}
+          inkColor={derived.selectedSignature?.inkColor ?? state.inkColor}
+          thickness={derived.selectedSignature?.thickness ?? state.thickness}
           verified={state.verified}
-          onInkColorChange={actions.setInkColor}
-          onThicknessChange={actions.setThickness}
+          onInkColorChange={actions.setSelectedInkColor}
+          onThicknessChange={actions.setSelectedThickness}
           onVerifiedChange={actions.toggleVerified}
           onEdit={actions.editSignature}
           onDelete={actions.deleteSignature}
@@ -88,15 +87,12 @@ export default function Screen(props: EditorScreenProps) {
         <DocumentCanvas
           document={props.document}
           signatureAssets={props.signatureAssets}
-          inkColor={state.inkColor}
-          placed={derived.signaturePlaced}
-          placedMethod={derived.placedMethod}
+          signatures={state.signatures}
+          selectedId={state.selectedId}
           showSignId={derived.showSignId}
           signIdValue={props.signedToolbar.signIdValue}
           onSignField={actions.startSignFlow}
-          selected={derived.signatureActive}
-          onSelect={actions.selectSignature}
-          signaturePosition={state.signaturePosition}
+          onSelectSignature={actions.selectSignature}
           onSignatureMove={actions.moveSignature}
         />
       </div>
@@ -126,7 +122,7 @@ export default function Screen(props: EditorScreenProps) {
           thickness={state.thickness}
           assets={props.signatureAssets}
           canPlace={derived.canPlace}
-          editing={state.editingPlaced}
+          editing={state.editingId !== null}
           onBack={actions.backToSelectType}
           onClose={actions.closeCreate}
           onMethodChange={actions.setMethod}
