@@ -40,7 +40,7 @@ export function AppHeader() {
     <div data-brand="pdfguru">
       <header className="sticky top-0 z-30 border-b border-action-stroke bg-bg-white-bg">
         <div className="mx-auto flex max-w-[1200px] items-center gap-6 px-6 py-3">
-          <Link to="/" className="flex items-center gap-2 shrink-0" onClick={() => setQuery('')}>
+          <Link to="/gallery" className="flex items-center gap-2 shrink-0" onClick={() => setQuery('')}>
             <span className="size-2.5 rounded-full bg-primary" />
             <span className="text-subtitle-emph text-text-primary">Vibe Concepts</span>
           </Link>

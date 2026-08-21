@@ -4,17 +4,27 @@ import { ConceptRoute } from './ConceptRoute';
 import { PreviewRoute } from './PreviewRoute';
 import { AppLayout } from './AppLayout';
 
+/**
+ * The root path serves two audiences, so it depends on the build:
+ *
+ * - **dev** — the sandbox gallery, so every concept is browsable with the app
+ *   header (search / back to gallery) and, inside a multipage concept, the flow
+ *   bar along the bottom.
+ * - **built** — straight to the sign funnel with no sandbox chrome at all. The
+ *   deployed URL is what usability-test participants open, and they must not see
+ *   the gallery header, the flow bar or the analytics overlay.
+ *
+ * Every other route exists in both builds: `/gallery`, `/c/*` with chrome, and
+ * `/preview/*` bare. `import.meta.env.PROD` is inlined at build time, so the
+ * unused branch is dropped from the bundle.
+ */
+const HOME = import.meta.env.PROD ? '/preview/pdfleader/sign-funnel' : '/gallery';
+
 export function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/*
-         * Opening the app lands on the sign funnel with no sandbox chrome — the
-         * /preview routes render the concept alone (no gallery header, no flow
-         * bar, no analytics overlay), which is what usability testing needs.
-         * The gallery is still there at /gallery.
-         */}
-        <Route path="/" element={<Navigate to="/preview/pdfleader/sign-funnel" replace />} />
+        <Route path="/" element={<Navigate to={HOME} replace />} />
         <Route element={<AppLayout />}>
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/c/:product/:slug" element={<ConceptRoute />} />
